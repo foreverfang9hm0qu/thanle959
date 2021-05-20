@@ -64,7 +64,9 @@ public class MapViewHandler extends Activity {
     public void setFeatureLayerDTGs(List<FeatureLayerDTG> mFeatureLayerDTGs) {
         this.mFeatureLayerDTGs = mFeatureLayerDTGs;
     }
-
+    public void setmPopUp(Popup mPopUp) {
+        this.mPopUp = mPopUp;
+    }
     private List<FeatureLayerDTG> mFeatureLayerDTGs;
 
     public MapViewHandler(MapView mMapView, QuanLySuCo quanLySuCo) {
@@ -83,7 +85,12 @@ public class MapViewHandler extends Activity {
         singleTapAdddFeatureAsync.execute(add_point);
     }
 
-
+    public void onSingleTapMapView(MotionEvent e) {
+        final Point clickPoint = mMapView.screenToLocation(new android.graphics.Point(Math.round(e.getX()), Math.round(e.getY())));
+            mClickPoint = new android.graphics.Point((int) e.getX(), (int) e.getY());
+            SingleTapMapViewAsync singleTapMapViewAsync = new SingleTapMapViewAsync(mContext, mFeatureLayerDTGs, mPopUp, mClickPoint, mMapView);
+            singleTapMapViewAsync.execute(clickPoint);
+    }
     public double[] onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
         Point center = ((MapView) mMapView).getCurrentViewpoint(Viewpoint.Type.CENTER_AND_SCALE).getTargetGeometry().getExtent().getCenter();
         Geometry project = GeometryEngine.project(center, SpatialReferences.getWgs84());

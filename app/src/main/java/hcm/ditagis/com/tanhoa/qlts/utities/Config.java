@@ -42,7 +42,13 @@ public class Config {
         this.minScale = minScale;
         this.groupLayer = groupLayer;
     }
-
+    public Config(String url, String titleService, int minScale, String groupLayer, String[] updateField){
+        this.url = url;
+        this.titleService = titleService;
+        this.minScale = minScale;
+        this.groupLayer = groupLayer;
+        this.updateField = updateField;
+    }
     public Config(String url, String[] queryField, String[] outField, String titleService, int minScale, String[] updateField) {
         this.url = url;
         this.queryField = queryField;

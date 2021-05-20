@@ -213,8 +213,9 @@ public class QuanLySuCo extends AppCompatActivity implements NavigationView.OnNa
             mMap.getOperationalLayers().add(featureLayer);
 
         }
+        popupInfos = new Popup(QuanLySuCo.this,mMapView, mCallout);
+        mMapViewHandler.setmPopUp(popupInfos);
         mMapViewHandler.setFeatureLayerDTGs(mFeatureLayerDTGS);
-        traCuu.setPopupInfos(popupInfos);
         final List<FeatureLayerDTG> tmpFeatureLayerDTGs = new ArrayList<>();
         mMap.addDoneLoadingListener(new Runnable() {
             @Override
@@ -276,6 +277,7 @@ public class QuanLySuCo extends AppCompatActivity implements NavigationView.OnNa
             @Override
             public boolean onSingleTapConfirmed(MotionEvent e) {
                 try {
+                    mMapViewHandler.onSingleTapMapView(e);
                 } catch (ArcGISRuntimeException ex) {
                     Log.d("", ex.toString());
                 }
@@ -502,7 +504,7 @@ public class QuanLySuCo extends AppCompatActivity implements NavigationView.OnNa
                 this.startActivity(intent);
                 break;
             case R.id.nav_tracuu:
-                traCuu.start();
+//                traCuu.start();
                 break;
             case R.id.nav_find_route:
                 intent = new Intent(this, FindRouteActivity.class);

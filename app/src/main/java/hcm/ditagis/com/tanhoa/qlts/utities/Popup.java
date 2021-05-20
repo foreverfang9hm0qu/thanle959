@@ -78,6 +78,12 @@ public class Popup extends AppCompatActivity {
         return mDialog;
     }
 
+    public Popup(QuanLySuCo mainActivity, MapView mMapView, Callout callout) {
+        this.mMainActivity = mainActivity;
+        this.mMapView = mMapView;
+        this.mCallout = callout;
+
+    }
     public Popup(QuanLySuCo mainActivity, MapView mMapView, ServiceFeatureTable mServiceFeatureTable, Callout callout) {
         this.mMainActivity = mainActivity;
         this.mMapView = mMapView;
@@ -92,53 +98,55 @@ public class Popup extends AppCompatActivity {
     }
 
     private void refressPopup() {
+        String[] hiddenFields = mMainActivity.getResources().getStringArray(R.array.hiddenFields);
         Map<String, Object> attributes = mSelectedArcGISFeature.getAttributes();
         ListView listView = linearLayout.findViewById(R.id.lstview_thongtinsuco);
         FeatureViewInfoAdapter featureViewInfoAdapter = new FeatureViewInfoAdapter(mMainActivity, new ArrayList<FeatureViewInfoAdapter.Item>());
         listView.setAdapter(featureViewInfoAdapter);
         String typeIdField = mSelectedArcGISFeature.getFeatureTable().getTypeIdField();
-        String[] outFields = mFeatureLayerDTG.getOutFields();
-        List<Field> fields = this.mSelectedArcGISFeature.getFeatureTable().getFields();
-        for (String outField : outFields) {
-            for (Field field : fields) {
-                if (field.getName().equals(outField)) {
-                    Object value = attributes.get(field.getName());
-                    FeatureViewInfoAdapter.Item item = new FeatureViewInfoAdapter.Item();
-                    item.setAlias(field.getAlias());
-                    item.setFieldName(field.getName());
-                    if (value != null) {
-                        if (item.getFieldName().equals(typeIdField)) {
-                            List<FeatureType> featureTypes = mSelectedArcGISFeature.getFeatureTable().getFeatureTypes();
-                            String valueFeatureType = getValueFeatureType(featureTypes, value.toString()).toString();
-                            if (valueFeatureType != null) item.setValue(valueFeatureType);
-                        } else if (field.getDomain() != null) {
-                            List<CodedValue> codedValues = ((CodedValueDomain) this.mSelectedArcGISFeature.getFeatureTable().getField(item.getFieldName()).getDomain()).getCodedValues();
-                            Object valueDomainObject = getValueDomain(codedValues, value.toString());
-                            if (valueDomainObject != null)
-                                item.setValue(valueDomainObject.toString());
-                        } else switch (field.getFieldType()) {
-                            case DATE:
-                                item.setValue(Constant.DATE_FORMAT.format(((Calendar) value).getTime()));
-                                break;
-                            case OID:
-                            case TEXT:
-                            case GLOBALID:
-                                item.setValue(value.toString());
-                                break;
-                            case SHORT:
-                            case DOUBLE:
-                            case INTEGER:
-                            case FLOAT:
-                                item.setValue(value.toString());
-                                break;
-                        }
-                    }
-                    featureViewInfoAdapter.add(item);
+        for (Field field : this.mSelectedArcGISFeature.getFeatureTable().getFields()) {
+            boolean checkHiddenField = false;
+            for(String hiddenField: hiddenFields){
+                if(hiddenField.equals(field.getName())){
+                    checkHiddenField = true;
                     break;
                 }
             }
+            Object value = attributes.get(field.getName());
+            if (value != null && !checkHiddenField) {
+                FeatureViewInfoAdapter.Item item = new FeatureViewInfoAdapter.Item();
+                item.setAlias(field.getAlias());
+                item.setFieldName(field.getName());
+                if (item.getFieldName().equals(typeIdField)) {
+                    List<FeatureType> featureTypes = mSelectedArcGISFeature.getFeatureTable().getFeatureTypes();
+                    Object valueFeatureType = getValueFeatureType(featureTypes, value.toString());
+                    if (valueFeatureType != null) item.setValue(valueFeatureType.toString());
+                } else if (field.getDomain() != null) {
+                    List<CodedValue> codedValues = ((CodedValueDomain) this.mSelectedArcGISFeature.getFeatureTable().getField(item.getFieldName()).getDomain()).getCodedValues();
+                    Object valueDomainObject = getValueDomain(codedValues, value.toString());
+                    if (valueDomainObject != null) item.setValue(valueDomainObject.toString());
+                } else switch (field.getFieldType()) {
+                    case DATE:
+                        item.setValue(Constant.DATE_FORMAT.format(((Calendar) value).getTime()));
+                        break;
+                    case OID:
+                    case TEXT:
+                    case GLOBALID:
+                        item.setValue(value.toString());
+                        break;
+                    case SHORT:
+                    case DOUBLE:
+                    case INTEGER:
+                    case FLOAT:
+                        item.setValue(value.toString());
+
+                        break;
+                }
+
+                featureViewInfoAdapter.add(item);
+                featureViewInfoAdapter.notifyDataSetChanged();
+            }
         }
-        featureViewInfoAdapter.notifyDataSetChanged();
     }
 
 
@@ -477,6 +485,7 @@ public class Popup extends AppCompatActivity {
                         layoutEditText.setVisibility(View.VISIBLE);
                         editText.setText(item.getValue());
                         break;
+                    case INTEGER:
                     case SHORT:
                         layoutEditText.setVisibility(View.VISIBLE);
                         editText.setInputType(InputType.TYPE_CLASS_NUMBER);
@@ -484,6 +493,7 @@ public class Popup extends AppCompatActivity {
 
 
                         break;
+
                     case DOUBLE:
                         layoutEditText.setVisibility(View.VISIBLE);
                         editText.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
@@ -509,6 +519,8 @@ public class Popup extends AppCompatActivity {
                                     }
                                     break;
                                 case TEXT:
+                                    item.setValue(editText.getText().toString());
+                                    break;
                                 case SHORT:
                                     try {
                                         short x = Short.parseShort(editText.getText().toString());
