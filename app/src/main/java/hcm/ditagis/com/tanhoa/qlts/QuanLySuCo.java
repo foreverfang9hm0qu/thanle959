@@ -28,6 +28,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.CompoundButtonCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -37,6 +38,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
+import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
@@ -50,6 +52,8 @@ import android.widget.Toast;
 import com.esri.arcgisruntime.ArcGISRuntimeEnvironment;
 import com.esri.arcgisruntime.ArcGISRuntimeException;
 import com.esri.arcgisruntime.data.ArcGISFeature;
+import com.esri.arcgisruntime.data.ArcGISFeatureTable;
+import com.esri.arcgisruntime.data.FeatureTable;
 import com.esri.arcgisruntime.data.ServiceFeatureTable;
 import com.esri.arcgisruntime.geometry.Geometry;
 import com.esri.arcgisruntime.geometry.GeometryEngine;
@@ -68,7 +72,6 @@ import com.esri.arcgisruntime.mapping.view.GraphicsOverlay;
 import com.esri.arcgisruntime.mapping.view.LocationDisplay;
 import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.symbology.SimpleMarkerSymbol;
-import com.esri.arcgisruntime.symbology.UniqueValueRenderer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -78,17 +81,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import hcm.ditagis.com.tanhoa.qlts.adapter.FeatureViewMoreInfoAdapter;
+import hcm.ditagis.com.tanhoa.qlts.adapter.ObjectsAdapter;
+import hcm.ditagis.com.tanhoa.qlts.adapter.SearchAdapter;
 import hcm.ditagis.com.tanhoa.qlts.adapter.TraCuuAdapter;
 import hcm.ditagis.com.tanhoa.qlts.async.EditAsync;
 import hcm.ditagis.com.tanhoa.qlts.libs.FeatureLayerDTG;
-import hcm.ditagis.com.tanhoa.qlts.tools.TraCuu;
 import hcm.ditagis.com.tanhoa.qlts.utities.Config;
-import hcm.ditagis.com.tanhoa.qlts.utities.Constant;
 import hcm.ditagis.com.tanhoa.qlts.utities.ImageFile;
 import hcm.ditagis.com.tanhoa.qlts.utities.ListConfig;
 import hcm.ditagis.com.tanhoa.qlts.utities.MapViewHandler;
 import hcm.ditagis.com.tanhoa.qlts.utities.MySnackBar;
 import hcm.ditagis.com.tanhoa.qlts.utities.Popup;
+import hcm.ditagis.com.tanhoa.qlts.utities.SearchItem;
 
 public class QuanLySuCo extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
@@ -99,22 +103,19 @@ public class QuanLySuCo extends AppCompatActivity implements NavigationView.OnNa
     private FeatureLayerDTG mFeatureLayerDTG;
     private MapViewHandler mMapViewHandler;
     private ListView mListViewSearch;
-    private TraCuuAdapter mSearchAdapter;
+    private ObjectsAdapter mSearchAdapter;
     private LocationDisplay mLocationDisplay;
     private int requestCode = 2;
     private Point mCurrentPoint;
     private Geocoder mGeocoder;
     private GraphicsOverlay mGraphicsOverlay;
     private boolean isSearchingFeature = false;
-    private TextView txtTimSuCo;
-    private TextView txtTimDiaChi;
     private LinearLayout mLayoutTimKiem;
     private FloatingActionButton mFloatButtonLayer, mFloatButtonLocation;
     private List<FeatureLayerDTG> mFeatureLayerDTGS;
     private LinearLayout mLinearLayoutCover;
     private boolean isOpenFab = false;
     private Animation mAnimationFabOpen, mAnimationFabClose, mAnimationClockwise, mAnimationAntiClockwise;
-    private TraCuu traCuu;
 
     public void setUri(Uri uri) {
         this.mUri = uri;
@@ -157,14 +158,14 @@ public class QuanLySuCo extends AppCompatActivity implements NavigationView.OnNa
         this.mListViewSearch = findViewById(R.id.lstview_search);
         //đưa listview search ra phía sau
         this.mListViewSearch.invalidate();
-        List<TraCuuAdapter.Item> items = new ArrayList<>();
-        this.mSearchAdapter = new TraCuuAdapter(QuanLySuCo.this, items);
+        List<ObjectsAdapter.Item> items = new ArrayList<>();
+        this.mSearchAdapter = new ObjectsAdapter(QuanLySuCo.this, items);
         this.mListViewSearch.setAdapter(mSearchAdapter);
         this.mListViewSearch.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                TraCuuAdapter.Item item = ((TraCuuAdapter.Item) parent.getItemAtPosition(position));
-                int objectID = item.getObjectID();
+                ObjectsAdapter.Item item = ((ObjectsAdapter.Item) parent.getItemAtPosition(position));
+                int objectID = Integer.parseInt(item.getObjectID());
                 if (objectID != -1) {
                     mMapViewHandler.queryByObjectID(objectID);
                     mSearchAdapter.clear();
@@ -314,13 +315,8 @@ public class QuanLySuCo extends AppCompatActivity implements NavigationView.OnNa
         findViewById(R.id.btn_layer_close).setOnClickListener(this);
         mFloatButtonLocation = findViewById(R.id.floatBtnLocation);
         mFloatButtonLocation.setOnClickListener(this);
-        txtTimSuCo = findViewById(R.id.txt_tim_su_co);
-        txtTimSuCo.setOnClickListener(this);
-        txtTimDiaChi = findViewById(R.id.txt_tim_dia_chi);
-        txtTimDiaChi.setOnClickListener(this);
         mLayoutTimKiem = findViewById(R.id.layout_tim_kiem);
 
-        optionSearchFeature();
     }
 
     private void setLicense() {
@@ -345,28 +341,6 @@ public class QuanLySuCo extends AppCompatActivity implements NavigationView.OnNa
 //        });
     }
 
-    private void setRendererSuCoFeatureLayer(FeatureLayer mSuCoTanHoaLayer) {
-        UniqueValueRenderer uniqueValueRenderer = new UniqueValueRenderer();
-        uniqueValueRenderer.getFieldNames().add("TrangThai");
-        SimpleMarkerSymbol defaultSymbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.Style.CIRCLE, Color.BLACK, 15);
-        SimpleMarkerSymbol chuaxuly = new SimpleMarkerSymbol(SimpleMarkerSymbol.Style.CIRCLE, Color.RED, 15);
-        SimpleMarkerSymbol dangxyly = new SimpleMarkerSymbol(SimpleMarkerSymbol.Style.CIRCLE, Color.YELLOW, 15);
-        SimpleMarkerSymbol daxuly = new SimpleMarkerSymbol(SimpleMarkerSymbol.Style.CIRCLE, Color.GREEN, 15);
-        uniqueValueRenderer.setDefaultSymbol(defaultSymbol);
-        uniqueValueRenderer.setDefaultLabel("Chưa xác định");
-
-        List<Object> chuaxulyValue = new ArrayList<>();
-        chuaxulyValue.add(0);
-        List<Object> dangxylyValue = new ArrayList<>();
-        dangxylyValue.add(2);
-        List<Object> daxulyValue = new ArrayList<>();
-        daxulyValue.add(1);
-
-        uniqueValueRenderer.getUniqueValues().add(new UniqueValueRenderer.UniqueValue("Chưa xử lý", "Chưa xử lý", chuaxuly, chuaxulyValue));
-        uniqueValueRenderer.getUniqueValues().add(new UniqueValueRenderer.UniqueValue("Chưa xử lý", "Chưa xử lý", dangxyly, dangxylyValue));
-        uniqueValueRenderer.getUniqueValues().add(new UniqueValueRenderer.UniqueValue("Chưa xử lý", "Chưa xử lý", daxuly, daxulyValue));
-        mSuCoTanHoaLayer.setRenderer(uniqueValueRenderer);
-    }
 
     private void changeStatusOfLocationDataSource() {
         mLocationDisplay = mMapView.getLocationDisplay();
@@ -449,7 +423,7 @@ public class QuanLySuCo extends AppCompatActivity implements NavigationView.OnNa
                         mSearchAdapter.clear();
                         List<Address> addressList = mGeocoder.getFromLocationName(newText, 5);
                         for (Address address : addressList) {
-                            TraCuuAdapter.Item item = new TraCuuAdapter.Item(-1, "", 0, "", address.getAddressLine(0));
+                            ObjectsAdapter.Item item = new ObjectsAdapter.Item("-1","", address.getAddressLine(0));
                             item.setLatitude(address.getLatitude());
                             item.setLongtitude(address.getLongitude());
                             mSearchAdapter.add(item);
@@ -460,6 +434,20 @@ public class QuanLySuCo extends AppCompatActivity implements NavigationView.OnNa
                     }
                 }
                 return false;
+            }
+        });
+        findViewById(R.id.img_clearSelectLayer).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((TextView)findViewById(R.id.txt_title_search)).setText(getString(R.string.nav_find_route));
+                isSearchingFeature = false;
+            }
+        });
+        findViewById(R.id.img_selectTime).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                showDialogSelectTypeSearch();
             }
         });
         menu.findItem(R.id.action_search).setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
@@ -478,7 +466,41 @@ public class QuanLySuCo extends AppCompatActivity implements NavigationView.OnNa
         });
         return true;
     }
-
+    private void showDialogSelectTypeSearch() {
+        SearchItem searchItem = new SearchItem(mFeatureLayerDTGS,this);
+        List<SearchAdapter.Item> items = searchItem.getItems();
+        SearchAdapter searchAdapter = new SearchAdapter(this, items);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_Holo_Light_NoActionBar_Fullscreen);
+        @SuppressLint("InflateParams") View layout = getLayoutInflater().inflate(R.layout.layout_title_listview, null);
+        ListView listView = layout.findViewById(R.id.listview);
+        listView.setAdapter(searchAdapter);
+        TextView txt_Title_Layout = layout.findViewById(R.id.txt_Title_Layout);
+        txt_Title_Layout.setText("Tìm kiếm theo");
+        builder.setView(layout);
+        final AlertDialog selectTimeDialog = builder.create();
+        selectTimeDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        selectTimeDialog.show();
+        final List<SearchAdapter.Item> finalItems = searchAdapter.getItems();
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                selectTimeDialog.dismiss();
+                final SearchAdapter.Item itemAtPosition = (SearchAdapter.Item) parent.getItemAtPosition(position);
+                String titleLayer = itemAtPosition.getTitleLayer();
+                ((TextView)findViewById(R.id.txt_title_search)).setText(titleLayer);
+                ServiceFeatureTable serviceFeatureTable = getServiceFeatureTable(titleLayer);
+                mMapViewHandler.setSearchSFT(serviceFeatureTable);
+                isSearchingFeature = true;
+            }
+        });
+    }
+    private ServiceFeatureTable getServiceFeatureTable(String tableName){
+        for(FeatureLayerDTG featureLayerDTG: mFeatureLayerDTGS){
+            String tableNameDTG = ((ArcGISFeatureTable) featureLayerDTG.getFeatureLayer().getFeatureTable()).getTableName();
+            if (tableNameDTG.equals(tableName)) return (ServiceFeatureTable) featureLayerDTG.getFeatureLayer().getFeatureTable();
+        }
+        return null;
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -557,25 +579,6 @@ public class QuanLySuCo extends AppCompatActivity implements NavigationView.OnNa
         }
     }
 
-    private void optionSearchFeature() {
-        this.isSearchingFeature = true;
-        txtTimSuCo.setTextColor(ContextCompat.getColor(this, R.color.colorPrimary));
-        txtTimSuCo.setBackgroundResource(R.drawable.layout_shape_basemap);
-
-        txtTimDiaChi.setTextColor(ContextCompat.getColor(this, R.color.colorBlack));
-        txtTimDiaChi.setBackgroundResource(R.drawable.layout_shape_basemap_none);
-    }
-
-    private void optionFindRoute() {
-        this.isSearchingFeature = false;
-        txtTimDiaChi.setTextColor(ContextCompat.getColor(this, R.color.colorPrimary));
-        txtTimDiaChi.setBackgroundResource(R.drawable.layout_shape_basemap);
-
-        txtTimSuCo.setTextColor(ContextCompat.getColor(this, R.color.colorBlack));
-        txtTimSuCo.setBackgroundResource(R.drawable.layout_shape_basemap_none);
-
-
-    }
 
     private void toogleFloatButton(){
         if(findViewById(R.id.floatBtnLayer).getVisibility() == View.VISIBLE){
@@ -590,12 +593,6 @@ public class QuanLySuCo extends AppCompatActivity implements NavigationView.OnNa
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.txt_tim_su_co:
-                optionSearchFeature();
-                break;
-            case R.id.txt_tim_dia_chi:
-                optionFindRoute();
-                break;
             case R.id.floatBtnLayer:
                 toogleFloatButton();
                 findViewById(R.id.layout_layer).setVisibility(View.VISIBLE);

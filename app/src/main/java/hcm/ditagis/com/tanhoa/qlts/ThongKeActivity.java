@@ -36,7 +36,7 @@ import java.util.concurrent.ExecutionException;
 
 import hcm.ditagis.com.tanhoa.qlts.adapter.ThongKeAdapter;
 import hcm.ditagis.com.tanhoa.qlts.utities.Constant;
-import hcm.ditagis.com.tanhoa.qlts.utities.TimePeriodReport;
+import hcm.ditagis.com.tanhoa.qlts.utities.TimeItem;
 
 public class ThongKeActivity extends AppCompatActivity {
     private TextView txtTongSuCo, txtChuaSua, txtDangSua, txtDaSua;
@@ -49,8 +49,8 @@ public class ThongKeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_thong_ke);
         mServiceFeatureTable = new ServiceFeatureTable(getResources().getString(R.string.service_feature_table));
-        TimePeriodReport timePeriodReport = new TimePeriodReport(this);
-        List<ThongKeAdapter.Item> items = timePeriodReport.getItems();
+        TimeItem timeItem = new TimeItem(this);
+        List<ThongKeAdapter.Item> items = timeItem.getItems();
         thongKeAdapter = new ThongKeAdapter(this, items);
 
         this.txtTongSuCo = this.findViewById(R.id.txtTongSuCo);

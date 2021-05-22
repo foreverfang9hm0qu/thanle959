@@ -13,12 +13,12 @@ import android.widget.TextView;
 import java.util.List;
 import hcm.ditagis.com.tanhoa.qlts.R;
 
-public class DanhSachSuCoAdapter extends ArrayAdapter<DanhSachSuCoAdapter.Item> {
+public class ObjectsAdapter extends ArrayAdapter<ObjectsAdapter.Item> {
     private Context context;
     private List<Item> items;
 
 
-    public DanhSachSuCoAdapter(Context context, List<DanhSachSuCoAdapter.Item> items) {
+    public ObjectsAdapter(Context context, List<ObjectsAdapter.Item> items) {
         super(context, 0, items);
         this.context = context;
         this.items = items;
@@ -78,6 +78,8 @@ public class DanhSachSuCoAdapter extends ArrayAdapter<DanhSachSuCoAdapter.Item> 
         private String idSuCo;
         private String ngayXayRa;
         private String diaChi;
+        double latitude;
+        double longtitude;
 
         public Item() {
         }
@@ -118,6 +120,22 @@ public class DanhSachSuCoAdapter extends ArrayAdapter<DanhSachSuCoAdapter.Item> 
 
         public void setDiaChi(String diaChi) {
             this.diaChi = diaChi;
+        }
+
+        public double getLatitude() {
+            return latitude;
+        }
+
+        public void setLatitude(double latitude) {
+            this.latitude = latitude;
+        }
+
+        public double getLongtitude() {
+            return longtitude;
+        }
+
+        public void setLongtitude(double longtitude) {
+            this.longtitude = longtitude;
         }
     }
 

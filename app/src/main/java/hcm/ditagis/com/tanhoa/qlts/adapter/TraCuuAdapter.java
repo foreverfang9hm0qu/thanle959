@@ -163,7 +163,7 @@ public class TraCuuAdapter extends ArrayAdapter<TraCuuAdapter.Item> {
 
         @Override
         public String toString() {
-            return "Item{" + "objectID=" + objectID + ", id='" + id + '\'' + ", trangThai=" + trangThai + ", ngayCapNhat='" + ngayCapNhat + '\'' + ", diaChi='" + diaChi + '\'' + '}';
+            return "Item{" + "objectID=" + objectID + ", typeSearch='" + id + '\'' + ", trangThai=" + trangThai + ", ngayCapNhat='" + ngayCapNhat + '\'' + ", diaChi='" + diaChi + '\'' + '}';
         }
     }
 }

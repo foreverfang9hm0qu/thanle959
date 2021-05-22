@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 import hcm.ditagis.com.tanhoa.qlts.QuanLySuCo;
-import hcm.ditagis.com.tanhoa.qlts.adapter.DanhSachSuCoAdapter;
+import hcm.ditagis.com.tanhoa.qlts.adapter.ObjectsAdapter;
 import hcm.ditagis.com.tanhoa.qlts.adapter.TraCuSuCoAdapter;
 import hcm.ditagis.com.tanhoa.qlts.async.NotifyTraCuuAdapterValueChangeAsync;
 import hcm.ditagis.com.tanhoa.qlts.async.QuerySuCoAsync;
@@ -171,8 +171,8 @@ public class TraCuu {
         final AlertDialog.Builder builder = new AlertDialog.Builder(mainActivity, android.R.style.Theme_Holo_Light_NoActionBar_Fullscreen);
         final View layout_table_tracuu = mainActivity.getLayoutInflater().inflate(R.layout.layout_title_listview, null);
         ListView listView = (ListView) layout_table_tracuu.findViewById(R.id.listview);
-        final List<DanhSachSuCoAdapter.Item> items = new ArrayList<>();
-        final DanhSachSuCoAdapter adapter = new DanhSachSuCoAdapter(mainActivity, items);
+        final List<ObjectsAdapter.Item> items = new ArrayList<>();
+        final ObjectsAdapter adapter = new ObjectsAdapter(mainActivity, items);
         listView.setAdapter(adapter);
 
         builder.setView(layout_table_tracuu);
@@ -182,7 +182,7 @@ public class TraCuu {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, final long id) {
-                final DanhSachSuCoAdapter.Item item = adapter.getItems().get(position);
+                final ObjectsAdapter.Item item = adapter.getItems().get(position);
                 Feature selectedFeature = getSelectedFeature(item.getObjectID());
                 if (selectedFeature != null) {
                     dialog.dismiss();

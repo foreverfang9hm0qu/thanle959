@@ -12,7 +12,7 @@
         android:background="@color/colorPrimary">
 
         <TextView
-            android:id="@+id/txtTongItem"
+            android:id="@+id/txt_Title_Layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"

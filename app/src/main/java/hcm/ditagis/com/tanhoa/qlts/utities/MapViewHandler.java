@@ -9,17 +9,16 @@ import android.widget.ListView;
 
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.data.ArcGISFeature;
+import com.esri.arcgisruntime.data.ArcGISFeatureTable;
 import com.esri.arcgisruntime.data.Feature;
 import com.esri.arcgisruntime.data.FeatureQueryResult;
 import com.esri.arcgisruntime.data.Field;
 import com.esri.arcgisruntime.data.QueryParameters;
 import com.esri.arcgisruntime.data.ServiceFeatureTable;
-import com.esri.arcgisruntime.geometry.Envelope;
 import com.esri.arcgisruntime.geometry.Geometry;
 import com.esri.arcgisruntime.geometry.GeometryEngine;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.geometry.SpatialReferences;
-import com.esri.arcgisruntime.layers.FeatureLayer;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
 import com.esri.arcgisruntime.mapping.Viewpoint;
 import com.esri.arcgisruntime.mapping.view.MapView;
@@ -35,6 +34,7 @@ import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
 
 import hcm.ditagis.com.tanhoa.qlts.QuanLySuCo;
+import hcm.ditagis.com.tanhoa.qlts.adapter.ObjectsAdapter;
 import hcm.ditagis.com.tanhoa.qlts.adapter.TraCuuAdapter;
 import hcm.ditagis.com.tanhoa.qlts.async.SingleTapAddFeatureAsync;
 import hcm.ditagis.com.tanhoa.qlts.async.SingleTapMapViewAsync;
@@ -56,7 +56,7 @@ public class MapViewHandler extends Activity {
     private ArcGISFeature mSelectedArcGISFeature;
     private MapView mMapView;
     private boolean isClickBtnAdd = false;
-    private ServiceFeatureTable mServiceFeatureTable;
+    private ServiceFeatureTable searchSFT;
     private Popup mPopUp;
     private Context mContext;
 
@@ -64,9 +64,11 @@ public class MapViewHandler extends Activity {
     public void setFeatureLayerDTGs(List<FeatureLayerDTG> mFeatureLayerDTGs) {
         this.mFeatureLayerDTGs = mFeatureLayerDTGs;
     }
+
     public void setmPopUp(Popup mPopUp) {
         this.mPopUp = mPopUp;
     }
+
     private List<FeatureLayerDTG> mFeatureLayerDTGs;
 
     public MapViewHandler(MapView mMapView, QuanLySuCo quanLySuCo) {
@@ -75,22 +77,31 @@ public class MapViewHandler extends Activity {
         this.mMap = mMapView.getMap();
     }
 
+    public ServiceFeatureTable getSearchSFT() {
+        return searchSFT;
+    }
+
+    public void setSearchSFT(ServiceFeatureTable searchSFT) {
+        this.searchSFT = searchSFT;
+    }
+
     public void setClickBtnAdd(boolean clickBtnAdd) {
         isClickBtnAdd = clickBtnAdd;
     }
 
     public void addFeature(byte[] image) {
-        SingleTapAddFeatureAsync singleTapAdddFeatureAsync = new SingleTapAddFeatureAsync(mContext, image, mServiceFeatureTable, loc, mMapView);
+        SingleTapAddFeatureAsync singleTapAdddFeatureAsync = new SingleTapAddFeatureAsync(mContext, image, searchSFT, loc, mMapView);
         Point add_point = mMapView.getCurrentViewpoint(Viewpoint.Type.CENTER_AND_SCALE).getTargetGeometry().getExtent().getCenter();
         singleTapAdddFeatureAsync.execute(add_point);
     }
 
     public void onSingleTapMapView(MotionEvent e) {
         final Point clickPoint = mMapView.screenToLocation(new android.graphics.Point(Math.round(e.getX()), Math.round(e.getY())));
-            mClickPoint = new android.graphics.Point((int) e.getX(), (int) e.getY());
-            SingleTapMapViewAsync singleTapMapViewAsync = new SingleTapMapViewAsync(mContext, mFeatureLayerDTGs, mPopUp, mClickPoint, mMapView);
-            singleTapMapViewAsync.execute(clickPoint);
+        mClickPoint = new android.graphics.Point((int) e.getX(), (int) e.getY());
+        SingleTapMapViewAsync singleTapMapViewAsync = new SingleTapMapViewAsync(mContext, mFeatureLayerDTGs, mPopUp, mClickPoint, mMapView);
+        singleTapMapViewAsync.execute(clickPoint);
     }
+
     public double[] onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
         Point center = ((MapView) mMapView).getCurrentViewpoint(Viewpoint.Type.CENTER_AND_SCALE).getTargetGeometry().getExtent().getCenter();
         Geometry project = GeometryEngine.project(center, SpatialReferences.getWgs84());
@@ -119,7 +130,7 @@ public class MapViewHandler extends Activity {
         final QueryParameters queryParameters = new QueryParameters();
         final String query = "OBJECTID = " + objectID;
         queryParameters.setWhereClause(query);
-        final ListenableFuture<FeatureQueryResult> feature = mServiceFeatureTable.queryFeaturesAsync(queryParameters);
+        final ListenableFuture<FeatureQueryResult> feature = searchSFT.queryFeaturesAsync(queryParameters);
         feature.addDoneListener(new Runnable() {
             @Override
             public void run() {
@@ -127,10 +138,12 @@ public class MapViewHandler extends Activity {
                     FeatureQueryResult result = feature.get();
                     if (result.iterator().hasNext()) {
                         mSelectedArcGISFeature = (ArcGISFeature) result.iterator().next();
-                        mPopUp.setFeatureLayerDTG(mFeatureLayerDTG);
-                        if (mSelectedArcGISFeature != null)
+                        if (mSelectedArcGISFeature != null) {
+                            String tableName = ((ArcGISFeatureTable) mSelectedArcGISFeature.getFeatureTable()).getTableName();
+                            FeatureLayerDTG featureLayerDTG = getmFeatureLayerDTG(tableName);
+                            mPopUp.setFeatureLayerDTG(featureLayerDTG);
                             mPopUp.showPopup(mSelectedArcGISFeature);
-                        else mPopUp.dimissCallout();
+                        } else mPopUp.dimissCallout();
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -142,12 +155,20 @@ public class MapViewHandler extends Activity {
 
     }
 
-    public void querySearch(String searchStr, ListView listView, final TraCuuAdapter adapter) {
+    public FeatureLayerDTG getmFeatureLayerDTG(String tableName) {
+        for (FeatureLayerDTG featureLayerDTG : mFeatureLayerDTGs) {
+            String tableNameDTG = ((ArcGISFeatureTable) featureLayerDTG.getFeatureLayer().getFeatureTable()).getTableName();
+            if (tableNameDTG.equals(tableName)) return featureLayerDTG;
+        }
+        return null;
+    }
+
+    public void querySearch(String searchStr, ListView listView, final ObjectsAdapter adapter) {
         adapter.clear();
         adapter.notifyDataSetChanged();
         QueryParameters queryParameters = new QueryParameters();
         StringBuilder builder = new StringBuilder();
-        for (Field field : mServiceFeatureTable.getFields()) {
+        for (Field field : searchSFT.getFields()) {
             switch (field.getFieldType()) {
                 case OID:
                 case INTEGER:
@@ -178,7 +199,7 @@ public class MapViewHandler extends Activity {
         }
         builder.append(" 1 = 2 ");
         queryParameters.setWhereClause(builder.toString());
-        final ListenableFuture<FeatureQueryResult> feature = mServiceFeatureTable.queryFeaturesAsync(queryParameters);
+        final ListenableFuture<FeatureQueryResult> feature = searchSFT.queryFeaturesAsync(queryParameters);
         feature.addDoneListener(new Runnable() {
             @Override
             public void run() {
@@ -188,20 +209,8 @@ public class MapViewHandler extends Activity {
                     while (iterator.hasNext()) {
                         Feature item = (Feature) iterator.next();
                         Map<String, Object> attributes = item.getAttributes();
-                        String format_date = "";
-                        String[] split = attributes.get(Constant.IDSU_CO).toString().split("_");
-                        try {
-                            format_date = Constant.DATE_FORMAT.format((new GregorianCalendar(Integer.parseInt(split[3]), Integer.parseInt(split[2]), Integer.parseInt(split[1])).getTime()));
-                        } catch (Exception e) {
-
-                        }
-                        String viTri = "";
-                        try {
-                            viTri = attributes.get(Constant.VI_TRI).toString();
-                        } catch (Exception e) {
-
-                        }
-                        adapter.add(new TraCuuAdapter.Item(Integer.parseInt(attributes.get(Constant.OBJECTID).toString()), attributes.get(Constant.IDSU_CO).toString(), Integer.parseInt(attributes.get(Constant.TRANG_THAI).toString()), format_date, viTri));
+                        String objectid = attributes.get(Constant.OBJECTID).toString();
+                        adapter.add(new ObjectsAdapter.Item(objectid, objectid, ""));
                         adapter.notifyDataSetChanged();
 
 //                        queryByObjectID(Integer.parseInt(attributes.get(Constant.OBJECTID).toString()));

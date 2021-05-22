@@ -29,7 +29,6 @@ public class ListConfig {
         List<Config> configs = new ArrayList<>();
         //        CONFIG BASEMAP
         configs.add(new Config(mContext.getResources().getString(R.string.URL_TIM_DUONG), mContext.getResources().getString(R.string.TITLE_TIM_DUONG), mContext.getResources().getInteger(R.integer.MIN_SCALE_TIM_DUONG), mContext.getString(R.string.group_base_map)));
-        configs.add(new Config(mContext.getResources().getString(R.string.URL_TIM_DUONG), mContext.getResources().getString(R.string.TITLE_TIM_DUONG), mContext.getResources().getInteger(R.integer.MIN_SCALE_TIM_DUONG), mContext.getString(R.string.group_base_map)));
         configs.add(new Config(mContext.getResources().getString(R.string.URL_TIM_SONG), mContext.getResources().getString(R.string.TITLE_TIM_SONG), mContext.getResources().getInteger(R.integer.MIN_SCALE_TIM_SONG), mContext.getString(R.string.group_base_map)));
         configs.add(new Config(mContext.getResources().getString(R.string.URL_GIAO_THONG), mContext.getResources().getString(R.string.TITLE_GIAO_THONG), mContext.getResources().getInteger(R.integer.MIN_SCALE_GIAO_THONG), mContext.getString(R.string.group_base_map)));
         configs.add(new Config(mContext.getResources().getString(R.string.URL_SONG_HO), mContext.getResources().getString(R.string.TITLE_SONG_HO), mContext.getResources().getInteger(R.integer.MIN_SCALE_SONG_HO), mContext.getString(R.string.group_base_map)));
@@ -68,8 +67,6 @@ public class ListConfig {
         configs.add(new Config(mContext.getResources().getString(R.string.URL_DIEM_CUOI_ONG), mContext.getResources().getString(R.string.TITLE_DIEM_CUOI_ONG), mContext.getResources().getInteger(R.integer.minScale_diemcuoiong), mContext.getString(R.string.group_tai_san), mContext.getResources().getStringArray(R.array.update_fields_diemcuoiong)));
         configs.add(new Config(mContext.getResources().getString(R.string.URL_DIEM_XA_CAN), mContext.getResources().getString(R.string.TITLE_DIEM_XA_CAN), mContext.getResources().getInteger(R.integer.minScale_diemxacan), mContext.getString(R.string.group_tai_san), mContext.getResources().getStringArray(R.array.update_fields_diemxacan)));
         configs.add(new Config(mContext.getResources().getString(R.string.URL_DONG_HO_KHACH_HANG), mContext.getResources().getString(R.string.TITLE_DONG_HO_KHACH_HANG), mContext.getResources().getInteger(R.integer.minScale_donghokhachhang), mContext.getString(R.string.group_tai_san), mContext.getResources().getStringArray(R.array.update_fields_donghokhachhang)));
-
-        configs.add(new Config(mContext.getResources().getString(R.string.URL_VAN), mContext.getResources().getString(R.string.TITLE_VAN), mContext.getResources().getInteger(R.integer.minScale_van), mContext.getString(R.string.group_tai_san), mContext.getResources().getStringArray(R.array.update_fields_van)));
 
         return configs;
     }

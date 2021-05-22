@@ -5,19 +5,19 @@
 
     <!--<group android:checkableBehavior="single">-->
     <!--<item-->
-    <!--android:id="@+id/nav_camera"-->
+    <!--andrtypeSearchd:idtypeSearch@+id/nav_camera"-->
     <!--android:icon="@drawable/ic_menu_camera"-->
     <!--andraliasitle="Import" />-->
     <!--<item-->
-    <!--android:id="@+id/nav_gallery"-->
+    <!--andrtypeSearchd:idtypeSearch@+id/nav_gallery"-->
     <!--android:icon="@drawable/ic_menu_gallery"-->
     <!--andraliasitle="Gallery" />-->
     <!--<item-->
-    <!--android:id="@+id/nav_slideshow"-->
+    <!--andrtypeSearchd:idtypeSearch@+id/nav_slideshow"-->
     <!--android:icon="@drawable/ic_menu_slideshow"-->
     <!--andraliasitle="Slideshow" />-->
     <!--<item-->
-    <!--android:id="@+id/nav_manage"-->
+    <!--andrtypeSearchd:idtypeSearch@+id/nav_manage"-->
     <!--android:icon="@drawable/ic_menu_manage"-->
     <!--andraliasitle="Tools" />-->
     <!--</group>-->

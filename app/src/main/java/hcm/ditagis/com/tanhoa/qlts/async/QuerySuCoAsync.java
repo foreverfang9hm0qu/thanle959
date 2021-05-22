@@ -20,7 +20,7 @@ import java.util.concurrent.ExecutionException;
 
 import hcm.ditagis.com.tanhoa.qlts.QuanLySuCo;
 import hcm.ditagis.com.tanhoa.qlts.ThongKeActivity;
-import hcm.ditagis.com.tanhoa.qlts.adapter.DanhSachSuCoAdapter;
+import hcm.ditagis.com.tanhoa.qlts.adapter.ObjectsAdapter;
 import hcm.ditagis.com.tanhoa.qlts.R;
 import hcm.ditagis.com.tanhoa.qlts.utities.Constant;
 
@@ -28,14 +28,14 @@ import hcm.ditagis.com.tanhoa.qlts.utities.Constant;
  * Created by ThanLe on 4/16/2018.
  */
 
-public class QuerySuCoAsync extends AsyncTask<String, List<DanhSachSuCoAdapter.Item>, Void> {
+public class QuerySuCoAsync extends AsyncTask<String, List<ObjectsAdapter.Item>, Void> {
     private ProgressDialog dialog;
     private Context mContext;
     private ServiceFeatureTable serviceFeatureTable;
-    private DanhSachSuCoAdapter danhSachDiemDanhGiaAdapter;
+    private ObjectsAdapter danhSachDiemDanhGiaAdapter;
     private TextView txtTongItem;
 
-    public QuerySuCoAsync(ThongKeActivity thongKeActivity, ServiceFeatureTable serviceFeatureTable, TextView txtTongItem, DanhSachSuCoAdapter adapter, AsyncResponse asyncResponse) {
+    public QuerySuCoAsync(ThongKeActivity thongKeActivity, ServiceFeatureTable serviceFeatureTable, TextView txtTongItem, ObjectsAdapter adapter, AsyncResponse asyncResponse) {
         this.delegate = asyncResponse;
         mContext = thongKeActivity;
         this.serviceFeatureTable = serviceFeatureTable;
@@ -44,7 +44,7 @@ public class QuerySuCoAsync extends AsyncTask<String, List<DanhSachSuCoAdapter.I
         dialog = new ProgressDialog(thongKeActivity, android.R.style.Theme_Material_Dialog_Alert);
     }
 
-    public QuerySuCoAsync(QuanLySuCo mainActivity, ServiceFeatureTable serviceFeatureTable, TextView txtTongItem, DanhSachSuCoAdapter adapter, AsyncResponse asyncResponse) {
+    public QuerySuCoAsync(QuanLySuCo mainActivity, ServiceFeatureTable serviceFeatureTable, TextView txtTongItem, ObjectsAdapter adapter, AsyncResponse asyncResponse) {
         this.delegate = asyncResponse;
         mContext = mainActivity;
         this.serviceFeatureTable = serviceFeatureTable;
@@ -71,7 +71,7 @@ public class QuerySuCoAsync extends AsyncTask<String, List<DanhSachSuCoAdapter.I
 
     @Override
     protected Void doInBackground(String... params) {
-        final List<DanhSachSuCoAdapter.Item> items = new ArrayList<>();
+        final List<ObjectsAdapter.Item> items = new ArrayList<>();
         final List<Feature> features = new ArrayList<>();
         QueryParameters queryParameters = new QueryParameters();
         String queryClause = params[0];
@@ -86,7 +86,7 @@ public class QuerySuCoAsync extends AsyncTask<String, List<DanhSachSuCoAdapter.I
 
                     while (iterator.hasNext()) {
                         Feature feature = (Feature) iterator.next();
-                        DanhSachSuCoAdapter.Item item = new DanhSachSuCoAdapter.Item();
+                        ObjectsAdapter.Item item = new ObjectsAdapter.Item();
                         Map<String, Object> attributes = feature.getAttributes();
                         item.setObjectID(attributes.get(mContext.getString(R.string.OBJECTID)).toString());
                         item.setIdSuCo(attributes.get(mContext.getString(R.string.IDSUCO)).toString());
@@ -114,7 +114,7 @@ public class QuerySuCoAsync extends AsyncTask<String, List<DanhSachSuCoAdapter.I
     }
 
     @Override
-    protected void onProgressUpdate(List<DanhSachSuCoAdapter.Item>... values) {
+    protected void onProgressUpdate(List<ObjectsAdapter.Item>... values) {
         danhSachDiemDanhGiaAdapter.clear();
         danhSachDiemDanhGiaAdapter.setItems(values[0]);
         danhSachDiemDanhGiaAdapter.notifyDataSetChanged();

@@ -17,13 +17,13 @@ import hcm.ditagis.com.tanhoa.qlts.adapter.ThongKeAdapter;
  * Created by NGUYEN HONG on 4/26/2018.
  */
 
-public class TimePeriodReport {
+public class TimeItem {
     private Calendar calendar;
     private Date today;
     private List<ThongKeAdapter.Item> items;
     private Context mContext;
 
-    public TimePeriodReport(Context context) {
+    public TimeItem(Context context) {
         mContext = context;
         today = new Date();
         calendar = Calendar.getInstance();
