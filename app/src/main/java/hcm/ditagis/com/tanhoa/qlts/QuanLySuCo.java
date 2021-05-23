@@ -421,7 +421,7 @@ public class QuanLySuCo extends AppCompatActivity implements NavigationView.OnNa
 
                     try {
                         mSearchAdapter.clear();
-                        List<Address> addressList = mGeocoder.getFromLocationName(newText, 5);
+                        List<Address> addressList = mGeocoder.getFromLocationName(newText, 1);
                         for (Address address : addressList) {
                             ObjectsAdapter.Item item = new ObjectsAdapter.Item("-1","", address.getAddressLine(0));
                             item.setLatitude(address.getLatitude());
@@ -439,7 +439,7 @@ public class QuanLySuCo extends AppCompatActivity implements NavigationView.OnNa
         findViewById(R.id.img_clearSelectLayer).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((TextView)findViewById(R.id.txt_title_search)).setText(getString(R.string.nav_find_route));
+                ((TextView)findViewById(R.id.txt_title_search)).setText(getString(R.string.nav_find_address));
                 isSearchingFeature = false;
             }
         });
@@ -453,13 +453,14 @@ public class QuanLySuCo extends AppCompatActivity implements NavigationView.OnNa
         menu.findItem(R.id.action_search).setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
             @Override
             public boolean onMenuItemActionExpand(MenuItem item) {
-
+                hiddenFloatButton();
                 mLayoutTimKiem.setVisibility(View.VISIBLE);
                 return true;
             }
 
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
+                showFloatButton();
                 mLayoutTimKiem.setVisibility(View.INVISIBLE);
                 return true;
             }
@@ -579,7 +580,14 @@ public class QuanLySuCo extends AppCompatActivity implements NavigationView.OnNa
         }
     }
 
-
+    private void hiddenFloatButton(){
+            findViewById(R.id.floatBtnLayer).setVisibility(View.INVISIBLE);
+            findViewById(R.id.floatBtnLocation).setVisibility(View.INVISIBLE);
+    }
+    private void showFloatButton(){
+        findViewById(R.id.floatBtnLayer).setVisibility(View.VISIBLE);
+        findViewById(R.id.floatBtnLocation).setVisibility(View.VISIBLE);
+    }
     private void toogleFloatButton(){
         if(findViewById(R.id.floatBtnLayer).getVisibility() == View.VISIBLE){
             findViewById(R.id.floatBtnLayer).setVisibility(View.INVISIBLE);

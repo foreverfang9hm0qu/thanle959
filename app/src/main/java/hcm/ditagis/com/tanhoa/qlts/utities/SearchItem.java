@@ -23,7 +23,6 @@ public class SearchItem {
     public SearchItem(List<FeatureLayerDTG> mFeatureLayerDTGS, QuanLySuCo quanLySuCo) {
         this.mFeatureLayerDTGS = mFeatureLayerDTGS;
         items = new ArrayList<>();
-        items.add(new SearchAdapter.Item(quanLySuCo.getString(R.string.type_search_address),quanLySuCo.getString(R.string.nav_find_route)));
         for(FeatureLayerDTG featureLayerDTG: mFeatureLayerDTGS){
             items.add(new SearchAdapter.Item(quanLySuCo.getString(R.string.type_search_feature_layer),featureLayerDTG.getTitleLayer()));
         }
