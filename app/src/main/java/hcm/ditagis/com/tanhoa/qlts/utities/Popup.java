@@ -84,6 +84,7 @@ public class Popup extends AppCompatActivity {
         this.mCallout = callout;
 
     }
+
     public Popup(QuanLySuCo mainActivity, MapView mMapView, ServiceFeatureTable mServiceFeatureTable, Callout callout) {
         this.mMainActivity = mainActivity;
         this.mMapView = mMapView;
@@ -106,8 +107,8 @@ public class Popup extends AppCompatActivity {
         String typeIdField = mSelectedArcGISFeature.getFeatureTable().getTypeIdField();
         for (Field field : this.mSelectedArcGISFeature.getFeatureTable().getFields()) {
             boolean checkHiddenField = false;
-            for(String hiddenField: hiddenFields){
-                if(hiddenField.equals(field.getName())){
+            for (String hiddenField : hiddenFields) {
+                if (hiddenField.equals(field.getName())) {
                     checkHiddenField = true;
                     break;
                 }
@@ -227,8 +228,7 @@ public class Popup extends AppCompatActivity {
                     } else if (field.getDomain() != null) {
                         List<CodedValue> codedValues = ((CodedValueDomain) this.mSelectedArcGISFeature.getFeatureTable().getField(item.getFieldName()).getDomain()).getCodedValues();
                         Object valueDomainObject = getValueDomain(codedValues, value.toString());
-                        if (valueDomainObject != null)
-                            item.setValue(valueDomainObject.toString());
+                        if (valueDomainObject != null) item.setValue(valueDomainObject.toString());
                     } else switch (field.getFieldType()) {
                         case DATE:
                             item.setValue(Constant.DATE_FORMAT.format(((Calendar) value).getTime()));
@@ -245,10 +245,12 @@ public class Popup extends AppCompatActivity {
                     }
                 }
                 item.setEdit(false);
-                for (String updateField : updateFields) {
-                    if (item.getFieldName().equals(updateField)) {
-                        item.setEdit(true);
-                        break;
+                if (updateFields.length > 0) {
+                    for (String updateField : updateFields) {
+                        if (item.getFieldName().equals(updateField)) {
+                            item.setEdit(true);
+                            break;
+                        }
                     }
                 }
                 item.setFieldType(field.getFieldType());
@@ -273,7 +275,7 @@ public class Popup extends AppCompatActivity {
                 EditAsync editAsync = new EditAsync(mMainActivity, mServiceFeatureTable, mSelectedArcGISFeature);
                 editAsync.execute(mFeatureViewMoreInfoAdapter);
 //                mDialog = dialog;
-                        refressPopup();
+                refressPopup();
 //                dialog.dismiss();
             }
         });
@@ -547,7 +549,7 @@ public class Popup extends AppCompatActivity {
     }
 
     public void dimissCallout() {
-        if(mFeatureLayerDTG != null) {
+        if (mFeatureLayerDTG != null) {
             FeatureLayer featureLayer = mFeatureLayerDTG.getFeatureLayer();
             featureLayer.clearSelection();
         }

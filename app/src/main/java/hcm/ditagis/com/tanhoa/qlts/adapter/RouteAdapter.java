@@ -12,8 +12,8 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.List;
 
 import hcm.ditagis.com.tanhoa.qlts.R;
-import hcm.ditagis.com.tanhoa.qlts.utities.Distance;
-import hcm.ditagis.com.tanhoa.qlts.utities.Duration;
+import hcm.ditagis.com.tanhoa.qlts.tools.Distance;
+import hcm.ditagis.com.tanhoa.qlts.tools.Duration;
 
 /**
  * Created by ThanLe on 04/10/2017.

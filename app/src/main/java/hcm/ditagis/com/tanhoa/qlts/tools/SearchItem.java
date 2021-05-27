@@ -1,4 +1,4 @@
-package hcm.ditagis.com.tanhoa.qlts.utities;
+package hcm.ditagis.com.tanhoa.qlts.tools;
 
 import android.content.Context;
 
@@ -23,11 +23,13 @@ public class SearchItem {
     public SearchItem(List<FeatureLayerDTG> mFeatureLayerDTGS, QuanLySuCo quanLySuCo) {
         this.mFeatureLayerDTGS = mFeatureLayerDTGS;
         items = new ArrayList<>();
-        for(FeatureLayerDTG featureLayerDTG: mFeatureLayerDTGS){
-            items.add(new SearchAdapter.Item(quanLySuCo.getString(R.string.type_search_feature_layer),featureLayerDTG.getTitleLayer()));
+        for (FeatureLayerDTG featureLayerDTG : mFeatureLayerDTGS) {
+            if (featureLayerDTG.getAction() != null && featureLayerDTG.getAction().getSearch())
+                items.add(new SearchAdapter.Item(quanLySuCo.getString(R.string.type_search_feature_layer), featureLayerDTG.getTitleLayer()));
         }
-        
+
     }
+
     public List<SearchAdapter.Item> getItems() {
         return items;
     }

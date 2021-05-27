@@ -1,6 +1,9 @@
-package hcm.ditagis.com.tanhoa.qlts.utities;
+package hcm.ditagis.com.tanhoa.qlts.tools;
 
 import com.google.android.gms.maps.model.LatLng;
+
+import hcm.ditagis.com.tanhoa.qlts.tools.Distance;
+import hcm.ditagis.com.tanhoa.qlts.tools.Duration;
 
 public class Step {
     public Distance distance;

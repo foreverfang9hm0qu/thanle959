@@ -26,27 +26,17 @@ public class ThongKeAdapter extends ArrayAdapter<ThongKeAdapter.Item> {
         this.items = items;
     }
 
+
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.item_thoigian_thongke, null);
+            convertView = inflater.inflate(R.layout.item_viewinfo, null);
         }
         Item item = items.get(position);
-        LinearLayout layout = (LinearLayout) convertView.findViewById(R.id.layout_tracuu);
-        TextView txt_thongke_mota = (TextView) convertView.findViewById(R.id.txt_thongke_mota);
-        //todo
-        txt_thongke_mota.setText(item.getMota());
-        TextView txt_thongke_thoigian = (TextView) convertView.findViewById(R.id.txt_thongke_thoigian);
-        //todo
-        if(item.getThoigianhienthi() != null) {
-            txt_thongke_thoigian.setText(item.getThoigianhienthi());
-        }
-        ImageView imageView = (ImageView) convertView.findViewById(R.id.img_selectTime);
-        if (item.isChecked()) {
-            imageView.setVisibility(View.VISIBLE);
-        } else {
-            imageView.setVisibility(View.INVISIBLE);
-        }
+        TextView txt_viewinfo_alias = (TextView) convertView.findViewById(R.id.txt_viewinfo_alias);
+        TextView txt_viewinfo_value = (TextView) convertView.findViewById(R.id.txt_viewinfo_value);
+        txt_viewinfo_alias.setText(item.getTitleLayer());
+        txt_viewinfo_value.setText(item.getSumFeatures().toString());
         return convertView;
     }
 
@@ -70,70 +60,28 @@ public class ThongKeAdapter extends ArrayAdapter<ThongKeAdapter.Item> {
 
 
     public static class Item {
-        int id;
-        String mota;
-        String thoigianbatdau;
-        String thoigianketthuc;
-        String thoigianhienthi;
-        private boolean isChecked = false;
+        private String titleLayer;
+        private Long sumFeatures;
 
-        public Item() {
+        public Item(String titleLayer, Long sumFeatures) {
+            this.titleLayer = titleLayer;
+            this.sumFeatures = sumFeatures;
         }
 
-        public Item(int id, String mota, String thoigianbatdau, String thoigianketthuc,String thoigianhienthi) {
-            this.id = id;
-            this.mota = mota;
-            this.thoigianbatdau = thoigianbatdau;
-            this.thoigianketthuc = thoigianketthuc;
-            this.thoigianhienthi = thoigianhienthi;
+        public String getTitleLayer() {
+            return titleLayer;
         }
 
-        public String getThoigianhienthi() {
-            return thoigianhienthi;
+        public void setTitleLayer(String titleLayer) {
+            this.titleLayer = titleLayer;
         }
 
-        public void setThoigianhienthi(String thoigianhienthi) {
-            this.thoigianhienthi = thoigianhienthi;
+        public Long getSumFeatures() {
+            return sumFeatures;
         }
 
-        public boolean isChecked() {
-            return isChecked;
-        }
-
-        public void setChecked(boolean checked) {
-            isChecked = checked;
-        }
-
-        public int getId() {
-            return id;
-        }
-
-        public void setId(int id) {
-            this.id = id;
-        }
-
-        public String getMota() {
-            return mota;
-        }
-
-        public void setMota(String mota) {
-            this.mota = mota;
-        }
-
-        public String getThoigianbatdau() {
-            return thoigianbatdau;
-        }
-
-        public void setThoigianbatdau(String thoigianbatdau) {
-            this.thoigianbatdau = thoigianbatdau;
-        }
-
-        public String getThoigianketthuc() {
-            return thoigianketthuc;
-        }
-
-        public void setThoigianketthuc(String thoigianketthuc) {
-            this.thoigianketthuc = thoigianketthuc;
+        public void setSumFeatures(Long sumFeatures) {
+            this.sumFeatures = sumFeatures;
         }
     }
 }

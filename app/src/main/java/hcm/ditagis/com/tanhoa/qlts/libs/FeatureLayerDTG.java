@@ -4,6 +4,8 @@ package hcm.ditagis.com.tanhoa.qlts.libs;
 import com.esri.arcgisruntime.layers.FeatureLayer;
 import com.esri.arcgisruntime.mapping.view.MapView;
 
+import java.util.List;
+
 /**
  * Created by NGUYEN HONG on 3/14/2018.
  */
@@ -22,6 +24,7 @@ public class FeatureLayerDTG {
     private String[] updateFields;
     private String titleLayer;
     private String groupLayer;
+    private Action action;
 
     public String[] getUpdateFields() {
         return updateFields;
@@ -72,4 +75,14 @@ public class FeatureLayerDTG {
     public void setGroupLayer(String groupLayer) {
         this.groupLayer = groupLayer;
     }
+
+    public Action getAction() {
+        return action;
+    }
+
+    public void setAction(Action action) {
+        this.action = action;
+    }
+
+
 }

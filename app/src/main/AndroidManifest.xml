@@ -37,10 +37,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="hcm.ditagis.com.tanhoa.qlts.ThongKeActivity"
-            android:label="Thống kê"
-            android:parentActivityName="hcm.ditagis.com.tanhoa.qlts.QuanLySuCo" />
-        <activity
             android:name="hcm.ditagis.com.tanhoa.qlts.TraCuuActivity"
             android:label="Tra cứu thông tin"
             android:parentActivityName="hcm.ditagis.com.tanhoa.qlts.QuanLySuCo" />

@@ -1,4 +1,4 @@
-package hcm.ditagis.com.tanhoa.qlts.utities;
+package hcm.ditagis.com.tanhoa.qlts.tools;
 
 import android.support.design.widget.Snackbar;
 import android.view.View;

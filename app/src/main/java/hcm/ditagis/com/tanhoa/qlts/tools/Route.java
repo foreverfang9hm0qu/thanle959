@@ -1,4 +1,4 @@
-package hcm.ditagis.com.tanhoa.qlts.utities;
+package hcm.ditagis.com.tanhoa.qlts.tools;
 
 import com.google.android.gms.maps.model.LatLng;
 

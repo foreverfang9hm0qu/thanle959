@@ -33,8 +33,8 @@ import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
 
 import hcm.ditagis.com.tanhoa.qlts.R;
+import hcm.ditagis.com.tanhoa.qlts.tools.MySnackBar;
 import hcm.ditagis.com.tanhoa.qlts.utities.Constant;
-import hcm.ditagis.com.tanhoa.qlts.utities.MySnackBar;
 
 /**
  * Created by ThanLe on 4/16/2018.

@@ -1,6 +1,8 @@
-package hcm.ditagis.com.tanhoa.qlts.utities;
+package hcm.ditagis.com.tanhoa.qlts.tools;
 
 import java.util.List;
+
+import hcm.ditagis.com.tanhoa.qlts.tools.Route;
 
 /**
  * Created by Mai Thanh Hiep on 4/3/2016.

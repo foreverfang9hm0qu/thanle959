@@ -53,7 +53,6 @@ import com.esri.arcgisruntime.ArcGISRuntimeEnvironment;
 import com.esri.arcgisruntime.ArcGISRuntimeException;
 import com.esri.arcgisruntime.data.ArcGISFeature;
 import com.esri.arcgisruntime.data.ArcGISFeatureTable;
-import com.esri.arcgisruntime.data.FeatureTable;
 import com.esri.arcgisruntime.data.ServiceFeatureTable;
 import com.esri.arcgisruntime.geometry.Geometry;
 import com.esri.arcgisruntime.geometry.GeometryEngine;
@@ -83,16 +82,18 @@ import java.util.List;
 import hcm.ditagis.com.tanhoa.qlts.adapter.FeatureViewMoreInfoAdapter;
 import hcm.ditagis.com.tanhoa.qlts.adapter.ObjectsAdapter;
 import hcm.ditagis.com.tanhoa.qlts.adapter.SearchAdapter;
-import hcm.ditagis.com.tanhoa.qlts.adapter.TraCuuAdapter;
 import hcm.ditagis.com.tanhoa.qlts.async.EditAsync;
+import hcm.ditagis.com.tanhoa.qlts.libs.Action;
 import hcm.ditagis.com.tanhoa.qlts.libs.FeatureLayerDTG;
+import hcm.ditagis.com.tanhoa.qlts.tools.DirectionFinderListener;
+import hcm.ditagis.com.tanhoa.qlts.tools.ThongKe;
 import hcm.ditagis.com.tanhoa.qlts.utities.Config;
 import hcm.ditagis.com.tanhoa.qlts.utities.ImageFile;
 import hcm.ditagis.com.tanhoa.qlts.utities.ListConfig;
 import hcm.ditagis.com.tanhoa.qlts.utities.MapViewHandler;
-import hcm.ditagis.com.tanhoa.qlts.utities.MySnackBar;
+import hcm.ditagis.com.tanhoa.qlts.tools.MySnackBar;
 import hcm.ditagis.com.tanhoa.qlts.utities.Popup;
-import hcm.ditagis.com.tanhoa.qlts.utities.SearchItem;
+import hcm.ditagis.com.tanhoa.qlts.tools.SearchItem;
 
 public class QuanLySuCo extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
@@ -114,6 +115,7 @@ public class QuanLySuCo extends AppCompatActivity implements NavigationView.OnNa
     private FloatingActionButton mFloatButtonLayer, mFloatButtonLocation;
     private List<FeatureLayerDTG> mFeatureLayerDTGS;
     private LinearLayout mLinearLayoutCover;
+    private ThongKe thongKe;
     private boolean isOpenFab = false;
     private Animation mAnimationFabOpen, mAnimationFabClose, mAnimationClockwise, mAnimationAntiClockwise;
 
@@ -210,6 +212,10 @@ public class QuanLySuCo extends AppCompatActivity implements NavigationView.OnNa
             featureLayerDTG.setTitleLayer(featureLayer.getName());
             featureLayerDTG.setUpdateFields(config.getUpdateField());
             featureLayerDTG.setGroupLayer(config.getGroupLayer());
+            if(featureLayerDTG.getGroupLayer().equals(getString(R.string.group_tai_san))){
+                Action action = new Action(true,true,true);
+                featureLayerDTG.setAction(action);
+            }
             mFeatureLayerDTGS.add(featureLayerDTG);
             mMap.getOperationalLayers().add(featureLayer);
 
@@ -217,6 +223,7 @@ public class QuanLySuCo extends AppCompatActivity implements NavigationView.OnNa
         popupInfos = new Popup(QuanLySuCo.this,mMapView, mCallout);
         mMapViewHandler.setmPopUp(popupInfos);
         mMapViewHandler.setFeatureLayerDTGs(mFeatureLayerDTGS);
+        thongKe = new ThongKe(this, mFeatureLayerDTGS);
         final List<FeatureLayerDTG> tmpFeatureLayerDTGs = new ArrayList<>();
         mMap.addDoneLoadingListener(new Runnable() {
             @Override
@@ -490,6 +497,7 @@ public class QuanLySuCo extends AppCompatActivity implements NavigationView.OnNa
                 String titleLayer = itemAtPosition.getTitleLayer();
                 ((TextView)findViewById(R.id.txt_title_search)).setText(titleLayer);
                 ServiceFeatureTable serviceFeatureTable = getServiceFeatureTable(titleLayer);
+                serviceFeatureTable.getFeatureLayer().setVisible(true);
                 mMapViewHandler.setSearchSFT(serviceFeatureTable);
                 isSearchingFeature = true;
             }
@@ -516,15 +524,14 @@ public class QuanLySuCo extends AppCompatActivity implements NavigationView.OnNa
 
         return true;
     }
-
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        Intent intent;
         // Handle navigation view item clicks here.
         switch (item.getItemId()) {
             case R.id.nav_thongke:
-                Intent intent = new Intent(this, ThongKeActivity.class);
-                this.startActivity(intent);
+                thongKe.start();
                 break;
             case R.id.nav_tracuu:
 //                traCuu.start();
