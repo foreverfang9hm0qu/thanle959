@@ -169,24 +169,24 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
-
                 <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                    <TextView
+                    <CheckBox
+                        android:id="@+id/cb_Layer_HanhChinh"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:text="Ẩn/hiện dữ liệu hành chính"
-                        android:textColor="@color/colorBlack" />
+                        android:textColor="@color/colorTextColor_1" />
 
 
                 </FrameLayout>
 
 
                 <LinearLayout
-                    android:id="@+id/linnearDisplayLayer1"
+                    android:id="@+id/linnearDisplayLayerBaseMap"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical" />
@@ -202,19 +202,20 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                    <TextView
+                    <CheckBox
+                        android:id="@+id/cb_Layer_TaiSan"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:text="Ẩn/hiện lớp dữ liệu"
-                        android:textColor="@color/colorBlack" />
+                        android:text="Ẩn/hiện lớp dữ liệu tài sản"
+                        android:textColor="@color/colorTextColor_1" />
 
 
                 </FrameLayout>
 
 
                 <LinearLayout
-                    android:id="@+id/linnearDisplayLayer"
+                    android:id="@+id/linnearDisplayLayerTaiSan"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical" />

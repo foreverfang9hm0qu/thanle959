@@ -45,4 +45,5 @@
     <color name="colorImgBtnUpload_2">#67b2e4</color>
     <color name="colorBorderEditext_2">#ffffff</color>
     <color name="colorBackground_csm_2">#66CDAA</color>
+    <color name="colorTextColor_1">#000000</color>
 </resources>

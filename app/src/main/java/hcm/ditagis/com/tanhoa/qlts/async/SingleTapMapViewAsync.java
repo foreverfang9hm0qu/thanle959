@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.data.ArcGISFeature;
+import com.esri.arcgisruntime.data.ArcGISFeatureTable;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.layers.FeatureLayer;
 import com.esri.arcgisruntime.mapping.GeoElement;
@@ -14,6 +15,7 @@ import com.esri.arcgisruntime.mapping.view.IdentifyLayerResult;
 import com.esri.arcgisruntime.mapping.view.MapView;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import hcm.ditagis.com.tanhoa.qlts.R;
 import hcm.ditagis.com.tanhoa.qlts.libs.FeatureLayerDTG;
@@ -23,7 +25,7 @@ import hcm.ditagis.com.tanhoa.qlts.utities.Popup;
  * Created by ThanLe on 4/16/2018.
  */
 
-public class SingleTapMapViewAsync extends AsyncTask<Point, FeatureLayer, Void> {
+public class SingleTapMapViewAsync extends AsyncTask<Point, FeatureLayerDTG, Void> {
     private ProgressDialog mDialog;
     private Context mContext;
     private FeatureLayerDTG mFeatureLayerDTG;
@@ -56,50 +58,55 @@ public class SingleTapMapViewAsync extends AsyncTask<Point, FeatureLayer, Void> 
 
     @Override
     protected Void doInBackground(Point... params) {
-        mPoint = params[0];
-        final int[] isIdentified = {mFeatureLayerDTGs.size()};
-        for (final FeatureLayerDTG featureLayerDTG : mFeatureLayerDTGs) {
-            if (isIdentified[0] > 0) {
-                final ListenableFuture<IdentifyLayerResult> identifyFuture = mMapView.identifyLayerAsync(featureLayerDTG.getFeatureLayer(), mClickPoint, 5, false, 1);
-                identifyFuture.addDoneListener(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            isIdentified[0]--;
-                            IdentifyLayerResult layerResult = identifyFuture.get();
-                            List<GeoElement> resultGeoElements = layerResult.getElements();
-                            if (resultGeoElements.size() > 0) {
-                                if (resultGeoElements.get(0) instanceof ArcGISFeature) {
-                                    mFeatureLayerDTG = featureLayerDTG;
-                                    mSelectedArcGISFeature = (ArcGISFeature) resultGeoElements.get(0);
-                                    publishProgress(featureLayerDTG.getFeatureLayer());
-//                                    if (mDialog != null && mDialog.isShowing()) {
-//                                        mDialog.dismiss();
-//                                    }
+        final ListenableFuture<List<IdentifyLayerResult>> listListenableFuture = mMapView.identifyLayersAsync(mClickPoint, 5, false, 1);
+        listListenableFuture.addDoneListener(new Runnable() {
+            @Override
+            public void run() {
+                List<IdentifyLayerResult> identifyLayerResults = null;
+                try {
+                    identifyLayerResults = listListenableFuture.get();
+                    for (IdentifyLayerResult identifyLayerResult : identifyLayerResults) {
+                        {
+                            List<GeoElement> elements = identifyLayerResult.getElements();
+                            if (elements.size() > 0) {
+                                if (elements.get(0) instanceof ArcGISFeature) {
+                                    mSelectedArcGISFeature = (ArcGISFeature) elements.get(0);
+                                    String tableName = ((ArcGISFeatureTable) mSelectedArcGISFeature.getFeatureTable()).getTableName();
+                                    FeatureLayerDTG featureLayerDTG = getmFeatureLayerDTG(tableName);
+                                    publishProgress(featureLayerDTG);
                                 }
-                            } else {
-                                if (isIdentified[0] == 0)
-                                    // none of the features on the map were selected
-                                    publishProgress(null);
                             }
-
-                        } catch (Exception e) {
-                            Log.e(mContext.getResources().getString(R.string.app_name), "Select feature failed: " + e.getMessage());
                         }
+
                     }
-                });
+                    publishProgress(null);
+
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
             }
+        });
+        return null;
+    }
+    public FeatureLayerDTG getmFeatureLayerDTG(String tableName) {
+        for (FeatureLayerDTG featureLayerDTG : mFeatureLayerDTGs) {
+            String tableNameDTG = ((ArcGISFeatureTable) featureLayerDTG.getFeatureLayer().getFeatureTable()).getTableName();
+            if (tableNameDTG.equals(tableName)) return featureLayerDTG;
         }
         return null;
     }
-
     @Override
-    protected void onProgressUpdate(FeatureLayer... values) {
+    protected void onProgressUpdate(FeatureLayerDTG... values) {
         super.onProgressUpdate(values);
-
-        mPopUp.setFeatureLayerDTG(mFeatureLayerDTG);
-        if (mSelectedArcGISFeature != null) mPopUp.showPopup(mSelectedArcGISFeature);
-        else mPopUp.dimissCallout();
+        mPopUp.clearSelection();
+        mPopUp.dimissCallout();
+        if (values != null) {
+            FeatureLayerDTG featureLayerDTG = values[0];
+            mPopUp.setFeatureLayerDTG(featureLayerDTG);
+            if (mSelectedArcGISFeature != null) mPopUp.showPopup(mSelectedArcGISFeature);
+        }
         if (mDialog != null && mDialog.isShowing()) {
             mDialog.dismiss();
         }

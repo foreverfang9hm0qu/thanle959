@@ -1,10 +1,12 @@
 package hcm.ditagis.com.tanhoa.qlts.tools;
 
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.data.QueryParameters;
@@ -63,6 +65,7 @@ public class ThongKe {
             @Override
             public void onClick(View v) {
                 refress();
+                Toast.makeText(mainActivity, "Đã làm mới dữ liệu", Toast.LENGTH_LONG).show();
             }
         });
         ListView listView = layout.findViewById(R.id.listview);
@@ -76,6 +79,8 @@ public class ThongKe {
         selectTimeDialog.show();
     }
     public void refress(){
+
+        items.clear();
         QueryParameters queryParameters = new QueryParameters();
         String queryClause = "1=1";
         queryParameters.setWhereClause(queryClause);

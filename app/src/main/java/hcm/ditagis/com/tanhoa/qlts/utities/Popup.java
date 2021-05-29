@@ -548,11 +548,14 @@ public class Popup extends AppCompatActivity {
 
     }
 
-    public void dimissCallout() {
+    public void clearSelection() {
         if (mFeatureLayerDTG != null) {
             FeatureLayer featureLayer = mFeatureLayerDTG.getFeatureLayer();
             featureLayer.clearSelection();
         }
+    }
+
+    public void dimissCallout() {
         if (mCallout != null && mCallout.isShowing()) {
             mCallout.dismiss();
         }
