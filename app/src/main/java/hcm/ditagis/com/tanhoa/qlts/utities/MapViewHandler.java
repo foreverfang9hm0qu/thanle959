@@ -142,7 +142,7 @@ public class MapViewHandler extends Activity {
                             String tableName = ((ArcGISFeatureTable) mSelectedArcGISFeature.getFeatureTable()).getTableName();
                             FeatureLayerDTG featureLayerDTG = getmFeatureLayerDTG(tableName);
                             mPopUp.setFeatureLayerDTG(featureLayerDTG);
-                            mPopUp.showPopup(mSelectedArcGISFeature);
+                            mPopUp.showPopup(mSelectedArcGISFeature,false);
                         } else mPopUp.dimissCallout();
                     }
                 } catch (InterruptedException e) {

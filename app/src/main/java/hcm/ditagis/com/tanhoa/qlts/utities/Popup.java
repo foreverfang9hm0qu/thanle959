@@ -151,41 +151,6 @@ public class Popup extends AppCompatActivity {
     }
 
 
-    public LinearLayout createPopup(String name, final ArcGISFeature mSelectedArcGISFeature) {
-        this.mSelectedArcGISFeature = mSelectedArcGISFeature;
-        lstFeatureType = new ArrayList<>();
-        for (int i = 0; i < mSelectedArcGISFeature.getFeatureTable().getFeatureTypes().size(); i++) {
-            lstFeatureType.add(mSelectedArcGISFeature.getFeatureTable().getFeatureTypes().get(i).getName());
-        }
-        LayoutInflater inflater = LayoutInflater.from(this.mMainActivity.getApplicationContext());
-        linearLayout = (LinearLayout) inflater.inflate(R.layout.layout_thongtinsuco, null);
-        refressPopup();
-        ((TextView) linearLayout.findViewById(R.id.txt_title_layer)).setText(name);
-        if (mCallout != null) mCallout.dismiss();
-        if (name.equals(mMainActivity.getString(R.string.ALIAS_DIEM_SU_CO))) {
-
-            ((ImageButton) linearLayout.findViewById(R.id.imgBtn_ViewMoreInfo)).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    viewMoreInfo();
-                }
-            });
-
-            ((ImageButton) linearLayout.findViewById(R.id.imgBtn_delete)).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mSelectedArcGISFeature.getFeatureTable().getFeatureLayer().clearSelection();
-                    deleteFeature();
-                }
-            });
-        } else {
-            ((ImageButton) linearLayout.findViewById(R.id.imgBtn_ViewMoreInfo)).setVisibility(View.INVISIBLE);
-            ((ImageButton) linearLayout.findViewById(R.id.imgBtn_delete)).setVisibility(View.INVISIBLE);
-        }
-        linearLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        return linearLayout;
-    }
-
     private void viewMoreInfo() {
         Map<String, Object> attr = mSelectedArcGISFeature.getAttributes();
         AlertDialog.Builder builder = new AlertDialog.Builder(mMainActivity, android.R.style.Theme_Material_Light_NoActionBar_Fullscreen);
@@ -561,7 +526,7 @@ public class Popup extends AppCompatActivity {
         }
     }
 
-    public LinearLayout showPopup(final ArcGISFeature mSelectedArcGISFeature) {
+    public LinearLayout showPopup(final ArcGISFeature mSelectedArcGISFeature, Boolean clickMap) {
         dimissCallout();
         mServiceFeatureTable = (ServiceFeatureTable) mFeatureLayerDTG.getFeatureLayer().getFeatureTable();
         this.mSelectedArcGISFeature = mSelectedArcGISFeature;
@@ -598,8 +563,7 @@ public class Popup extends AppCompatActivity {
 
         linearLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         Envelope envelope = mSelectedArcGISFeature.getGeometry().getExtent();
-        Envelope envelope1 = new Envelope(new Point(envelope.getXMin(), envelope.getYMin() + DELTA_MOVE_Y), new Point(envelope.getXMax(), envelope.getYMax() + DELTA_MOVE_Y));
-        mMapView.setViewpointGeometryAsync(envelope1, 0);
+        if (!clickMap) mMapView.setViewpointGeometryAsync(envelope, 0);
         // show CallOut
         mCallout.setLocation(envelope.getCenter());
         mCallout.setContent(linearLayout);

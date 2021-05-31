@@ -105,7 +105,7 @@ public class SingleTapMapViewAsync extends AsyncTask<Point, FeatureLayerDTG, Voi
         if (values != null) {
             FeatureLayerDTG featureLayerDTG = values[0];
             mPopUp.setFeatureLayerDTG(featureLayerDTG);
-            if (mSelectedArcGISFeature != null) mPopUp.showPopup(mSelectedArcGISFeature);
+            if (mSelectedArcGISFeature != null) mPopUp.showPopup(mSelectedArcGISFeature,true);
         }
         if (mDialog != null && mDialog.isShowing()) {
             mDialog.dismiss();
