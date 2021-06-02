@@ -36,7 +36,6 @@ import com.esri.arcgisruntime.data.FeatureType;
 import com.esri.arcgisruntime.data.Field;
 import com.esri.arcgisruntime.data.ServiceFeatureTable;
 import com.esri.arcgisruntime.geometry.Envelope;
-import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.layers.FeatureLayer;
 import com.esri.arcgisruntime.loadable.LoadStatus;
 import com.esri.arcgisruntime.mapping.view.Callout;
@@ -50,7 +49,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-import hcm.ditagis.com.tanhoa.qlts.QuanLySuCo;
+import hcm.ditagis.com.tanhoa.qlts.QuanLyTaiSan;
 import hcm.ditagis.com.tanhoa.qlts.R;
 import hcm.ditagis.com.tanhoa.qlts.adapter.FeatureViewInfoAdapter;
 import hcm.ditagis.com.tanhoa.qlts.adapter.FeatureViewMoreInfoAdapter;
@@ -60,7 +59,7 @@ import hcm.ditagis.com.tanhoa.qlts.async.ViewAttachmentAsync;
 import hcm.ditagis.com.tanhoa.qlts.libs.FeatureLayerDTG;
 
 public class Popup extends AppCompatActivity {
-    private QuanLySuCo mMainActivity;
+    private QuanLyTaiSan mMainActivity;
     private ArcGISFeature mSelectedArcGISFeature = null;
     private ServiceFeatureTable mServiceFeatureTable;
     private Callout mCallout;
@@ -78,14 +77,14 @@ public class Popup extends AppCompatActivity {
         return mDialog;
     }
 
-    public Popup(QuanLySuCo mainActivity, MapView mMapView, Callout callout) {
+    public Popup(QuanLyTaiSan mainActivity, MapView mMapView, Callout callout) {
         this.mMainActivity = mainActivity;
         this.mMapView = mMapView;
         this.mCallout = callout;
 
     }
 
-    public Popup(QuanLySuCo mainActivity, MapView mMapView, ServiceFeatureTable mServiceFeatureTable, Callout callout) {
+    public Popup(QuanLyTaiSan mainActivity, MapView mMapView, ServiceFeatureTable mServiceFeatureTable, Callout callout) {
         this.mMainActivity = mainActivity;
         this.mMapView = mMapView;
         this.mServiceFeatureTable = mServiceFeatureTable;
@@ -203,6 +202,7 @@ public class Popup extends AppCompatActivity {
                             item.setValue(value.toString());
                             break;
                         case DOUBLE:
+                        case INTEGER:
                         case SHORT:
                             item.setValue(value.toString());
 
@@ -233,15 +233,12 @@ public class Popup extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
             }
-        }).setNegativeButton("Chụp ảnh và cập nhật", new DialogInterface.OnClickListener() {
+        }).setNegativeButton("Cập nhật", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-//                capture();
                 EditAsync editAsync = new EditAsync(mMainActivity, mServiceFeatureTable, mSelectedArcGISFeature);
                 editAsync.execute(mFeatureViewMoreInfoAdapter);
-//                mDialog = dialog;
                 refressPopup();
-//                dialog.dismiss();
             }
         });
 
@@ -488,6 +485,14 @@ public class Popup extends AppCompatActivity {
                                 case TEXT:
                                     item.setValue(editText.getText().toString());
                                     break;
+                                case INTEGER:
+                                    try {
+                                        int x = Integer.parseInt(editText.getText().toString());
+                                        item.setValue(editText.getText().toString());
+                                    } catch (Exception e) {
+                                        Toast.makeText(mMainActivity, "Số liệu nhập vào không đúng định dạng!!!", Toast.LENGTH_LONG).show();
+                                    }
+                                    break;
                                 case SHORT:
                                     try {
                                         short x = Short.parseShort(editText.getText().toString());
@@ -537,7 +542,7 @@ public class Popup extends AppCompatActivity {
             lstFeatureType.add(mSelectedArcGISFeature.getFeatureTable().getFeatureTypes().get(i).getName());
         }
         LayoutInflater inflater = LayoutInflater.from(this.mMainActivity.getApplicationContext());
-        linearLayout = (LinearLayout) inflater.inflate(R.layout.layout_thongtinsuco, null);
+        linearLayout = (LinearLayout) inflater.inflate(R.layout.layout_popup_infos, null);
         refressPopup();
         ((TextView) linearLayout.findViewById(R.id.txt_title_layer)).setText(mFeatureLayerDTG.getTitleLayer());
         ((ImageButton) linearLayout.findViewById(R.id.imgBtn_ViewMoreInfo)).setOnClickListener(new View.OnClickListener() {
@@ -560,6 +565,15 @@ public class Popup extends AppCompatActivity {
                 dimissCallout();
             }
         });
+        if (this.mSelectedArcGISFeature.canEditAttachments()) {
+            ((ImageButton) linearLayout.findViewById(R.id.imgBtn_takePics)).setVisibility(View.VISIBLE);
+            ((ImageButton) linearLayout.findViewById(R.id.imgBtn_takePics)).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    updateAttachment();
+                }
+            });
+        }
 
         linearLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         Envelope envelope = mSelectedArcGISFeature.getGeometry().getExtent();
@@ -658,6 +672,19 @@ public class Popup extends AppCompatActivity {
 //        this.mUri = Uri.fromFile(photo);
         mMainActivity.startActivityForResult(cameraIntent, REQUEST_ID_IMAGE_CAPTURE);
 
+    }
+
+    public void updateAttachment() {
+        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI.getPath());
+        File photo = ImageFile.getFile(mMainActivity);
+//        this.mUri= FileProvider.getUriForFile(this, this.getApplicationContext().getPackageName() + ".my.package.name.provider", photo);
+        this.mUri = Uri.fromFile(photo);
+        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, this.mUri);
+        mMainActivity.setSelectedArcGISFeature(mSelectedArcGISFeature);
+        mMainActivity.setFeatureViewMoreInfoAdapter(mFeatureViewMoreInfoAdapter);
+        mMainActivity.setUri(mUri);
+        mMainActivity.startActivityForResult(cameraIntent, mMainActivity.getResources().getInteger(R.integer.REQUEST_ID_UPDATE_ATTACHMENT));
     }
 
 }

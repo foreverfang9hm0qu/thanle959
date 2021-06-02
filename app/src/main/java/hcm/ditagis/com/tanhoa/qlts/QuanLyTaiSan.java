@@ -81,6 +81,7 @@ import hcm.ditagis.com.tanhoa.qlts.adapter.FeatureViewMoreInfoAdapter;
 import hcm.ditagis.com.tanhoa.qlts.adapter.ObjectsAdapter;
 import hcm.ditagis.com.tanhoa.qlts.adapter.SearchAdapter;
 import hcm.ditagis.com.tanhoa.qlts.async.EditAsync;
+import hcm.ditagis.com.tanhoa.qlts.async.UpdateAttachmentAsync;
 import hcm.ditagis.com.tanhoa.qlts.libs.Action;
 import hcm.ditagis.com.tanhoa.qlts.libs.FeatureLayerDTG;
 import hcm.ditagis.com.tanhoa.qlts.tools.ThongKe;
@@ -92,7 +93,7 @@ import hcm.ditagis.com.tanhoa.qlts.tools.MySnackBar;
 import hcm.ditagis.com.tanhoa.qlts.utities.Popup;
 import hcm.ditagis.com.tanhoa.qlts.tools.SearchItem;
 
-public class QuanLySuCo extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
+public class QuanLyTaiSan extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
     private Uri mUri;
     private Popup popupInfos;
@@ -162,7 +163,7 @@ public class QuanLySuCo extends AppCompatActivity implements NavigationView.OnNa
         //đưa listview search ra phía sau
         this.mListViewSearch.invalidate();
         List<ObjectsAdapter.Item> items = new ArrayList<>();
-        this.mSearchAdapter = new ObjectsAdapter(QuanLySuCo.this, items);
+        this.mSearchAdapter = new ObjectsAdapter(QuanLyTaiSan.this, items);
         this.mListViewSearch.setAdapter(mSearchAdapter);
         this.mListViewSearch.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -196,7 +197,7 @@ public class QuanLySuCo extends AppCompatActivity implements NavigationView.OnNa
         List<Config> configs = ListConfig.getInstance(this).getConfigs();
         mFeatureLayerDTGS = new ArrayList<>();
         mCallout = mMapView.getCallout();
-        mMapViewHandler = new MapViewHandler(mMapView, QuanLySuCo.this);
+        mMapViewHandler = new MapViewHandler(mMapView, QuanLyTaiSan.this);
         for (Config config : configs) {
             ServiceFeatureTable serviceFeatureTable = new ServiceFeatureTable(config.getUrl());
 
@@ -221,7 +222,7 @@ public class QuanLySuCo extends AppCompatActivity implements NavigationView.OnNa
             mMap.getOperationalLayers().add(featureLayer);
 
         }
-        popupInfos = new Popup(QuanLySuCo.this, mMapView, mCallout);
+        popupInfos = new Popup(QuanLyTaiSan.this, mMapView, mCallout);
         mMapViewHandler.setmPopUp(popupInfos);
         mMapViewHandler.setFeatureLayerDTGs(mFeatureLayerDTGS);
         thongKe = new ThongKe(this, mFeatureLayerDTGS);
@@ -378,13 +379,13 @@ public class QuanLySuCo extends AppCompatActivity implements NavigationView.OnNa
 
                 // If an error is found, handle the failure to start.
                 // Check permissions to see if failure may be due to lack of permissions.
-                boolean permissionCheck1 = ContextCompat.checkSelfPermission(QuanLySuCo.this, reqPermissions[0]) == PackageManager.PERMISSION_GRANTED;
-                boolean permissionCheck2 = ContextCompat.checkSelfPermission(QuanLySuCo.this, reqPermissions[1]) == PackageManager.PERMISSION_GRANTED;
+                boolean permissionCheck1 = ContextCompat.checkSelfPermission(QuanLyTaiSan.this, reqPermissions[0]) == PackageManager.PERMISSION_GRANTED;
+                boolean permissionCheck2 = ContextCompat.checkSelfPermission(QuanLyTaiSan.this, reqPermissions[1]) == PackageManager.PERMISSION_GRANTED;
 
                 if (!(permissionCheck1 && permissionCheck2)) {
                     // If permissions are not already granted, request permission from the user.
-                    ActivityCompat.requestPermissions(QuanLySuCo.this, reqPermissions, requestCode);
-                }  // Report other unknown failure types to the user - for example, location services may not // be enabled on the device. //                    String message = String.format("Error in DataSourceStatusChangedListener: %s", dataSourceStatusChangedEvent //                            .getSource().getLocationDataSource().getError().getMessage()); //                    Toast.makeText(QuanLySuCo.this, message, Toast.LENGTH_LONG).show();
+                    ActivityCompat.requestPermissions(QuanLyTaiSan.this, reqPermissions, requestCode);
+                }  // Report other unknown failure types to the user - for example, location services may not // be enabled on the device. //                    String message = String.format("Error in DataSourceStatusChangedListener: %s", dataSourceStatusChangedEvent //                            .getSource().getLocationDataSource().getError().getMessage()); //                    Toast.makeText(QuanLyTaiSan.this, message, Toast.LENGTH_LONG).show();
 
             }
         });
@@ -602,7 +603,7 @@ public class QuanLySuCo extends AppCompatActivity implements NavigationView.OnNa
             mLocationDisplay.startAsync();
 
         } else {
-            Toast.makeText(QuanLySuCo.this, getResources().getString(R.string.location_permission_denied), Toast.LENGTH_SHORT).show();
+            Toast.makeText(QuanLyTaiSan.this, getResources().getString(R.string.location_permission_denied), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -810,12 +811,9 @@ public class QuanLySuCo extends AppCompatActivity implements NavigationView.OnNa
             } else {
                 MySnackBar.make(mMapView, "Lỗi khi chụp ảnh", false);
             }
-        } else if (requestCode == REQUEST_ID_IMAGE_CAPTURE_POPUP) {
+        } else if (requestCode == getResources().getInteger(R.integer.REQUEST_ID_UPDATE_ATTACHMENT)) {
             if (resultCode == RESULT_OK) {
-//                this.mUri= data.getData();
                 if (this.mUri != null) {
-//                    Uri selectedImage = this.mUri;
-//                    getContentResolver().notifyChange(selectedImage, null);
                     Bitmap bitmap = getBitmap(mUri.getPath());
                     try {
                         if (bitmap != null) {
@@ -826,10 +824,8 @@ public class QuanLySuCo extends AppCompatActivity implements NavigationView.OnNa
                             rotatedBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
                             byte[] image = outputStream.toByteArray();
                             Toast.makeText(this, "Đã lưu ảnh", Toast.LENGTH_SHORT).show();
-//                            mMapViewHandler.addFeature(image);
-                            popupInfos.getDialog().dismiss();
-                            EditAsync editAsync = new EditAsync(this, (ServiceFeatureTable) mFeatureLayerDTG.getFeatureLayer().getFeatureTable(), mSelectedArcGISFeature, true, image);
-                            editAsync.execute(mFeatureViewMoreInfoAdapter);
+                            UpdateAttachmentAsync updateAttachmentAsync = new UpdateAttachmentAsync(this, mSelectedArcGISFeature, image);
+                            updateAttachmentAsync.execute();
                         }
                     } catch (Exception ignored) {
                     }

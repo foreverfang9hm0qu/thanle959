@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import hcm.ditagis.com.tanhoa.qlts.QuanLySuCo;
+import hcm.ditagis.com.tanhoa.qlts.QuanLyTaiSan;
 import hcm.ditagis.com.tanhoa.qlts.R;
 import hcm.ditagis.com.tanhoa.qlts.adapter.FeatureViewMoreInfoAttachmentsAdapter;
 
@@ -32,12 +32,12 @@ import hcm.ditagis.com.tanhoa.qlts.adapter.FeatureViewMoreInfoAttachmentsAdapter
 
 public class ViewAttachmentAsync extends AsyncTask<Void, Integer, Void> {
     private ProgressDialog mDialog;
-    private QuanLySuCo mMainActivity;
+    private QuanLyTaiSan mMainActivity;
     private ArcGISFeature mSelectedArcGISFeature = null;
     private AlertDialog.Builder builder;
     private View layout;
 
-    public ViewAttachmentAsync(QuanLySuCo context, ArcGISFeature selectedArcGISFeature) {
+    public ViewAttachmentAsync(QuanLyTaiSan context, ArcGISFeature selectedArcGISFeature) {
         mMainActivity = context;
         mSelectedArcGISFeature = selectedArcGISFeature;
         mDialog = new ProgressDialog(context, android.R.style.Theme_Material_Dialog_Alert);

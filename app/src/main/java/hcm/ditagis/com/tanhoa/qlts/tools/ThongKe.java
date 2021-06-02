@@ -1,7 +1,6 @@
 package hcm.ditagis.com.tanhoa.qlts.tools;
 
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
@@ -15,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import hcm.ditagis.com.tanhoa.qlts.QuanLySuCo;
+import hcm.ditagis.com.tanhoa.qlts.QuanLyTaiSan;
 import hcm.ditagis.com.tanhoa.qlts.R;
 import hcm.ditagis.com.tanhoa.qlts.adapter.ThongKeAdapter;
 import hcm.ditagis.com.tanhoa.qlts.libs.FeatureLayerDTG;
@@ -25,7 +24,7 @@ import hcm.ditagis.com.tanhoa.qlts.libs.FeatureLayerDTG;
  */
 
 public class ThongKe {
-    private QuanLySuCo mainActivity;
+    private QuanLyTaiSan mainActivity;
     private List<FeatureLayerDTG> mFeatureLayerDTGS;
     private List<ThongKeAdapter.Item> items;
     private ThongKeAdapter thongKeAdapter;
@@ -34,17 +33,17 @@ public class ThongKe {
     public ThongKe() {
     }
 
-    public ThongKe(QuanLySuCo mainActivity, List<FeatureLayerDTG> mFeatureLayerDTGS) {
+    public ThongKe(QuanLyTaiSan mainActivity, List<FeatureLayerDTG> mFeatureLayerDTGS) {
         this.mainActivity = mainActivity;
         this.mFeatureLayerDTGS = mFeatureLayerDTGS;
         setup();
     }
 
-    public QuanLySuCo getMainActivity() {
+    public QuanLyTaiSan getMainActivity() {
         return mainActivity;
     }
 
-    public void setMainActivity(QuanLySuCo mainActivity) {
+    public void setMainActivity(QuanLyTaiSan mainActivity) {
         this.mainActivity = mainActivity;
     }
 

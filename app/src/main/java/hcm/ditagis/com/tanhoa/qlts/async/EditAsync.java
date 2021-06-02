@@ -98,6 +98,12 @@ public class EditAsync extends AsyncTask<FeatureViewMoreInfoAdapter, Void, Void>
                     } else
                         mSelectedArcGISFeature.getAttributes().put(item.getFieldName(), item.getValue());
                     break;
+                case INTEGER:
+                    if (codeDomain != null) {
+                        mSelectedArcGISFeature.getAttributes().put(item.getFieldName(), Integer.parseInt(codeDomain.toString()));
+                    } else
+                        mSelectedArcGISFeature.getAttributes().put(item.getFieldName(), Integer.parseInt(item.getValue()));
+                    break;
                 case SHORT:
                     if (codeDomain != null) {
                         mSelectedArcGISFeature.getAttributes().put(item.getFieldName(), Short.parseShort(codeDomain.toString()));
@@ -112,26 +118,7 @@ public class EditAsync extends AsyncTask<FeatureViewMoreInfoAdapter, Void, Void>
             public void run() {
                 try {
                     updateFeature(mSelectedArcGISFeature);
-                    // update feature in the feature table
-//                    mServiceFeatureTable.updateFeatureAsync(mSelectedArcGISFeature).addDoneListener(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            mServiceFeatureTable.applyEditsAsync().addDoneListener(new Runnable() {
-//                                @Override
-//                                public void run() {
-//                                    if (isUpdateAttachment) {
-//                                        addAttachment();
-//                                    } else {
-//                                        if (mDialog != null && mDialog.isShowing()) {
-//                                            mDialog.dismiss();
-//                                        }
-//                                    }
-//
-//
-//                                }
-//                            });
-//                        }
-//                    });
+
 
                 } catch (Exception e) {
                 }

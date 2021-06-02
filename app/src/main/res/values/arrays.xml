@@ -556,6 +556,7 @@
     </string-array>
     <string-array name="hiddenFields">
         <item>GLOBALID</item>
+        <item>GlobalID</item>
         <item>TOADO_X</item>
         <item>TOADO_Y</item>
         <item>Shape.STArea()</item>

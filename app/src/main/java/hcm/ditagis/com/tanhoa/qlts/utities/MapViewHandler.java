@@ -26,16 +26,14 @@ import com.esri.arcgisruntime.tasks.geocode.LocatorTask;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
 
-import hcm.ditagis.com.tanhoa.qlts.QuanLySuCo;
+import hcm.ditagis.com.tanhoa.qlts.QuanLyTaiSan;
 import hcm.ditagis.com.tanhoa.qlts.adapter.ObjectsAdapter;
-import hcm.ditagis.com.tanhoa.qlts.adapter.TraCuuAdapter;
 import hcm.ditagis.com.tanhoa.qlts.async.SingleTapAddFeatureAsync;
 import hcm.ditagis.com.tanhoa.qlts.async.SingleTapMapViewAsync;
 import hcm.ditagis.com.tanhoa.qlts.libs.FeatureLayerDTG;
@@ -71,9 +69,9 @@ public class MapViewHandler extends Activity {
 
     private List<FeatureLayerDTG> mFeatureLayerDTGs;
 
-    public MapViewHandler(MapView mMapView, QuanLySuCo quanLySuCo) {
+    public MapViewHandler(MapView mMapView, QuanLyTaiSan quanLyTaiSan) {
         this.mMapView = mMapView;
-        this.mContext = quanLySuCo;
+        this.mContext = quanLyTaiSan;
         this.mMap = mMapView.getMap();
     }
 
