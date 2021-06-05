@@ -48,7 +48,12 @@ public class ViewAttachmentAsync extends AsyncTask<Void, Integer, Void> {
         super.onPreExecute();
         mDialog.setMessage(mMainActivity.getString(R.string.async_dang_lay_hinh_anh_dinh_kem));
         mDialog.setCancelable(false);
-
+        mDialog.setButton("Hủy", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                publishProgress(0);
+            }
+        });
         mDialog.show();
 
     }

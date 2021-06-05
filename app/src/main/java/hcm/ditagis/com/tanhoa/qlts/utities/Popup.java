@@ -157,13 +157,15 @@ public class Popup extends AppCompatActivity {
         mFeatureViewMoreInfoAdapter = new FeatureViewMoreInfoAdapter(mMainActivity, new ArrayList<FeatureViewMoreInfoAdapter.Item>());
         final ListView lstViewInfo = layout.findViewById(R.id.lstView_alertdialog_info);
         layout.findViewById(R.id.layout_viewmoreinfo_id_su_co).setVisibility(View.VISIBLE);
-        layout.findViewById(R.id.framelayout_viewmoreinfo_attachment).setVisibility(View.VISIBLE);
-        layout.findViewById(R.id.framelayout_viewmoreinfo_attachment).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                viewAttachment();
-            }
-        });
+        if (mSelectedArcGISFeature.canEditAttachments()) {
+            layout.findViewById(R.id.framelayout_viewmoreinfo_attachment).setVisibility(View.VISIBLE);
+            layout.findViewById(R.id.framelayout_viewmoreinfo_attachment).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    viewAttachment();
+                }
+            });
+        }
 
         lstViewInfo.setAdapter(mFeatureViewMoreInfoAdapter);
         lstViewInfo.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -236,9 +238,13 @@ public class Popup extends AppCompatActivity {
         }).setNegativeButton("Cập nhật", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                EditAsync editAsync = new EditAsync(mMainActivity, mServiceFeatureTable, mSelectedArcGISFeature);
-                editAsync.execute(mFeatureViewMoreInfoAdapter);
-                refressPopup();
+                if (mSelectedArcGISFeature.canUpdateGeometry()) {
+                    EditAsync editAsync = new EditAsync(mMainActivity, mServiceFeatureTable, mSelectedArcGISFeature);
+                    editAsync.execute(mFeatureViewMoreInfoAdapter);
+                    refressPopup();
+                } else
+                    Toast.makeText(mMainActivity, "Không được quyền chỉnh sửa dữ liệu!!!", Toast.LENGTH_LONG).show();
+
             }
         });
 
@@ -394,7 +400,7 @@ public class Popup extends AppCompatActivity {
 
                 final FrameLayout layoutTextView = layout.findViewById(R.id.layout_edit_viewmoreinfo_TextView);
                 final TextView textView = layout.findViewById(R.id.txt_edit_viewmoreinfo);
-                ImageView img_selectTime = (ImageView) layout.findViewById(R.id.img_selectTime);
+                ImageView img_selectTime = (ImageView) layout.findViewById(R.id.img_selectLayer);
                 final LinearLayout layoutEditText = layout.findViewById(R.id.layout_edit_viewmoreinfo_Editext);
                 final EditText editText = layout.findViewById(R.id.etxt_edit_viewmoreinfo);
                 final LinearLayout layoutSpin = layout.findViewById(R.id.layout_edit_viewmoreinfo_Spinner);

@@ -80,7 +80,6 @@ import java.util.List;
 import hcm.ditagis.com.tanhoa.qlts.adapter.FeatureViewMoreInfoAdapter;
 import hcm.ditagis.com.tanhoa.qlts.adapter.ObjectsAdapter;
 import hcm.ditagis.com.tanhoa.qlts.adapter.SearchAdapter;
-import hcm.ditagis.com.tanhoa.qlts.async.EditAsync;
 import hcm.ditagis.com.tanhoa.qlts.async.UpdateAttachmentAsync;
 import hcm.ditagis.com.tanhoa.qlts.libs.Action;
 import hcm.ditagis.com.tanhoa.qlts.libs.FeatureLayerDTG;
@@ -465,7 +464,7 @@ public class QuanLyTaiSan extends AppCompatActivity implements NavigationView.On
                 isSearchingFeature = false;
             }
         });
-        findViewById(R.id.img_selectTime).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.img_selectLayer).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 

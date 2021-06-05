@@ -3,6 +3,7 @@ package hcm.ditagis.com.tanhoa.qlts.async;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 
 import hcm.ditagis.com.tanhoa.qlts.R;
@@ -26,6 +27,12 @@ public class NotifyDataSetChangeTraCuuAsync extends AsyncTask<TraCuuAdapter, Voi
     protected void onPreExecute() {
         super.onPreExecute();
         dialog.setMessage(mActivity.getString(R.string.async_dang_cap_nhat_giao_dien));
+        dialog.setButton("Hủy", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                publishProgress(null);
+            }
+        });
         dialog.setCancelable(false);
 
         dialog.show();

@@ -29,7 +29,7 @@ public class UpdateAttachmentAsync extends AsyncTask<Void, Void, Void> {
 
     public UpdateAttachmentAsync(Context context, ArcGISFeature selectedArcGISFeature, byte[] image) {
         mContext = context;
-        mServiceFeatureTable = (ServiceFeatureTable) mSelectedArcGISFeature.getFeatureTable();
+        mServiceFeatureTable = (ServiceFeatureTable) selectedArcGISFeature.getFeatureTable();
         mSelectedArcGISFeature = selectedArcGISFeature;
         mDialog = new ProgressDialog(context, android.R.style.Theme_Material_Dialog_Alert);
         this.mImage = image;

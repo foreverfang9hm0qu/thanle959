@@ -2,6 +2,7 @@ package hcm.ditagis.com.tanhoa.qlts.async;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -64,6 +65,12 @@ public class SingleTapAddFeatureAsync extends AsyncTask<Point, Void, Void> {
         super.onPreExecute();
         mDialog.setMessage("Đang xử lý...");
         mDialog.setCancelable(false);
+        mDialog.setButton("Hủy", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                publishProgress(null);
+            }
+        });
         mDialog.show();
     }
 

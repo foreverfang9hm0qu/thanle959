@@ -55,7 +55,7 @@
                 android:src="@drawable/ic_clear_select_layer" />
 
             <ImageView
-                android:id="@+id/img_selectTime"
+                android:id="@+id/img_selectLayer"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"

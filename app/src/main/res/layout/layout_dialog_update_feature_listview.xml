@@ -37,7 +37,7 @@
             android:text="ádfdasf"
             android:textAppearance="?android:attr/textAppearanceMedium" />
         <ImageView
-            android:id="@+id/img_selectTime"
+            android:id="@+id/img_selectLayer"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_gravity="right|end"

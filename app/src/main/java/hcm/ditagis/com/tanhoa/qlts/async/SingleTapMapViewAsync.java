@@ -2,6 +2,7 @@ package hcm.ditagis.com.tanhoa.qlts.async;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -53,6 +54,13 @@ public class SingleTapMapViewAsync extends AsyncTask<Point, FeatureLayerDTG, Voi
         super.onPreExecute();
         mDialog.setMessage("Đang xử lý...");
         mDialog.setCancelable(false);
+        mDialog.setButton("Hủy", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                publishProgress(null);
+            }
+        });
+
         mDialog.show();
     }
 

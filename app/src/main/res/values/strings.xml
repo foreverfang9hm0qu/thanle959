@@ -74,9 +74,7 @@
     <string name="URL_VAN">https://sawagis.vn/arcgis/rest/services/ChoLon/ChoLonGIS/FeatureServer/4</string>
     <string name="URL_TRU_HONG">https://sawagis.vn/arcgis/rest/services/ChoLon/ChoLonGIS/FeatureServer/5</string>
     <string name="URL_MOI_NOI">https://sawagis.vn/arcgis/rest/services/ChoLon/ChoLonGIS/FeatureServer/6</string>
-
-    <string name="URL_DONG_HO_TONG"> http://113.161.88.180:800/arcgis/rest/services/TanHoa/TANHOAGIS/FeatureServer/1</string>
-    <!--<string name="URL_DONG_HO_TONG">https://sawagis.vn/arcgis/rest/services/ChoLon/ChoLonGIS/FeatureServer/7</string>-->
+    <string name="URL_DONG_HO_TONG">https://sawagis.vn/arcgis/rest/services/ChoLon/ChoLonGIS/FeatureServer/7</string>
     <string name="URL_BE_CHUA">https://sawagis.vn/arcgis/rest/services/ChoLon/ChoLonGIS/FeatureServer/9</string>
     <string name="URL_THAP_CAT_AP">https://sawagis.vn/arcgis/rest/services/ChoLon/ChoLonGIS/FeatureServer/10</string>
     <string name="URL_THUY_DAI">https://sawagis.vn/arcgis/rest/services/ChoLon/ChoLonGIS/FeatureServer/11</string>

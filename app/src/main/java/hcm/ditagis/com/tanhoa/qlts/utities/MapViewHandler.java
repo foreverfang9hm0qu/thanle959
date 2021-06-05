@@ -128,7 +128,7 @@ public class MapViewHandler extends Activity {
         final QueryParameters queryParameters = new QueryParameters();
         final String query = "OBJECTID = " + objectID;
         queryParameters.setWhereClause(query);
-        final ListenableFuture<FeatureQueryResult> feature = searchSFT.queryFeaturesAsync(queryParameters);
+        final ListenableFuture<FeatureQueryResult> feature = searchSFT.queryFeaturesAsync(queryParameters,ServiceFeatureTable.QueryFeatureFields.LOAD_ALL);
         feature.addDoneListener(new Runnable() {
             @Override
             public void run() {
