@@ -550,7 +550,7 @@ public class Popup extends AppCompatActivity {
         LayoutInflater inflater = LayoutInflater.from(this.mMainActivity.getApplicationContext());
         linearLayout = (LinearLayout) inflater.inflate(R.layout.layout_popup_infos, null);
         refressPopup();
-        ((TextView) linearLayout.findViewById(R.id.txt_title_layer)).setText(mFeatureLayerDTG.getTitleLayer());
+        ((TextView) linearLayout.findViewById(R.id.txt_title_layer)).setText(mFeatureLayerDTG.getFeatureLayer().getName());
         ((ImageButton) linearLayout.findViewById(R.id.imgBtn_ViewMoreInfo)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

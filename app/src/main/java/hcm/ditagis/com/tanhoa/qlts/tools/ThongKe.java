@@ -91,7 +91,7 @@ public class ThongKe {
                     public void run() {
                         try {
                             Long aLong = longListenableFuture.get();
-                            ThongKeAdapter.Item item = new ThongKeAdapter.Item(featureLayerDTG.getTitleLayer(), aLong);
+                            ThongKeAdapter.Item item = new ThongKeAdapter.Item(featureLayerDTG.getFeatureLayer().getName(), aLong);
                             items.add(item);
                             thongKeAdapter.notifyDataSetChanged();
 

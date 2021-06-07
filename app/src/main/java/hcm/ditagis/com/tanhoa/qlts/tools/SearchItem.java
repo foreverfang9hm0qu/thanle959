@@ -21,7 +21,7 @@ public class SearchItem {
         items = new ArrayList<>();
         for (FeatureLayerDTG featureLayerDTG : mFeatureLayerDTGS) {
             if (featureLayerDTG.getAction() != null && featureLayerDTG.getAction().getSearch())
-                items.add(new SearchAdapter.Item(quanLyTaiSan.getString(R.string.type_search_feature_layer), featureLayerDTG.getTitleLayer()));
+                items.add(new SearchAdapter.Item(quanLyTaiSan.getString(R.string.type_search_feature_layer), featureLayerDTG.getFeatureLayer().getName(),featureLayerDTG.getFeatureLayer().getId()));
         }
 
     }

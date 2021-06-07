@@ -11,8 +11,8 @@ public class Config {
     private String[] queryField;
     private String[] outField;
     private String[] updateField;
-    private String titleService;
-    private String name;
+    private String titleLayer;
+    private String idLayer;
     private int minScale;
     private Context mContext;
     private static Config instance = null;
@@ -36,36 +36,46 @@ public class Config {
     }
 
     //    CONSTRUCTOR OF BASEMAP
-    public Config(String url, String titleService, int minScale, String groupLayer) {
+    public Config(String url,String idLayer, String titleLayer, int minScale, String groupLayer) {
+        this.idLayer = idLayer;
         this.url = url;
-        this.titleService = titleService;
+        this.titleLayer = titleLayer;
         this.minScale = minScale;
         this.groupLayer = groupLayer;
     }
-    public Config(String url, String titleService, int minScale, String groupLayer, String[] updateField){
+    public Config(String url,String idLayer, String titleLayer, int minScale, String groupLayer, String[] updateField){
+        this.idLayer = idLayer;
         this.url = url;
-        this.titleService = titleService;
+        this.titleLayer = titleLayer;
         this.minScale = minScale;
         this.groupLayer = groupLayer;
         this.updateField = updateField;
     }
-    public Config(String url, String[] queryField, String[] outField, String titleService, int minScale, String[] updateField) {
+    public Config(String url, String titleLayer, int minScale, String groupLayer, String[] updateField){
+        this.url = url;
+        this.titleLayer = titleLayer;
+        this.minScale = minScale;
+        this.groupLayer = groupLayer;
+        this.updateField = updateField;
+    }
+
+    public Config(String url, String[] queryField, String[] outField, String titleLayer, int minScale, String[] updateField) {
         this.url = url;
         this.queryField = queryField;
         this.outField = outField;
         this.updateField = updateField;
-        this.titleService = titleService;
+        this.titleLayer = titleLayer;
         this.minScale = minScale;
     }
 
-    public Config(String url, String[] queryField, String[] outField, String name, String titleService, int minScale, String[] updateField, String groupLayer) {
+    public Config(String url, String[] queryField, String[] outField, String idLayer, String titleLayer, int minScale, String[] updateField, String groupLayer) {
         this.url = url;
         this.queryField = queryField;
         this.outField = outField;
         this.updateField = updateField;
-        this.titleService = titleService;
+        this.titleLayer = titleLayer;
         this.minScale = minScale;
-        this.name = name;
+        this.idLayer = idLayer;
         this.groupLayer = groupLayer;
     }
 
@@ -101,20 +111,20 @@ public class Config {
         this.outField = outField;
     }
 
-    public String getTitleService() {
-        return titleService;
+    public String getTitleLayer() {
+        return titleLayer;
     }
 
-    public void setTitleService(String titleService) {
-        this.titleService = titleService;
+    public void setTitleLayer(String titleLayer) {
+        this.titleLayer = titleLayer;
     }
 
-    public String getName() {
-        return name;
+    public String getIdLayer() {
+        return idLayer;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setIdLayer(String idLayer) {
+        this.idLayer = idLayer;
     }
 
     public String getGroupLayer() {

@@ -22,7 +22,6 @@ public class FeatureLayerDTG {
     private String[] outFields;
     private String[] queryFields;
     private String[] updateFields;
-    private String titleLayer;
     private String groupLayer;
     private Action action;
 
@@ -58,14 +57,6 @@ public class FeatureLayerDTG {
 
     public void setQueryFields(String[] queryFields) {
         this.queryFields = queryFields;
-    }
-
-    public String getTitleLayer() {
-        return titleLayer;
-    }
-
-    public void setTitleLayer(String titleLayer) {
-        this.titleLayer = titleLayer;
     }
 
     public String getGroupLayer() {

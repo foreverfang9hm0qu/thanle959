@@ -52,7 +52,6 @@ import android.widget.Toast;
 import com.esri.arcgisruntime.ArcGISRuntimeEnvironment;
 import com.esri.arcgisruntime.ArcGISRuntimeException;
 import com.esri.arcgisruntime.data.ArcGISFeature;
-import com.esri.arcgisruntime.data.ArcGISFeatureTable;
 import com.esri.arcgisruntime.data.ServiceFeatureTable;
 import com.esri.arcgisruntime.geometry.Geometry;
 import com.esri.arcgisruntime.geometry.GeometryEngine;
@@ -201,16 +200,15 @@ public class QuanLyTaiSan extends AppCompatActivity implements NavigationView.On
             ServiceFeatureTable serviceFeatureTable = new ServiceFeatureTable(config.getUrl());
 
             FeatureLayer featureLayer = new FeatureLayer(serviceFeatureTable);
-            if (config.getTitleService().equals(getString(R.string.ALIAS_HANH_CHINH)))
+            if (config.getTitleLayer().equals(getString(R.string.TITLE_HANH_CHINH_HUYEN)))
                 featureLayer.setOpacity(0.7f);
-            featureLayer.setName(config.getTitleService());
+            featureLayer.setName(config.getTitleLayer());
             featureLayer.setMaxScale(0);
-
+            featureLayer.setId(config.getIdLayer());
             featureLayer.setMinScale(1000000);
             FeatureLayerDTG featureLayerDTG = new FeatureLayerDTG(featureLayer);
             featureLayerDTG.setOutFields(config.getOutField());
             featureLayerDTG.setQueryFields(config.getQueryField());
-            featureLayerDTG.setTitleLayer(featureLayer.getName());
             featureLayerDTG.setUpdateFields(config.getUpdateField());
             featureLayerDTG.setGroupLayer(config.getGroupLayer());
             if (featureLayerDTG.getGroupLayer().equals(getString(R.string.group_tai_san))) {
@@ -236,7 +234,7 @@ public class QuanLyTaiSan extends AppCompatActivity implements NavigationView.On
                 for (final FeatureLayerDTG featureLayerDTG : mFeatureLayerDTGS) {
                     final FeatureLayer featureLayer = featureLayerDTG.getFeatureLayer();
                     final CheckBox checkBox = new CheckBox(mLinnearDisplayLayerTaiSan.getContext());
-                    checkBox.setText(featureLayerDTG.getTitleLayer());
+                    checkBox.setText(featureLayerDTG.getFeatureLayer().getName());
                     checkBox.setChecked(false);
                     featureLayer.setVisible(false);
                     CompoundButtonCompat.setButtonTintList(checkBox, new ColorStateList(states, colors));
@@ -509,9 +507,9 @@ public class QuanLyTaiSan extends AppCompatActivity implements NavigationView.On
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 selectTimeDialog.dismiss();
                 final SearchAdapter.Item itemAtPosition = (SearchAdapter.Item) parent.getItemAtPosition(position);
-                String titleLayer = itemAtPosition.getTitleLayer();
-                ((TextView) findViewById(R.id.txt_title_search)).setText(titleLayer);
-                ServiceFeatureTable serviceFeatureTable = getServiceFeatureTable(titleLayer);
+                String idLayer = itemAtPosition.getIdLayer();
+                ((TextView) findViewById(R.id.txt_title_search)).setText(itemAtPosition.getTitleLayer());
+                ServiceFeatureTable serviceFeatureTable = getServiceFeatureTable(idLayer);
                 serviceFeatureTable.getFeatureLayer().setVisible(true);
                 mMapViewHandler.setSearchSFT(serviceFeatureTable);
                 isSearchingFeature = true;
@@ -519,10 +517,10 @@ public class QuanLyTaiSan extends AppCompatActivity implements NavigationView.On
         });
     }
 
-    private ServiceFeatureTable getServiceFeatureTable(String tableName) {
+    private ServiceFeatureTable getServiceFeatureTable(String idLayer) {
         for (FeatureLayerDTG featureLayerDTG : mFeatureLayerDTGS) {
-            String tableNameDTG = ((ArcGISFeatureTable) featureLayerDTG.getFeatureLayer().getFeatureTable()).getTableName();
-            if (tableNameDTG.equals(tableName))
+            String id = featureLayerDTG.getFeatureLayer().getId();
+            if (id.equals(idLayer))
                 return (ServiceFeatureTable) featureLayerDTG.getFeatureLayer().getFeatureTable();
         }
         return null;
