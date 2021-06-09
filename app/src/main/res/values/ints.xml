@@ -27,7 +27,6 @@
     <integer name="MIN_SCALE_GIAO_THONG">20000</integer>
     <integer name="MIN_SCALE_SONG_HO">20000</integer>
     <integer name="MIN_SCALE_THUA_DAT">2100</integer>
-    <integer name="MIN_SCALE_HANH_CHINH_XA">0</integer>
-    <integer name="MIN_SCALE_HANH_CHINH_HUYEN">0</integer>
+    <integer name="MIN_SCALE_HANH_CHINH">0</integer>
     <!--MINSCALE END-->
 </resources>

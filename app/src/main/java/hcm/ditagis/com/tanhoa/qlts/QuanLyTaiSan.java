@@ -196,12 +196,15 @@ public class QuanLyTaiSan extends AppCompatActivity implements NavigationView.On
         mFeatureLayerDTGS = new ArrayList<>();
         mCallout = mMapView.getCallout();
         mMapViewHandler = new MapViewHandler(mMapView, QuanLyTaiSan.this);
+        popupInfos = new Popup(QuanLyTaiSan.this, mMapView, mCallout);
         for (Config config : configs) {
             ServiceFeatureTable serviceFeatureTable = new ServiceFeatureTable(config.getUrl());
 
             FeatureLayer featureLayer = new FeatureLayer(serviceFeatureTable);
-            if (config.getTitleLayer().equals(getString(R.string.TITLE_HANH_CHINH_HUYEN)))
+            if (config.getTitleLayer().equals(getString(R.string.TITLE_HANH_CHINH))) {
                 featureLayer.setOpacity(0.7f);
+                popupInfos.setmSFTHanhChinh(serviceFeatureTable);
+            }
             featureLayer.setName(config.getTitleLayer());
             featureLayer.setMaxScale(0);
             featureLayer.setId(config.getIdLayer());
@@ -219,7 +222,7 @@ public class QuanLyTaiSan extends AppCompatActivity implements NavigationView.On
             mMap.getOperationalLayers().add(featureLayer);
 
         }
-        popupInfos = new Popup(QuanLyTaiSan.this, mMapView, mCallout);
+
         mMapViewHandler.setmPopUp(popupInfos);
         mMapViewHandler.setFeatureLayerDTGs(mFeatureLayerDTGS);
         thongKe = new ThongKe(this, mFeatureLayerDTGS);
@@ -551,6 +554,7 @@ public class QuanLyTaiSan extends AppCompatActivity implements NavigationView.On
                 thongKe.start();
                 break;
             case R.id.nav_tracuu:
+                mMapViewHandler.queryAll();
 //                traCuu.start();
                 break;
             case R.id.nav_find_route:

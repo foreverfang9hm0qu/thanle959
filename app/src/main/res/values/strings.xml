@@ -44,7 +44,7 @@
     <string name="ID_SONG_HO">SONG_HO</string>
     <string name="ID_THUA_DAT">THUA_DAT</string>
     <string name="ID_GIAO_THONG">SONG_HO</string>
-    <string name="ID_HANH_CHINH_HUYEN">HANH_CHINH_HUYEN</string>
+    <string name="ID_HANH_CHINH">HANH_CHINH</string>
 
     <!--ID END-->
     <!--TITLE SERVICE START-->
@@ -69,8 +69,7 @@
     <string name="TITLE_GIAO_THONG">Giao thông</string>
     <string name="TITLE_SONG_HO">Sông hồ</string>
     <string name="TITLE_THUA_DAT">Thửa đất</string>
-    <string name="TITLE_HANH_CHINH_XA">Hành chính xã</string>
-    <string name="TITLE_HANH_CHINH_HUYEN">Hành chính huyện</string>
+    <string name="TITLE_HANH_CHINH">Hành chính</string>
     <!--TITLE SERVICE END-->
 
     <!--URL SERVICE START-->
@@ -97,8 +96,7 @@
     <string name="URL_GIAO_THONG">https://sawagis.vn/arcgis/rest/services/ChoLon/ChoLonBaseMap/MapServer/2</string>
     <string name="URL_SONG_HO">https://sawagis.vn/arcgis/rest/services/ChoLon/ChoLonBaseMap/MapServer/3</string>
     <string name="URL_THUA_DAT">https://sawagis.vn/arcgis/rest/services/ChoLon/ChoLonBaseMap/MapServer/4</string>
-    <string name="URL_HANH_CHINH_XA">https://sawagis.vn/arcgis/rest/services/ChoLon/ChoLonBaseMap/MapServer/5</string>
-    <string name="URL_HANH_CHINH_HUYEN">https://sawagis.vn/arcgis/rest/services/ChoLon/ChoLonBaseMap/MapServer/6</string>
+    <string name="URL_HANH_CHINH">https://sawagis.vn/arcgis/rest/services/ChoLon/ChoLonBaseMap/MapServer/5</string>
     <!--URL SERVICE END-->
     <string name="group_base_map">BASEMAP</string>
     <string name="group_tai_san">TAISAN</string>

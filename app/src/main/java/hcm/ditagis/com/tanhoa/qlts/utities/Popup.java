@@ -31,6 +31,7 @@ import com.esri.arcgisruntime.data.ArcGISFeature;
 import com.esri.arcgisruntime.data.CodedValue;
 import com.esri.arcgisruntime.data.CodedValueDomain;
 import com.esri.arcgisruntime.data.Domain;
+import com.esri.arcgisruntime.data.Feature;
 import com.esri.arcgisruntime.data.FeatureEditResult;
 import com.esri.arcgisruntime.data.FeatureType;
 import com.esri.arcgisruntime.data.Field;
@@ -55,6 +56,7 @@ import hcm.ditagis.com.tanhoa.qlts.adapter.FeatureViewInfoAdapter;
 import hcm.ditagis.com.tanhoa.qlts.adapter.FeatureViewMoreInfoAdapter;
 import hcm.ditagis.com.tanhoa.qlts.async.EditAsync;
 import hcm.ditagis.com.tanhoa.qlts.async.NotifyDataSetChangeAsync;
+import hcm.ditagis.com.tanhoa.qlts.async.QueryHanhChinhAsync;
 import hcm.ditagis.com.tanhoa.qlts.async.ViewAttachmentAsync;
 import hcm.ditagis.com.tanhoa.qlts.libs.FeatureLayerDTG;
 
@@ -71,7 +73,10 @@ public class Popup extends AppCompatActivity {
     private FeatureViewMoreInfoAdapter mFeatureViewMoreInfoAdapter;
     private DialogInterface mDialog;
     private static double DELTA_MOVE_Y = 0;//7000;
+    private ServiceFeatureTable mSFTHanhChinh;
     private MapView mMapView;
+    private ArrayList<Feature> quanhuyen_features;
+    private Feature quanhuyen_feature;
 
     public DialogInterface getDialog() {
         return mDialog;
@@ -82,16 +87,19 @@ public class Popup extends AppCompatActivity {
         this.mMapView = mMapView;
         this.mCallout = callout;
 
-    }
-
-    public Popup(QuanLyTaiSan mainActivity, MapView mMapView, ServiceFeatureTable mServiceFeatureTable, Callout callout) {
-        this.mMainActivity = mainActivity;
-        this.mMapView = mMapView;
-        this.mServiceFeatureTable = mServiceFeatureTable;
-        this.mCallout = callout;
 
     }
 
+
+    public void setmSFTHanhChinh(ServiceFeatureTable mSFTHanhChinh) {
+        this.mSFTHanhChinh = mSFTHanhChinh;
+        new QueryHanhChinhAsync(mMainActivity, mSFTHanhChinh, new QueryHanhChinhAsync.AsyncResponse() {
+            @Override
+            public void processFinish(ArrayList<Feature> output) {
+                quanhuyen_features = output;
+            }
+        }).execute();
+    }
 
     public void setFeatureLayerDTG(FeatureLayerDTG layerDTG) {
         this.mFeatureLayerDTG = layerDTG;
@@ -117,7 +125,12 @@ public class Popup extends AppCompatActivity {
                 FeatureViewInfoAdapter.Item item = new FeatureViewInfoAdapter.Item();
                 item.setAlias(field.getAlias());
                 item.setFieldName(field.getName());
-                if (item.getFieldName().equals(typeIdField)) {
+                if (item.getFieldName().toUpperCase().equals("MAPHUONG")) {
+                    getHanhChinhFeature(attributes.get(item.getFieldName()).toString());
+                    item.setValue(quanhuyen_feature.getAttributes().get("TenHanhChinh").toString());
+                } else if (item.getFieldName().toUpperCase().equals("MAQUAN")) {
+                    item.setValue(quanhuyen_feature.getAttributes().get("TenQuan").toString());
+                } else if (item.getFieldName().equals(typeIdField)) {
                     List<FeatureType> featureTypes = mSelectedArcGISFeature.getFeatureTable().getFeatureTypes();
                     Object valueFeatureType = getValueFeatureType(featureTypes, value.toString());
                     if (valueFeatureType != null) item.setValue(valueFeatureType.toString());
@@ -534,6 +547,16 @@ public class Popup extends AppCompatActivity {
     public void dimissCallout() {
         if (mCallout != null && mCallout.isShowing()) {
             mCallout.dismiss();
+        }
+    }
+
+    private void getHanhChinhFeature(String IDHanhChinh) {
+        quanhuyen_feature = null;
+        for (Feature feature : quanhuyen_features) {
+            Object idHanhChinh = feature.getAttributes().get("IDHanhChinh");
+            if (idHanhChinh != null && idHanhChinh.equals(IDHanhChinh)) {
+                quanhuyen_feature = feature;
+            }
         }
     }
 
