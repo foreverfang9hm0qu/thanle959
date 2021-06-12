@@ -126,7 +126,7 @@ public class Popup extends AppCompatActivity {
                 item.setAlias(field.getAlias());
                 item.setFieldName(field.getName());
                 if (item.getFieldName().toUpperCase().equals("MAPHUONG")) {
-                    getHanhChinhFeature(attributes.get(item.getFieldName()).toString());
+                    getHanhChinhFeature(value.toString());
                     item.setValue(quanhuyen_feature.getAttributes().get("TenHanhChinh").toString());
                 } else if (item.getFieldName().toUpperCase().equals("MAQUAN")) {
                     item.setValue(quanhuyen_feature.getAttributes().get("TenQuan").toString());
@@ -200,11 +200,18 @@ public class Popup extends AppCompatActivity {
                 item.setAlias(field.getAlias());
                 item.setFieldName(field.getName());
                 if (value != null) {
+
                     if (item.getFieldName().equals(typeIdField)) {
                         List<FeatureType> featureTypes = mSelectedArcGISFeature.getFeatureTable().getFeatureTypes();
                         String valueFeatureType = getValueFeatureType(featureTypes, value.toString()).toString();
                         if (valueFeatureType != null) item.setValue(valueFeatureType);
-                    } else if (field.getDomain() != null) {
+                    } else if (item.getFieldName().toUpperCase().equals("MAPHUONG")) {
+                        getHanhChinhFeature(value.toString());
+                        item.setValue(quanhuyen_feature.getAttributes().get("TenHanhChinh").toString());
+                    } else if (item.getFieldName().toUpperCase().equals("MAQUAN")) {
+                        item.setValue(quanhuyen_feature.getAttributes().get("TenQuan").toString());
+                    }
+                    else if (field.getDomain() != null) {
                         List<CodedValue> codedValues = ((CodedValueDomain) this.mSelectedArcGISFeature.getFeatureTable().getField(item.getFieldName()).getDomain()).getCodedValues();
                         Object valueDomainObject = getValueDomain(codedValues, value.toString());
                         if (valueDomainObject != null) item.setValue(valueDomainObject.toString());
@@ -260,35 +267,8 @@ public class Popup extends AppCompatActivity {
 
             }
         });
-
-//        builder.setPositiveButton(mMainActivity.getString(R.string.btn_TakePicture), null);
-//        builder.setNegativeButton(mMainActivity.getString(R.string.btn_Update), null);
-//        builder.setNeutralButton(mMainActivity.getString(R.string.btn_Esc), null);
         final AlertDialog dialog = builder.create();
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-////        PICTURE
-//        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                capture();
-//            }
-//        });
-////        UPDATE
-//        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                EditAsync editAsync = new EditAsync(mMainActivity, mServiceFeatureTable, mSelectedArcGISFeature);
-//                editAsync.execute(mFeatureViewMoreInfoAdapter);
-//                refressPopup();
-//            }
-//        });
-////        ESC
-//        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                dialog.dismiss();
-//            }
-//        });
         dialog.show();
 
 
@@ -297,79 +277,6 @@ public class Popup extends AppCompatActivity {
     private void viewAttachment() {
         ViewAttachmentAsync viewAttachmentAsync = new ViewAttachmentAsync(mMainActivity, mSelectedArcGISFeature);
         viewAttachmentAsync.execute();
-//        get attachment
-//        final AlertDialog.Builder builder = new AlertDialog.Builder(mMainActivity, android.R.style.Theme_Material_Light_NoActionBar_Fullscreen);
-//        LayoutInflater layoutInflater = LayoutInflater.from(mMainActivity);
-//        final View layout = layoutInflater.inflate(R.layout.layout_viewmoreinfo_feature_attachment, null);
-//        ListView lstViewAttachment = layout.findViewById(R.id.lstView_alertdialog_attachments);
-//
-//        final FeatureViewMoreInfoAttachmentsAdapter attachmentsAdapter = new FeatureViewMoreInfoAttachmentsAdapter(mMainActivity, new ArrayList<FeatureViewMoreInfoAttachmentsAdapter.Item>());
-//        lstViewAttachment.setAdapter(attachmentsAdapter);
-//        final ListenableFuture<List<Attachment>> attachmentResults = mSelectedArcGISFeature.fetchAttachmentsAsync();
-//        attachmentResults.addDoneListener(new Runnable() {
-//            @Override
-//            public void run() {
-//                try {
-//
-//                    final List<Attachment> attachments = attachmentResults.get();
-//                    int size = attachments.size();
-//                    // if selected feature has attachments, display them in a list fashion
-//                    if (!attachments.isEmpty()) {
-//                        //
-//                        for (final Attachment attachment : attachments) {
-//                            if (attachment.getContentType().toLowerCase().trim().contains("png")) {
-//                                final FeatureViewMoreInfoAttachmentsAdapter.Item item = new FeatureViewMoreInfoAttachmentsAdapter.Item();
-//                                item.setName(attachment.getName());
-//                                final ListenableFuture<InputStream> inputStreamListenableFuture = attachment.fetchDataAsync();
-//                                inputStreamListenableFuture.addDoneListener(new Runnable() {
-//                                    @Override
-//                                    public void run() {
-//                                        try {
-//                                            InputStream inputStream = inputStreamListenableFuture.get();
-//                                            item.setImg(IOUtils.toByteArray(inputStream));
-//                                            attachmentsAdapter.add(item);
-//                                            attachmentsAdapter.notifyDataSetChanged();
-//                                            if (attachmentsAdapter.getCount() > 0 && attachments.lastIndexOf(attachment) == attachments.size() - 1) {
-//                                                builder.setView(layout);
-//                                                builder.setCancelable(false);
-//                                                builder.setPositiveButton("Thoát", new DialogInterface.OnClickListener() {
-//                                                    @Override
-//                                                    public void onClick(DialogInterface dialog, int which) {
-//                                                        dialog.dismiss();
-//                                                    }
-//                                                });
-//                                                AlertDialog dialog = builder.create();
-//                                                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-//
-//                                                dialog.show();
-//                                            } else {
-//                                                Toast.makeText(mMainActivity, "Không có file hình ảnh đính kèm", Toast.LENGTH_LONG).show();
-//                                            }
-//                                        } catch (InterruptedException e) {
-//                                            e.printStackTrace();
-//                                        } catch (ExecutionException e) {
-//                                            e.printStackTrace();
-//                                        } catch (IOException e) {
-//                                            e.printStackTrace();
-//                                        }
-//                                    }
-//                                });
-//
-//                            }
-//                        }
-//
-//                    } else {
-//                        size--;
-////                        MySnackBar.make(mCallout, "Không có file hình ảnh đính kèm", true);
-//                    }
-//
-//                } catch (Exception e) {
-//                    Log.e("ERROR", e.getMessage());
-//                }
-//            }
-//        });
-
-
     }
 
     private Object getValueDomain(List<CodedValue> codedValues, String code) {
@@ -426,7 +333,8 @@ public class Popup extends AppCompatActivity {
                     spin.setAdapter(adapter);
                     if (item.getValue() != null)
                         spin.setSelection(lstFeatureType.indexOf(item.getValue()));
-                } else if (domain != null) {
+                }
+                else if (domain != null) {
                     layoutSpin.setVisibility(View.VISIBLE);
                     List<CodedValue> codedValues = ((CodedValueDomain) domain).getCodedValues();
                     if (codedValues != null) {

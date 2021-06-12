@@ -55,8 +55,6 @@
         <item>COCHIAKHOA</item>
         <item>SONHA</item>
         <item>MADUONG</item>
-        <item>MAPHUONG</item>
-        <item>MAQUAN</item>
     </string-array>
     <string-array name="update_fields_dma">
         <item>TENDMA</item>
@@ -100,8 +98,6 @@
         <item>DOSAU</item>
         <item>DODOC</item>
         <item>MADMA</item>
-        <item>MAPHUONG</item>
-        <item>MAQUAN</item>
         <item>MADUONG</item>
         <item>GHICHU</item>
         <item>TINHTRANGRORI</item>
@@ -117,8 +113,8 @@
         <item>COCHIAKHOA</item>
         <item>SONHA</item>
         <item>MADUONG</item>
-        <item>MAPHUONG</item>
-        <item>MAQUAN</item>
+        
+        
     </string-array>
     <string-array name="update_fields_thapcatap">
         <item>DUONGKINH</item>
@@ -133,8 +129,8 @@
         <item>DONVIQUANLY</item>
         <item>SONHA</item>
         <item>MADUONG</item>
-        <item>MAPHUONG</item>
-        <item>MAQUAN</item>
+        
+        
     </string-array>
     <string-array name="update_fields_bechua">
         <item>NAMXAYDUNG</item>
@@ -151,8 +147,8 @@
         <item>DONVIQUANLY</item>
         <item>SONHA</item>
         <item>MADUONG</item>
-        <item>MAPHUONG</item>
-        <item>MAQUAN</item>
+        
+        
         <item>GHICHU</item>
         <item>MATRAMBOM</item>
         <item>MUCNUOCBE</item>
@@ -181,8 +177,8 @@
         <item>DONVIQUANLY</item>
         <item>SONHA</item>
         <item>MADUONG</item>
-        <item>MAPHUONG</item>
-        <item>MAQUAN</item>
+        
+        
         <item>GHICHU</item>
         <item>MSDONGHOTONG</item>
         <item>MASOHAMDHT</item>
@@ -240,8 +236,8 @@
         <item>DONVIQUANLY</item>
         <item>SONHA</item>
         <item>MADUONG</item>
-        <item>MAPHUONG</item>
-        <item>MAQUAN</item>
+        
+        
         <item>GHICHU</item>
         <item>LAYER</item>
         <item>VUNGPHUCVU</item>
@@ -264,8 +260,8 @@
         <item>TenDiemCuoi</item>
         <item>SoNha</item>
         <item>MaDuong</item>
-        <item>MaPhuong</item>
-        <item>MaQuan</item>
+        
+        
         <item>NgayCapNhat</item>
         <item>GhiChu</item>
         <item>NamLapDat</item>
@@ -281,8 +277,8 @@
         <item>DuongKinhVan</item>
         <item>SoNha</item>
         <item>MaDuong</item>
-        <item>MaPhuong</item>
-        <item>MaQuan</item>
+        
+        
         <item>GhiChu</item>
         <item>Layer</item>
         <item>ViTriXaCan</item>
@@ -319,8 +315,8 @@
         <item>TENTHUEBAO</item>
         <item>SONHA</item>
         <item>MADUONG</item>
-        <item>MAPHUONG</item>
-        <item>MAQUAN</item>
+        
+        
         <item>GHICHU</item>
         <item>SOHOPDONG</item>
         <item>SONGUOISUDUNG</item>
