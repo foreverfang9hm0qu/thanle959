@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
-import android.widget.Toast;
 
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.data.ArcGISFeature;
@@ -74,7 +73,7 @@ public class EditAsync extends AsyncTask<FeatureViewMoreInfoAdapter, Void, Void>
     protected Void doInBackground(FeatureViewMoreInfoAdapter... params) {
         FeatureViewMoreInfoAdapter adapter = params[0];
         for (FeatureViewMoreInfoAdapter.Item item : adapter.getItems()) {
-            if (item.getValue() == null) continue;
+            if (item.getValue() == null || !item.isEdit()) continue;
             Domain domain = mSelectedArcGISFeature.getFeatureTable().getField(item.getFieldName()).getDomain();
             Object codeDomain = null;
             if (domain != null) {
@@ -172,7 +171,7 @@ public class EditAsync extends AsyncTask<FeatureViewMoreInfoAdapter, Void, Void>
                 try {
                     Attachment attachment = addResult.get();
                     if (attachment.getSize() > 0) {
-                             final ListenableFuture<Void> tableResult = mServiceFeatureTable.updateFeatureAsync(mSelectedArcGISFeature);
+                        final ListenableFuture<Void> tableResult = mServiceFeatureTable.updateFeatureAsync(mSelectedArcGISFeature);
                         tableResult.addDoneListener(new Runnable() {
                             @Override
                             public void run() {
