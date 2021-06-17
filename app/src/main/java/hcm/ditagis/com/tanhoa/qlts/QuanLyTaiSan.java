@@ -554,7 +554,6 @@ public class QuanLyTaiSan extends AppCompatActivity implements NavigationView.On
                 thongKe.start();
                 break;
             case R.id.nav_tracuu:
-                mMapViewHandler.queryAll();
 //                traCuu.start();
                 break;
             case R.id.nav_find_route:

@@ -222,34 +222,4 @@ public class MapViewHandler extends Activity {
         });
 
     }
-
-    public void queryAll() {
-        final String query = "1=1";
-        QueryParameters queryParameters = new QueryParameters();
-        queryParameters.setWhereClause(query);
-        final ListenableFuture<FeatureQueryResult> feature = searchSFT.queryFeaturesAsync(queryParameters,ServiceFeatureTable.QueryFeatureFields.LOAD_ALL);
-        feature.addDoneListener(new Runnable() {
-            @Override
-            public void run() {
-                try {
-
-                    FeatureQueryResult result = feature.get();
-                    Iterator iterator = result.iterator();
-                    while (iterator.hasNext()) {
-                        Feature item = (Feature) iterator.next();
-                        Map<String, Object> attributes = item.getAttributes();
-                        if(!item.getFeatureTable().canEditGeometry()){
-                            String objectid = attributes.get(Constant.OBJECTID).toString();
-                        }
-
-//                        queryByObjectID(Integer.parseInt(attributes.get(Constant.OBJECTID).toString()));
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
 }
