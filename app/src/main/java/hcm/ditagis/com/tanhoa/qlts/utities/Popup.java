@@ -203,8 +203,8 @@ public class Popup extends AppCompatActivity {
 
                     if (item.getFieldName().equals(typeIdField)) {
                         List<FeatureType> featureTypes = mSelectedArcGISFeature.getFeatureTable().getFeatureTypes();
-                        String valueFeatureType = getValueFeatureType(featureTypes, value.toString()).toString();
-                        if (valueFeatureType != null) item.setValue(valueFeatureType);
+                        Object valueFeatureType = getValueFeatureType(featureTypes, value.toString());
+                        if (valueFeatureType != null && valueFeatureType.toString() != null) item.setValue(valueFeatureType.toString());
                     } else if (item.getFieldName().toUpperCase().equals("MAPHUONG")) {
                         getHanhChinhFeature(value.toString());
                         item.setValue(quanhuyen_feature.getAttributes().get("TenHanhChinh").toString());
