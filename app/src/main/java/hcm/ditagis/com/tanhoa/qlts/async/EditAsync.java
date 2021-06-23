@@ -32,6 +32,10 @@ import hcm.ditagis.com.tanhoa.qlts.utities.Constant;
  */
 
 public class EditAsync extends AsyncTask<FeatureViewMoreInfoAdapter, Void, Void> {
+    public interface AsyncResponse {
+        void processFinish();
+    }
+    public AsyncResponse delegate = null;
     private ProgressDialog mDialog;
     private Context mContext;
     private ServiceFeatureTable mServiceFeatureTable;
@@ -39,19 +43,12 @@ public class EditAsync extends AsyncTask<FeatureViewMoreInfoAdapter, Void, Void>
     private boolean isUpdateAttachment;
     private byte[] mImage;
 
-    public EditAsync(Context context, ServiceFeatureTable serviceFeatureTable, ArcGISFeature selectedArcGISFeature, boolean isUpdateAttachment, byte[] image) {
+    public EditAsync(Context context, ServiceFeatureTable serviceFeatureTable, ArcGISFeature selectedArcGISFeature,AsyncResponse delegate) {
         mContext = context;
         mServiceFeatureTable = serviceFeatureTable;
         mSelectedArcGISFeature = selectedArcGISFeature;
         mDialog = new ProgressDialog(context, android.R.style.Theme_Material_Dialog_Alert);
-        this.isUpdateAttachment = isUpdateAttachment;
-        this.mImage = image;
-    }
-    public EditAsync(Context context, ServiceFeatureTable serviceFeatureTable, ArcGISFeature selectedArcGISFeature) {
-        mContext = context;
-        mServiceFeatureTable = serviceFeatureTable;
-        mSelectedArcGISFeature = selectedArcGISFeature;
-        mDialog = new ProgressDialog(context, android.R.style.Theme_Material_Dialog_Alert);
+        this.delegate = delegate;
     }
 
     @Override
@@ -62,7 +59,7 @@ public class EditAsync extends AsyncTask<FeatureViewMoreInfoAdapter, Void, Void>
         mDialog.setButton("Hủy", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                publishProgress(null);
+                publishProgress();
             }
         });
         mDialog.show();
@@ -72,6 +69,7 @@ public class EditAsync extends AsyncTask<FeatureViewMoreInfoAdapter, Void, Void>
     @Override
     protected Void doInBackground(FeatureViewMoreInfoAdapter... params) {
         FeatureViewMoreInfoAdapter adapter = params[0];
+        List<FeatureType> featureTypes = mSelectedArcGISFeature.getFeatureTable().getFeatureTypes();
         for (FeatureViewMoreInfoAdapter.Item item : adapter.getItems()) {
             if (item.getValue() == null || !item.isEdit()) continue;
             Domain domain = mSelectedArcGISFeature.getFeatureTable().getField(item.getFieldName()).getDomain();
@@ -80,8 +78,7 @@ public class EditAsync extends AsyncTask<FeatureViewMoreInfoAdapter, Void, Void>
                 List<CodedValue> codedValues = ((CodedValueDomain) this.mSelectedArcGISFeature.getFeatureTable().getField(item.getFieldName()).getDomain()).getCodedValues();
                 codeDomain = getCodeDomain(codedValues, item.getValue());
             }
-            if (item.getFieldName().equals(mSelectedArcGISFeature.getFeatureTable().getTypeIdField())) {
-                List<FeatureType> featureTypes = mSelectedArcGISFeature.getFeatureTable().getFeatureTypes();
+            if (featureTypes.size() > 0 && item.getFieldName().equals(mSelectedArcGISFeature.getFeatureTable().getTypeIdField())) {
                 Object idFeatureTypes = getIdFeatureTypes(featureTypes, item.getValue());
                 mSelectedArcGISFeature.getAttributes().put(item.getFieldName(), Short.parseShort(idFeatureTypes.toString()));
 
@@ -143,10 +140,7 @@ public class EditAsync extends AsyncTask<FeatureViewMoreInfoAdapter, Void, Void>
                         try {
                             mDialog.dismiss();
                             List<FeatureEditResult> featureEditResults = listListenableEditAsync.get();
-                            if (featureEditResults.size() > 0) {
-                                mDialog.dismiss();
-                            } else {
-                            }
+                            publishProgress();
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         } catch (ExecutionException e) {
@@ -244,6 +238,7 @@ public class EditAsync extends AsyncTask<FeatureViewMoreInfoAdapter, Void, Void>
     @Override
     protected void onProgressUpdate(Void... values) {
         super.onProgressUpdate(values);
+        delegate.processFinish();
 
     }
 

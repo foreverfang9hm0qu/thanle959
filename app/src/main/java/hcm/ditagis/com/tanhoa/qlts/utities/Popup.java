@@ -105,7 +105,7 @@ public class Popup extends AppCompatActivity {
         this.mFeatureLayerDTG = layerDTG;
     }
 
-    private void refressPopup() {
+    public void refressPopup() {
         String[] hiddenFields = mMainActivity.getResources().getStringArray(R.array.hiddenFields);
         Map<String, Object> attributes = mSelectedArcGISFeature.getAttributes();
         ListView listView = linearLayout.findViewById(R.id.lstview_thongtinsuco);
@@ -132,8 +132,12 @@ public class Popup extends AppCompatActivity {
                     item.setValue(quanhuyen_feature.getAttributes().get("TenQuan").toString());
                 } else if (item.getFieldName().equals(typeIdField)) {
                     List<FeatureType> featureTypes = mSelectedArcGISFeature.getFeatureTable().getFeatureTypes();
-                    Object valueFeatureType = getValueFeatureType(featureTypes, value.toString());
-                    if (valueFeatureType != null) item.setValue(valueFeatureType.toString());
+                    if(featureTypes.size() > 0){
+                        Object valueFeatureType = getValueFeatureType(featureTypes, value.toString());
+                        if (valueFeatureType != null) item.setValue(valueFeatureType.toString());
+                    }
+                    else item.setValue(value.toString());
+
                 } else if (field.getDomain() != null) {
                     List<CodedValue> codedValues = ((CodedValueDomain) this.mSelectedArcGISFeature.getFeatureTable().getField(item.getFieldName()).getDomain()).getCodedValues();
                     Object valueDomainObject = getValueDomain(codedValues, value.toString());
@@ -142,18 +146,8 @@ public class Popup extends AppCompatActivity {
                     case DATE:
                         item.setValue(Constant.DATE_FORMAT.format(((Calendar) value).getTime()));
                         break;
-                    case OID:
-                    case TEXT:
-                    case GLOBALID:
+                    default:
                         item.setValue(value.toString());
-                        break;
-                    case SHORT:
-                    case DOUBLE:
-                    case INTEGER:
-                    case FLOAT:
-                        item.setValue(value.toString());
-
-                        break;
                 }
 
                 featureViewInfoAdapter.add(item);
@@ -190,6 +184,7 @@ public class Popup extends AppCompatActivity {
 
         String[] updateFields = mFeatureLayerDTG.getUpdateFields();
         String typeIdField = mSelectedArcGISFeature.getFeatureTable().getTypeIdField();
+        List<FeatureType> featureTypes = mSelectedArcGISFeature.getFeatureTable().getFeatureTypes();
         for (Field field : this.mSelectedArcGISFeature.getFeatureTable().getFields()) {
             Object value = attr.get(field.getName());
             if (field.getName().equals(Constant.IDSU_CO)) {
@@ -200,18 +195,16 @@ public class Popup extends AppCompatActivity {
                 item.setAlias(field.getAlias());
                 item.setFieldName(field.getName());
                 if (value != null) {
-
-                    if (item.getFieldName().equals(typeIdField)) {
-                        List<FeatureType> featureTypes = mSelectedArcGISFeature.getFeatureTable().getFeatureTypes();
+                    if (item.getFieldName().equals(typeIdField) && featureTypes.size() > 0) {
                         Object valueFeatureType = getValueFeatureType(featureTypes, value.toString());
-                        if (valueFeatureType != null && valueFeatureType.toString() != null) item.setValue(valueFeatureType.toString());
+                        if (valueFeatureType != null && valueFeatureType.toString() != null)
+                            item.setValue(valueFeatureType.toString());
                     } else if (item.getFieldName().toUpperCase().equals("MAPHUONG")) {
                         getHanhChinhFeature(value.toString());
                         item.setValue(quanhuyen_feature.getAttributes().get("TenHanhChinh").toString());
                     } else if (item.getFieldName().toUpperCase().equals("MAQUAN")) {
                         item.setValue(quanhuyen_feature.getAttributes().get("TenQuan").toString());
-                    }
-                    else if (field.getDomain() != null) {
+                    } else if (field.getDomain() != null) {
                         List<CodedValue> codedValues = ((CodedValueDomain) this.mSelectedArcGISFeature.getFeatureTable().getField(item.getFieldName()).getDomain()).getCodedValues();
                         Object valueDomainObject = getValueDomain(codedValues, value.toString());
                         if (valueDomainObject != null) item.setValue(valueDomainObject.toString());
@@ -259,9 +252,12 @@ public class Popup extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (mSelectedArcGISFeature.canUpdateGeometry()) {
-                    EditAsync editAsync = new EditAsync(mMainActivity, mServiceFeatureTable, mSelectedArcGISFeature);
-                    editAsync.execute(mFeatureViewMoreInfoAdapter);
-                    refressPopup();
+                    new EditAsync(mMainActivity, mServiceFeatureTable, mSelectedArcGISFeature, new EditAsync.AsyncResponse() {
+                        @Override
+                        public void processFinish() {
+                            refressPopup();
+                        }
+                    }).execute(mFeatureViewMoreInfoAdapter);
                 } else
                     Toast.makeText(mMainActivity, "Không được quyền chỉnh sửa dữ liệu!!!", Toast.LENGTH_LONG).show();
 
@@ -328,13 +324,19 @@ public class Popup extends AppCompatActivity {
 
                 final Domain domain = mSelectedArcGISFeature.getFeatureTable().getField(item.getFieldName()).getDomain();
                 if (item.getFieldName().equals(mSelectedArcGISFeature.getFeatureTable().getTypeIdField())) {
-                    layoutSpin.setVisibility(View.VISIBLE);
-                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(layout.getContext(), android.R.layout.simple_list_item_1, lstFeatureType);
-                    spin.setAdapter(adapter);
-                    if (item.getValue() != null)
-                        spin.setSelection(lstFeatureType.indexOf(item.getValue()));
-                }
-                else if (domain != null) {
+                    if(lstFeatureType.size() > 0) {
+                        layoutSpin.setVisibility(View.VISIBLE);
+                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(layout.getContext(), android.R.layout.simple_list_item_1, lstFeatureType);
+                        spin.setAdapter(adapter);
+                        if (item.getValue() != null)
+                            spin.setSelection(lstFeatureType.indexOf(item.getValue()));
+                    }
+                    else{
+                        layoutEditText.setVisibility(View.VISIBLE);
+                        editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+                        editText.setText(item.getValue());
+                    }
+                } else if (domain != null) {
                     layoutSpin.setVisibility(View.VISIBLE);
                     List<CodedValue> codedValues = ((CodedValueDomain) domain).getCodedValues();
                     if (codedValues != null) {
@@ -394,7 +396,7 @@ public class Popup extends AppCompatActivity {
                 builder.setPositiveButton("Cập nhật", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if (item.getFieldName().equals(mSelectedArcGISFeature.getFeatureTable().getTypeIdField()) || (domain != null)) {
+                        if ((lstFeatureType.size() > 0 && item.getFieldName().equals(mSelectedArcGISFeature.getFeatureTable().getTypeIdField())) || (domain != null)) {
                             item.setValue(spin.getSelectedItem().toString());
                         } else {
                             switch (item.getFieldType()) {
