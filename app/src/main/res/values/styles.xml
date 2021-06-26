@@ -50,4 +50,10 @@
 
     </style>
 
+    <style name="MyTextAppearance.Red" parent="@android:style/TextAppearance">
+        <item name="android:textSize">17sp</item>
+        <item name="android:textStyle">italic</item>
+        <item name="android:textColor">@color/colorRed</item>
+    </style>
+
 </resources>

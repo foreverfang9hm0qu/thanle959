@@ -26,5 +26,7 @@
     <dimen name="width_title_item_popup">100dp</dimen>
     <dimen name="field_horizontal_margin">10dp</dimen>
     <dimen name="font_size_textview">15sp</dimen>
+    <dimen name="margin_small">8dp</dimen>
+    <dimen name="padding_layout">20dp</dimen>
 
 </resources>

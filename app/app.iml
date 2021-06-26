@@ -159,9 +159,11 @@
     <orderEntry type="library" name="Gradle: com.google.android.gms:play-services-maps-12.0.1" level="project" />
     <orderEntry type="library" name="Gradle: com.google.firebase:firebase-messaging-12.0.1" level="project" />
     <orderEntry type="library" name="Gradle: com.google.android.gms:play-services-tagmanager-api-license-12.0.1" level="project" />
+    <orderEntry type="library" name="Gradle: __local_aars__:D.\Works\DITAGIS\HCM\ChoLon\PhanMem\HCM_ChoLon_QLTS_Android\app\libs\jtds-1.3.0.jar:unspecified@jar" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:animated-vector-drawable-26.1.0" level="project" />
     <orderEntry type="library" name="Gradle: com.google.android.gms:play-services-vision-common-12.0.1" level="project" />
     <orderEntry type="library" name="Gradle: com.google.android.gms:play-services-location-12.0.1" level="project" />
+    <orderEntry type="library" name="Gradle: __local_aars__:D.\Works\DITAGIS\HCM\ChoLon\PhanMem\HCM_ChoLon_QLTS_Android\app\libs\sqljdbc4.jar:unspecified@jar" level="project" />
     <orderEntry type="library" name="Gradle: com.google.android.gms:play-services-ads-lite-license-12.0.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: javax.annotation:javax.annotation-api:1.2@jar" level="project" />
     <orderEntry type="library" name="Gradle: com.google.android.gms:play-services-tasks-12.0.1" level="project" />
