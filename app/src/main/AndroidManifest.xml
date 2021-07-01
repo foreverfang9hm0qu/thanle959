@@ -29,11 +29,11 @@
             android:name="hcm.ditagis.com.cholon.qlts.QuanLyTaiSan"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name="hcm.ditagis.com.cholon.qlts.LoginActivity"
-            android:label="@string/app_name">
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -47,6 +47,7 @@
             android:name="hcm.ditagis.com.cholon.qlts.SettingsActivity"
             android:label="Cài đặt"
             android:parentActivityName="hcm.ditagis.com.cholon.qlts.QuanLyTaiSan" />
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />

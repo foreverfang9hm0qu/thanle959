@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import hcm.ditagis.com.cholon.qlts.async.LoginAsycn;
+import hcm.ditagis.com.cholon.qlts.async.NewLoginAsycn;
 import hcm.ditagis.com.cholon.qlts.entities.entitiesDB.User;
 import hcm.ditagis.com.cholon.qlts.utities.CheckConnectInternet;
 import hcm.ditagis.com.cholon.qlts.utities.Preference;
@@ -31,7 +32,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         mTxtUsername = findViewById(R.id.txtUsername);
         mTxtPassword = findViewById(R.id.txtPassword);
-
+        mTxtPassword.setText("ditagis@123");
         mTxtValidation = findViewById(R.id.txt_login_validation);
         create();
     }
@@ -75,9 +76,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             handleInfoLoginEmpty();
             return;
         }
-//        handleLoginSuccess(userName,passWord);
-        final String finalUserName = userName;
-        LoginAsycn loginAsycn = new LoginAsycn(this, new LoginAsycn.AsyncResponse() {
+        NewLoginAsycn loginAsycn = new NewLoginAsycn(this, new LoginAsycn.AsyncResponse() {
 
             @Override
             public void processFinish(User output) {
@@ -101,14 +100,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void handleLoginSuccess(User user) {
+
+
+        Preference.getInstance().savePreferences(getString(R.string.preference_username), mTxtUsername.getText().toString());
+//        Preference.getInstance().savePreferences(getString(R.string.preference_password), khachHang.getPassWord());
+        Preference.getInstance().savePreferences(getString(R.string.preference_displayname), user.getDisplayName());
         mTxtUsername.setText("");
         mTxtPassword.setText("");
-
-        Preference.getInstance().savePreferences(getString(R.string.preference_username), user.getUserName());
-        Preference.getInstance().savePreferences(getString(R.string.preference_password), user.getPassWord());
-        Preference.getInstance().savePreferences(getString(R.string.preference_displayname), user.getDisplayName());
-
-    Intent intent = new Intent(this, QuanLyTaiSan.class);
+        Intent intent = new Intent(this, QuanLyTaiSan.class);
 
         startActivity(intent);
     }
