@@ -65,7 +65,7 @@ public class NewLoginAsycn extends AsyncTask<String, Void, User> {
                     stringBuilder.append(line);
                     break;
                 }
-                Preference.getInstance().savePreferences(mContext.getString(R.string.preference_login_api), stringBuilder.toString().replace("\"", ""));
+                Preference.getInstance().savePreferences(mContext.getString(R.string.preference_login_api), stringBuilder.toString().replace("\"",""));
                 bufferedReader.close();
 
                 UserDangNhap.getInstance().setUser(new User());

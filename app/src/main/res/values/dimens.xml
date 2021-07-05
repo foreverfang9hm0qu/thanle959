@@ -28,5 +28,6 @@
     <dimen name="font_size_textview">15sp</dimen>
     <dimen name="margin_small">8dp</dimen>
     <dimen name="padding_layout">20dp</dimen>
+    <dimen name="padding_small">8dp</dimen>
 
 </resources>

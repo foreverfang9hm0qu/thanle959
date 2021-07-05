@@ -46,4 +46,5 @@
     <color name="colorBorderEditext_2">#ffffff</color>
     <color name="colorBackground_csm_2">#66CDAA</color>
     <color name="colorTextColor_1">#000000</color>
+    <color name="colorPrimaryLight">#029dea</color>
 </resources>

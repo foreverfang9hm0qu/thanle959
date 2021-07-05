@@ -69,18 +69,11 @@ public class Popup extends AppCompatActivity {
     private List<String> lstFeatureType;
     private LinearLayout linearLayout;
     private Uri mUri;
-    private static final int REQUEST_ID_IMAGE_CAPTURE = 44;
     private FeatureViewMoreInfoAdapter mFeatureViewMoreInfoAdapter;
-    private DialogInterface mDialog;
-    private static double DELTA_MOVE_Y = 0;//7000;
-    private ServiceFeatureTable mSFTHanhChinh;
     private MapView mMapView;
     private ArrayList<Feature> quanhuyen_features;
     private Feature quanhuyen_feature;
 
-    public DialogInterface getDialog() {
-        return mDialog;
-    }
 
     public Popup(QuanLyTaiSan mainActivity, MapView mMapView, Callout callout) {
         this.mMainActivity = mainActivity;
@@ -92,7 +85,6 @@ public class Popup extends AppCompatActivity {
 
 
     public void setmSFTHanhChinh(ServiceFeatureTable mSFTHanhChinh) {
-        this.mSFTHanhChinh = mSFTHanhChinh;
         new QueryHanhChinhAsync(mMainActivity, mSFTHanhChinh, new QueryHanhChinhAsync.AsyncResponse() {
             @Override
             public void processFinish(ArrayList<Feature> output) {
@@ -597,21 +589,6 @@ public class Popup extends AppCompatActivity {
 
     }
 
-    public void capture() {
-        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI.getPath());
-
-        File photo = ImageFile.getFile(mMainActivity);
-//        this.mUri= FileProvider.getUriForFile(this, this.getApplicationContext().getPackageName() + ".my.package.name.provider", photo);
-        this.mUri = Uri.fromFile(photo);
-        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, this.mUri);
-        mMainActivity.setSelectedArcGISFeature(mSelectedArcGISFeature);
-        mMainActivity.setFeatureViewMoreInfoAdapter(mFeatureViewMoreInfoAdapter);
-        mMainActivity.setUri(mUri);
-//        this.mUri = Uri.fromFile(photo);
-        mMainActivity.startActivityForResult(cameraIntent, REQUEST_ID_IMAGE_CAPTURE);
-
-    }
 
     public void updateAttachment() {
         Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
