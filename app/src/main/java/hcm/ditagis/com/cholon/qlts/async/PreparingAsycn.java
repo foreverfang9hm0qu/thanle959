@@ -27,6 +27,7 @@ public class PreparingAsycn extends AsyncTask<Void, Void, Void> {
     private ProgressDialog mDialog;
     private Context mContext;
     private AsyncResponse mDelegate;
+    private String API_URL;
 
     public interface AsyncResponse {
         void processFinish(Void output);
@@ -35,6 +36,7 @@ public class PreparingAsycn extends AsyncTask<Void, Void, Void> {
     public PreparingAsycn(Context context, AsyncResponse delegate) {
         this.mContext = context;
         this.mDelegate = delegate;
+        API_URL = mContext.getString(R.string.URL_API) + "/api/LayerInfo";
     }
 
     @Override
@@ -49,7 +51,7 @@ public class PreparingAsycn extends AsyncTask<Void, Void, Void> {
     @Override
     protected Void doInBackground(Void... params) {
         try {
-            String API_URL = "http://sawagis.vn/cholon/api/layerinfo";
+
             URL url = new URL(API_URL);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             try {
@@ -110,8 +112,7 @@ public class PreparingAsycn extends AsyncTask<Void, Void, Void> {
 //           LayerInfoDTG layerInfoDTG = new LayerInfoDTG();
             layerDTGS.add(new LayerInfoDTG(jsonRoute.getString(mContext.getString(R.string.sql_coloumn_sys_id)),
                     jsonRoute.getString(mContext.getString(R.string.sql_coloumn_sys_title)),
-                    jsonRoute.getString(mContext.getString(R.string.sql_coloumn_sys_url)).replace("//sawagis.vn/arcgis/rest/services/",
-                            "//gis.capnuoccholon.com.vn/server/rest/services/"),
+                    jsonRoute.getString(mContext.getString(R.string.sql_coloumn_sys_url)),
                     jsonRoute.getBoolean(mContext.getString(R.string.sql_coloumn_sys_iscreate)), jsonRoute.getBoolean(mContext.getString(R.string.sql_coloumn_sys_isdelete)),
                     jsonRoute.getBoolean(mContext.getString(R.string.sql_coloumn_sys_isedit)), jsonRoute.getBoolean(mContext.getString(R.string.sql_coloumn_sys_isview)),
                     jsonRoute.getString(mContext.getString(R.string.sql_coloumn_sys_outfield)), jsonRoute.getString(mContext.getString(R.string.sql_coloumn_sys_definition))));

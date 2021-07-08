@@ -119,16 +119,17 @@ public class Popup extends AppCompatActivity {
                 item.setFieldName(field.getName());
                 if (item.getFieldName().toUpperCase().equals("MAPHUONG")) {
                     getHanhChinhFeature(value.toString());
-                    item.setValue(quanhuyen_feature.getAttributes().get("TenHanhChinh").toString());
+                    if (quanhuyen_feature != null)
+                        item.setValue(quanhuyen_feature.getAttributes().get("TenHanhChinh").toString());
                 } else if (item.getFieldName().toUpperCase().equals("MAQUAN")) {
-                    item.setValue(quanhuyen_feature.getAttributes().get("TenQuan").toString());
+                    if (quanhuyen_feature != null)
+                        item.setValue(quanhuyen_feature.getAttributes().get("TenQuan").toString());
                 } else if (item.getFieldName().equals(typeIdField)) {
                     List<FeatureType> featureTypes = mSelectedArcGISFeature.getFeatureTable().getFeatureTypes();
-                    if(featureTypes.size() > 0){
+                    if (featureTypes.size() > 0) {
                         Object valueFeatureType = getValueFeatureType(featureTypes, value.toString());
                         if (valueFeatureType != null) item.setValue(valueFeatureType.toString());
-                    }
-                    else item.setValue(value.toString());
+                    } else item.setValue(value.toString());
 
                 } else if (field.getDomain() != null) {
                     List<CodedValue> codedValues = ((CodedValueDomain) this.mSelectedArcGISFeature.getFeatureTable().getField(item.getFieldName()).getDomain()).getCodedValues();
@@ -178,6 +179,7 @@ public class Popup extends AppCompatActivity {
         String typeIdField = mSelectedArcGISFeature.getFeatureTable().getTypeIdField();
         List<FeatureType> featureTypes = mSelectedArcGISFeature.getFeatureTable().getFeatureTypes();
         for (Field field : this.mSelectedArcGISFeature.getFeatureTable().getFields()) {
+
             Object value = attr.get(field.getName());
             if (field.getName().equals(Constant.IDSU_CO)) {
                 if (value != null)
@@ -186,16 +188,32 @@ public class Popup extends AppCompatActivity {
                 FeatureViewMoreInfoAdapter.Item item = new FeatureViewMoreInfoAdapter.Item();
                 item.setAlias(field.getAlias());
                 item.setFieldName(field.getName());
+                if (updateFields.length > 0) {
+                    if (updateFields[0].equals("*")) {
+                        item.setEdit(true);
+                    } else {
+                        for (String updateField : updateFields) {
+                            if (item.getFieldName().equals(updateField)) {
+                                item.setEdit(true);
+                                break;
+                            }
+                        }
+                    }
+                }
                 if (value != null) {
                     if (item.getFieldName().equals(typeIdField) && featureTypes.size() > 0) {
                         Object valueFeatureType = getValueFeatureType(featureTypes, value.toString());
                         if (valueFeatureType != null && valueFeatureType.toString() != null)
                             item.setValue(valueFeatureType.toString());
                     } else if (item.getFieldName().toUpperCase().equals("MAPHUONG")) {
+                        item.setEdit(false);
                         getHanhChinhFeature(value.toString());
-                        item.setValue(quanhuyen_feature.getAttributes().get("TenHanhChinh").toString());
+                        if (quanhuyen_feature != null)
+                            item.setValue(quanhuyen_feature.getAttributes().get("TenHanhChinh").toString());
                     } else if (item.getFieldName().toUpperCase().equals("MAQUAN")) {
-                        item.setValue(quanhuyen_feature.getAttributes().get("TenQuan").toString());
+                        item.setEdit(false);
+                        if (quanhuyen_feature != null)
+                            item.setValue(quanhuyen_feature.getAttributes().get("TenQuan").toString());
                     } else if (field.getDomain() != null) {
                         List<CodedValue> codedValues = ((CodedValueDomain) this.mSelectedArcGISFeature.getFeatureTable().getField(item.getFieldName()).getDomain()).getCodedValues();
                         Object valueDomainObject = getValueDomain(codedValues, value.toString());
@@ -216,15 +234,8 @@ public class Popup extends AppCompatActivity {
                             break;
                     }
                 }
-                item.setEdit(false);
-                if (updateFields.length > 0) {
-                    for (String updateField : updateFields) {
-                        if (item.getFieldName().equals(updateField)) {
-                            item.setEdit(true);
-                            break;
-                        }
-                    }
-                }
+
+
                 item.setFieldType(field.getFieldType());
                 mFeatureViewMoreInfoAdapter.add(item);
                 mFeatureViewMoreInfoAdapter.notifyDataSetChanged();
@@ -316,14 +327,13 @@ public class Popup extends AppCompatActivity {
 
                 final Domain domain = mSelectedArcGISFeature.getFeatureTable().getField(item.getFieldName()).getDomain();
                 if (item.getFieldName().equals(mSelectedArcGISFeature.getFeatureTable().getTypeIdField())) {
-                    if(lstFeatureType.size() > 0) {
+                    if (lstFeatureType.size() > 0) {
                         layoutSpin.setVisibility(View.VISIBLE);
                         ArrayAdapter<String> adapter = new ArrayAdapter<String>(layout.getContext(), android.R.layout.simple_list_item_1, lstFeatureType);
                         spin.setAdapter(adapter);
                         if (item.getValue() != null)
                             spin.setSelection(lstFeatureType.indexOf(item.getValue()));
-                    }
-                    else{
+                    } else {
                         layoutEditText.setVisibility(View.VISIBLE);
                         editText.setInputType(InputType.TYPE_CLASS_NUMBER);
                         editText.setText(item.getValue());
@@ -454,10 +464,12 @@ public class Popup extends AppCompatActivity {
 
     private void getHanhChinhFeature(String IDHanhChinh) {
         quanhuyen_feature = null;
-        for (Feature feature : quanhuyen_features) {
-            Object idHanhChinh = feature.getAttributes().get("IDHanhChinh");
-            if (idHanhChinh != null && idHanhChinh.equals(IDHanhChinh)) {
-                quanhuyen_feature = feature;
+        if (quanhuyen_features != null) {
+            for (Feature feature : quanhuyen_features) {
+                Object idHanhChinh = feature.getAttributes().get("IDHanhChinh");
+                if (idHanhChinh != null && idHanhChinh.equals(IDHanhChinh)) {
+                    quanhuyen_feature = feature;
+                }
             }
         }
     }
@@ -476,20 +488,28 @@ public class Popup extends AppCompatActivity {
         linearLayout = (LinearLayout) inflater.inflate(R.layout.layout_popup_infos, null);
         refressPopup();
         ((TextView) linearLayout.findViewById(R.id.txt_title_layer)).setText(mFeatureLayerDTG.getFeatureLayer().getName());
-        ((ImageButton) linearLayout.findViewById(R.id.imgBtn_ViewMoreInfo)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                viewMoreInfo();
-            }
-        });
+        if (mFeatureLayerDTG.getAction().getEdit()) {
+            ImageButton imgBtn_ViewMoreInfo = (ImageButton) linearLayout.findViewById(R.id.imgBtn_ViewMoreInfo);
+            imgBtn_ViewMoreInfo.setVisibility(View.VISIBLE);
+            imgBtn_ViewMoreInfo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    viewMoreInfo();
+                }
+            });
+        }
 
-        ((ImageButton) linearLayout.findViewById(R.id.imgBtn_delete)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mSelectedArcGISFeature.getFeatureTable().getFeatureLayer().clearSelection();
-                deleteFeature();
-            }
-        });
+        if (mFeatureLayerDTG.getAction().getDelete()) {
+            ImageButton imgBtn_delete = (ImageButton) linearLayout.findViewById(R.id.imgBtn_delete);
+            imgBtn_delete.setVisibility(View.VISIBLE);
+            imgBtn_delete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mSelectedArcGISFeature.getFeatureTable().getFeatureLayer().clearSelection();
+                    deleteFeature();
+                }
+            });
+        }
         ((Button) linearLayout.findViewById(R.id.btn_layer_close)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -497,8 +517,9 @@ public class Popup extends AppCompatActivity {
             }
         });
         if (this.mSelectedArcGISFeature.canEditAttachments()) {
-            ((ImageButton) linearLayout.findViewById(R.id.imgBtn_takePics)).setVisibility(View.VISIBLE);
-            ((ImageButton) linearLayout.findViewById(R.id.imgBtn_takePics)).setOnClickListener(new View.OnClickListener() {
+            ImageButton imgBtn_takePics = (ImageButton) linearLayout.findViewById(R.id.imgBtn_takePics);
+            imgBtn_takePics.setVisibility(View.VISIBLE);
+            imgBtn_takePics.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     updateAttachment();

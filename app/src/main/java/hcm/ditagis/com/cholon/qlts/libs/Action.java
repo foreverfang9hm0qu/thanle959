@@ -5,38 +5,44 @@ package hcm.ditagis.com.cholon.qlts.libs;
  */
 
 public class Action{
-    private Boolean isUpdate, isSearch, isStatistics = false;
+    private Boolean isCreate, isDelete, isEdit, isView = false;
 
-    public Action(Boolean isUpdate, Boolean isSearch, Boolean isStatistics) {
-        this.isUpdate = isUpdate;
-        this.isSearch = isSearch;
-        this.isStatistics = isStatistics;
+    public Action(Boolean isView,Boolean isCreate,Boolean isEdit, Boolean isDelete ) {
+        this.isCreate = isCreate;
+        this.isDelete = isDelete;
+        this.isEdit = isEdit;
+        this.isView = isView;
     }
 
-    public Action() {
+    public Boolean getCreate() {
+        return isCreate;
     }
 
-    public Boolean getUpdate() {
-        return isUpdate;
+    public void setCreate(Boolean create) {
+        isCreate = create;
     }
 
-    public void setUpdate(Boolean update) {
-        isUpdate = update;
+    public Boolean getDelete() {
+        return isDelete;
     }
 
-    public Boolean getSearch() {
-        return isSearch;
+    public void setDelete(Boolean delete) {
+        isDelete = delete;
     }
 
-    public void setSearch(Boolean search) {
-        isSearch = search;
+    public Boolean getEdit() {
+        return isEdit;
     }
 
-    public Boolean getStatistics() {
-        return isStatistics;
+    public void setEdit(Boolean edit) {
+        isEdit = edit;
     }
 
-    public void setStatistics(Boolean statistics) {
-        isStatistics = statistics;
+    public Boolean getView() {
+        return isView;
+    }
+
+    public void setView(Boolean view) {
+        isView = view;
     }
 }

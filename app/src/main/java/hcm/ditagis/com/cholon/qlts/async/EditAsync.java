@@ -128,8 +128,8 @@ public class EditAsync extends AsyncTask<FeatureViewMoreInfoAdapter, Void, Void>
         });
         return null;
     }
-    private void updateFeature(final Feature table_maudanhgiaFeature) {
-        final ListenableFuture<Void> mapViewResult = mServiceFeatureTable.updateFeatureAsync(table_maudanhgiaFeature);
+    private void updateFeature(final Feature feature) {
+        final ListenableFuture<Void> mapViewResult = mServiceFeatureTable.updateFeatureAsync(feature);
         mapViewResult.addDoneListener(new Runnable() {
             @Override
             public void run() {

@@ -221,10 +221,8 @@ public class QuanLyTaiSan extends AppCompatActivity implements NavigationView.On
     }
 
     private void setFeatureService() {
-        ListObjectDB.getInstance().getLstFeatureLayerDTG();
 
         // config feature layer service
-        List<Config> configs = ListConfig.getInstance(this).getConfigs();
         mFeatureLayerDTGS = new ArrayList<>();
         mCallout = mMapView.getCallout();
         mMapViewHandler = new MapViewHandler(mMapView, QuanLyTaiSan.this);
@@ -259,7 +257,7 @@ public class QuanLyTaiSan extends AppCompatActivity implements NavigationView.On
                     }
                 });
                 hanhChinhImageLayers.loadAsync();
-            } else {
+            } else if(layerInfoDTG.isView()){
                 ServiceFeatureTable serviceFeatureTable = new ServiceFeatureTable(url);
                 final FeatureLayer featureLayer = new FeatureLayer(serviceFeatureTable);
                 featureLayer.setName(layerInfoDTG.getTitleLayer());
@@ -268,8 +266,11 @@ public class QuanLyTaiSan extends AppCompatActivity implements NavigationView.On
                 featureLayer.setMaxScale(0);
                 featureLayer.setMinScale(1000000);
                 FeatureLayerDTG featureLayerDTG = new FeatureLayerDTG(featureLayer);
-                Action action = new Action(layerInfoDTG.isEdit(), layerInfoDTG.isView(), layerInfoDTG.isView());
+                Action action = new Action(layerInfoDTG.isView(), layerInfoDTG.isCreate(), layerInfoDTG.isEdit(),layerInfoDTG.isDelete());
                 featureLayerDTG.setAction(action);
+                featureLayerDTG.setOutFields(getFieldsDTG(layerInfoDTG.getOutField()));
+                featureLayerDTG.setQueryFields(getFieldsDTG(layerInfoDTG.getOutField()));
+                featureLayerDTG.setUpdateFields(getFieldsDTG(layerInfoDTG.getOutField()));
                 mFeatureLayerDTGS.add(featureLayerDTG);
                 featureLayer.addDoneLoadingListener(new Runnable() {
                     @Override
@@ -282,67 +283,16 @@ public class QuanLyTaiSan extends AppCompatActivity implements NavigationView.On
             }
 
         }
-//        for (Config config : configs) {
-//            ServiceFeatureTable serviceFeatureTable = new ServiceFeatureTable(config.getUrl());
-//
-//            FeatureLayer featureLayer = new FeatureLayer(serviceFeatureTable);
-//            if (config.getTitleLayer().equals(getString(R.string.TITLE_HANH_CHINH))) {
-//                featureLayer.setOpacity(0.7f);
-//                popupInfos.setmSFTHanhChinh(serviceFeatureTable);
-//            }
-//            featureLayer.setName(config.getTitleLayer());
-//            featureLayer.setMaxScale(0);
-//            featureLayer.setId(config.getIdLayer());
-//            featureLayer.setMinScale(1000000);
-//            FeatureLayerDTG featureLayerDTG = new FeatureLayerDTG(featureLayer);
-//            featureLayerDTG.setOutFields(config.getOutField());
-//            featureLayerDTG.setQueryFields(config.getQueryField());
-//            featureLayerDTG.setUpdateFields(config.getUpdateField());
-//            featureLayerDTG.setGroupLayer(config.getGroupLayer());
-//            if (featureLayerDTG.getGroupLayer().equals(getString(R.string.group_tai_san))) {
-//                Action action = new Action(true, true, true);
-//                featureLayerDTG.setAction(action);
-//            }
-//            mFeatureLayerDTGS.add(featureLayerDTG);
-//            mMap.getOperationalLayers().add(featureLayer);
-//
-//        }
 
         mMapViewHandler.setmPopUp(popupInfos);
         mMapViewHandler.setFeatureLayerDTGs(mFeatureLayerDTGS);
         thongKe = new ThongKe(this, mFeatureLayerDTGS);
+        final TextView txtToaDo = ((TextView) findViewById(R.id.txt_toado));
         mMap.addDoneLoadingListener(new Runnable() {
             @Override
             public void run() {
                 mLinnearDisplayLayerTaiSan = findViewById(R.id.linnearDisplayLayerTaiSan);
                 mLinnearDisplayLayerBaseMap = findViewById(R.id.linnearDisplayLayerBaseMap);
-                int states[][] = {{android.R.attr.state_checked}, {}};
-                int colors[] = {R.color.colorTextColor_1, R.color.colorTextColor_1};
-//                for (final FeatureLayerDTG featureLayerDTG : mFeatureLayerDTGS) {
-//                    final FeatureLayer featureLayer = featureLayerDTG.getFeatureLayer();
-//                    final CheckBox checkBox = new CheckBox(mLinnearDisplayLayerTaiSan.getContext());
-//                    checkBox.setText(featureLayerDTG.getFeatureLayer().getName());
-//                    checkBox.setChecked(false);
-//                    featureLayer.setVisible(false);
-//                    CompoundButtonCompat.setButtonTintList(checkBox, new ColorStateList(states, colors));
-//                    checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//                        @Override
-//                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//                            if (buttonView.isChecked()) {
-//                                featureLayer.setVisible(true);
-//
-//                            } else {
-//                                featureLayer.setVisible(false);
-//                            }
-//
-//                        }
-//                    });
-//                    if (featureLayerDTG.getGroupLayer().equals(getString(R.string.group_base_map))) {
-//                        mLinnearDisplayLayerBaseMap.addView(checkBox);
-//                    } else if (featureLayerDTG.getGroupLayer().equals(getString(R.string.group_tai_san))) {
-//                        mLinnearDisplayLayerTaiSan.addView(checkBox);
-//                    }
-//                }
             }
         });
         mMapView.setOnTouchListener(new DefaultMapViewOnTouchListener(this, mMapView) {
@@ -359,6 +309,13 @@ public class QuanLyTaiSan extends AppCompatActivity implements NavigationView.On
             @SuppressLint("SetTextI18n")
             @Override
             public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+                if(mMapViewHandler != null) {
+                    double[] location = mMapViewHandler.onScroll(e1, e2, distanceX, distanceY);
+                    float log = (float) Math.round(location[0] * 100000) / 100000;
+                    float lat = (float) Math.round(location[1] * 100000) / 100000;
+                    txtToaDo.setText(lat + ", " + log);
+//                    edit_latitude.setText(location[1] + "");
+                }
                 return super.onScroll(e1, e2, distanceX, distanceY);
             }
 
@@ -385,7 +342,18 @@ public class QuanLyTaiSan extends AppCompatActivity implements NavigationView.On
             }
         });
     }
+    private String[] getFieldsDTG(String stringFields) {
+        String[] returnFields = null;
+        if (stringFields != null) {
+            if (stringFields == "*") {
+                returnFields = new String[]{"*"};
+            } else {
+                returnFields = stringFields.split(",");
+            }
 
+        }
+        return returnFields;
+    }
     private void initLayerListView() {
         findViewById(R.id.layout_layer_open_street_map).setOnClickListener(this);
         findViewById(R.id.layout_layer_street_map).setOnClickListener(this);
@@ -464,7 +432,7 @@ public class QuanLyTaiSan extends AppCompatActivity implements NavigationView.On
     }
 
     private void addCheckBox_SubLayer(final ArcGISMapImageSublayer layer) {
-        final CheckBox checkBox = new CheckBox(mLinnearDisplayLayerTaiSan.getContext());
+        final CheckBox checkBox = new CheckBox(mLinnearDisplayLayerBaseMap.getContext());
         checkBox.setText(layer.getName());
         checkBox.setChecked(false);
         layer.setVisible(false);
