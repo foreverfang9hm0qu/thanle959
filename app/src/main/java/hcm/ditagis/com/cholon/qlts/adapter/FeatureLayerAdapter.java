@@ -14,11 +14,11 @@ import hcm.ditagis.com.cholon.qlts.R;
 /**
  * Created by ThanLe on 04/10/2017.
  */
-public class SearchAdapter extends ArrayAdapter<SearchAdapter.Item> {
+public class FeatureLayerAdapter extends ArrayAdapter<FeatureLayerAdapter.Item> {
     private Context context;
     private List<Item> items;
 
-    public SearchAdapter(Context context, List<Item> items) {
+    public FeatureLayerAdapter(Context context, List<Item> items) {
         super(context, 0, items);
         this.context = context;
         this.items = items;

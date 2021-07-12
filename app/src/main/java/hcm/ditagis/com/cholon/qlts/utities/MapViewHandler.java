@@ -1,10 +1,13 @@
 package hcm.ditagis.com.cholon.qlts.utities;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.FloatingActionButton;
 import android.view.MotionEvent;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
@@ -33,6 +36,7 @@ import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
 
 import hcm.ditagis.com.cholon.qlts.QuanLyTaiSan;
+import hcm.ditagis.com.cholon.qlts.R;
 import hcm.ditagis.com.cholon.qlts.adapter.ObjectsAdapter;
 import hcm.ditagis.com.cholon.qlts.async.SingleTapAddFeatureAsync;
 import hcm.ditagis.com.cholon.qlts.async.SingleTapMapViewAsync;
@@ -55,8 +59,9 @@ public class MapViewHandler extends Activity {
     private MapView mMapView;
     private boolean isClickBtnAdd = false;
     private ServiceFeatureTable searchSFT;
+    private ServiceFeatureTable addSFT;
     private Popup mPopUp;
-    private Context mContext;
+    private QuanLyTaiSan quanLyTaiSan;
 
 
     public void setFeatureLayerDTGs(List<FeatureLayerDTG> mFeatureLayerDTGs) {
@@ -71,7 +76,7 @@ public class MapViewHandler extends Activity {
 
     public MapViewHandler(MapView mMapView, QuanLyTaiSan quanLyTaiSan) {
         this.mMapView = mMapView;
-        this.mContext = quanLyTaiSan;
+        this.quanLyTaiSan = quanLyTaiSan;
         this.mMap = mMapView.getMap();
     }
 
@@ -83,23 +88,37 @@ public class MapViewHandler extends Activity {
         this.searchSFT = searchSFT;
     }
 
+    public ServiceFeatureTable getAddSFT() {
+        return addSFT;
+    }
+
+    public void setAddSFT(ServiceFeatureTable addSFT) {
+        this.addSFT = addSFT;
+    }
+
     public void setClickBtnAdd(boolean clickBtnAdd) {
         isClickBtnAdd = clickBtnAdd;
     }
 
     public void addFeature(byte[] image) {
-        SingleTapAddFeatureAsync singleTapAdddFeatureAsync = new SingleTapAddFeatureAsync(mContext, image, searchSFT, loc, mMapView);
+        SingleTapAddFeatureAsync singleTapAdddFeatureAsync = new SingleTapAddFeatureAsync(quanLyTaiSan, image, addSFT, mMapView);
         Point add_point = mMapView.getCurrentViewpoint(Viewpoint.Type.CENTER_AND_SCALE).getTargetGeometry().getExtent().getCenter();
         singleTapAdddFeatureAsync.execute(add_point);
+        closeAddFeature();
     }
 
     public void onSingleTapMapView(MotionEvent e) {
         final Point clickPoint = mMapView.screenToLocation(new android.graphics.Point(Math.round(e.getX()), Math.round(e.getY())));
         mClickPoint = new android.graphics.Point((int) e.getX(), (int) e.getY());
-        SingleTapMapViewAsync singleTapMapViewAsync = new SingleTapMapViewAsync(mContext, mFeatureLayerDTGs, mPopUp, mClickPoint, mMapView);
+        SingleTapMapViewAsync singleTapMapViewAsync = new SingleTapMapViewAsync(quanLyTaiSan, mFeatureLayerDTGs, mPopUp, mClickPoint, mMapView);
         singleTapMapViewAsync.execute(clickPoint);
     }
-
+    public void closeAddFeature(){
+        ((LinearLayout) this.quanLyTaiSan.findViewById(R.id.linear_addfeature)).setVisibility(View.GONE);
+        ((ImageView) this.quanLyTaiSan.findViewById(R.id.img_map_pin)).setVisibility(View.GONE);
+        ((FloatingActionButton) this.quanLyTaiSan.findViewById(R.id.floatBtnAdd)).setVisibility(View.VISIBLE);
+        this.setClickBtnAdd(false);
+    }
     public double[] onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
         Point center = ((MapView) mMapView).getCurrentViewpoint(Viewpoint.Type.CENTER_AND_SCALE).getTargetGeometry().getExtent().getCenter();
         Geometry project = GeometryEngine.project(center, SpatialReferences.getWgs84());

@@ -39,11 +39,10 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.Window;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SeekBar;
@@ -62,8 +61,6 @@ import com.esri.arcgisruntime.layers.ArcGISMapImageLayer;
 import com.esri.arcgisruntime.layers.ArcGISMapImageSublayer;
 import com.esri.arcgisruntime.layers.ArcGISSublayer;
 import com.esri.arcgisruntime.layers.FeatureLayer;
-import com.esri.arcgisruntime.layers.Layer;
-import com.esri.arcgisruntime.layers.SublayerList;
 import com.esri.arcgisruntime.loadable.LoadStatus;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
 import com.esri.arcgisruntime.mapping.Basemap;
@@ -86,18 +83,17 @@ import java.util.List;
 
 import hcm.ditagis.com.cholon.qlts.adapter.FeatureViewMoreInfoAdapter;
 import hcm.ditagis.com.cholon.qlts.adapter.ObjectsAdapter;
-import hcm.ditagis.com.cholon.qlts.adapter.SearchAdapter;
+import hcm.ditagis.com.cholon.qlts.adapter.FeatureLayerAdapter;
 import hcm.ditagis.com.cholon.qlts.async.PreparingAsycn;
 import hcm.ditagis.com.cholon.qlts.async.UpdateAttachmentAsync;
 import hcm.ditagis.com.cholon.qlts.entities.entitiesDB.LayerInfoDTG;
 import hcm.ditagis.com.cholon.qlts.entities.entitiesDB.ListObjectDB;
 import hcm.ditagis.com.cholon.qlts.libs.Action;
 import hcm.ditagis.com.cholon.qlts.libs.FeatureLayerDTG;
+import hcm.ditagis.com.cholon.qlts.tools.AddFeatureItem;
 import hcm.ditagis.com.cholon.qlts.tools.ThongKe;
 import hcm.ditagis.com.cholon.qlts.utities.CheckConnectInternet;
-import hcm.ditagis.com.cholon.qlts.utities.Config;
 import hcm.ditagis.com.cholon.qlts.utities.ImageFile;
-import hcm.ditagis.com.cholon.qlts.utities.ListConfig;
 import hcm.ditagis.com.cholon.qlts.utities.MapViewHandler;
 import hcm.ditagis.com.cholon.qlts.tools.MySnackBar;
 import hcm.ditagis.com.cholon.qlts.utities.Popup;
@@ -193,7 +189,7 @@ public class QuanLyTaiSan extends AppCompatActivity implements NavigationView.On
         // ẩn hiện thị lớp dữ liệu
         initLayerListView();
         initMapView();
-
+        setOnClickListener();
     }
 
     private void initMapView() {
@@ -354,10 +350,18 @@ public class QuanLyTaiSan extends AppCompatActivity implements NavigationView.On
         }
         return returnFields;
     }
-    private void initLayerListView() {
+    private void setOnClickListener(){
         findViewById(R.id.layout_layer_open_street_map).setOnClickListener(this);
         findViewById(R.id.layout_layer_street_map).setOnClickListener(this);
         findViewById(R.id.layout_layer_topo).setOnClickListener(this);
+        findViewById(R.id.floatBtnAdd).setOnClickListener(this);
+        findViewById(R.id.btn_add_feature_close).setOnClickListener(this);
+        findViewById(R.id.img_layvitri).setOnClickListener(this);
+
+
+    }
+    private void initLayerListView() {
+
         mFloatButtonLayer = findViewById(R.id.floatBtnLayer);
         mFloatButtonLayer.setOnClickListener(this);
         mLinearLayoutCover = findViewById(R.id.layout_cover_quan_ly_su_co);
@@ -605,27 +609,54 @@ public class QuanLyTaiSan extends AppCompatActivity implements NavigationView.On
         });
         return true;
     }
-
-    private void showDialogSelectTypeSearch() {
-        SearchItem searchItem = new SearchItem(mFeatureLayerDTGS, this);
-        List<SearchAdapter.Item> items = searchItem.getItems();
-        SearchAdapter searchAdapter = new SearchAdapter(this, items);
+    private void showDialogSelectAddFeatureLayer() {
+        AddFeatureItem addFeatureItem = new AddFeatureItem(mFeatureLayerDTGS, this);
+        List<FeatureLayerAdapter.Item> items = addFeatureItem.getItems();
+        FeatureLayerAdapter featureLayerAdapter = new FeatureLayerAdapter(this, items);
         AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_Holo_Light_NoActionBar_Fullscreen);
         @SuppressLint("InflateParams") View layout = getLayoutInflater().inflate(R.layout.layout_title_listview, null);
         ListView listView = layout.findViewById(R.id.listview);
-        listView.setAdapter(searchAdapter);
+        listView.setAdapter(featureLayerAdapter);
+        TextView txt_Title_Layout = layout.findViewById(R.id.txt_Title_Layout);
+        txt_Title_Layout.setText("Chọn lớp dữ liệu cập nhật");
+        builder.setView(layout);
+        final AlertDialog selectTimeDialog = builder.create();
+        selectTimeDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        selectTimeDialog.show();
+        final List<FeatureLayerAdapter.Item> finalItems = featureLayerAdapter.getItems();
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                selectTimeDialog.dismiss();
+                final FeatureLayerAdapter.Item itemAtPosition = (FeatureLayerAdapter.Item) parent.getItemAtPosition(position);
+                String idLayer = itemAtPosition.getIdLayer();
+                ((TextView) findViewById(R.id.txt_title_search)).setText(itemAtPosition.getTitleLayer());
+                ServiceFeatureTable serviceFeatureTable = getServiceFeatureTable(idLayer);
+                serviceFeatureTable.getFeatureLayer().setVisible(true);
+                mMapViewHandler.setAddSFT(serviceFeatureTable);
+            }
+        });
+    }
+    private void showDialogSelectTypeSearch() {
+        SearchItem searchItem = new SearchItem(mFeatureLayerDTGS, this);
+        List<FeatureLayerAdapter.Item> items = searchItem.getItems();
+        FeatureLayerAdapter featureLayerAdapter = new FeatureLayerAdapter(this, items);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_Holo_Light_NoActionBar_Fullscreen);
+        @SuppressLint("InflateParams") View layout = getLayoutInflater().inflate(R.layout.layout_title_listview, null);
+        ListView listView = layout.findViewById(R.id.listview);
+        listView.setAdapter(featureLayerAdapter);
         TextView txt_Title_Layout = layout.findViewById(R.id.txt_Title_Layout);
         txt_Title_Layout.setText("Tìm kiếm theo");
         builder.setView(layout);
         final AlertDialog selectTimeDialog = builder.create();
         selectTimeDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         selectTimeDialog.show();
-        final List<SearchAdapter.Item> finalItems = searchAdapter.getItems();
+        final List<FeatureLayerAdapter.Item> finalItems = featureLayerAdapter.getItems();
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 selectTimeDialog.dismiss();
-                final SearchAdapter.Item itemAtPosition = (SearchAdapter.Item) parent.getItemAtPosition(position);
+                final FeatureLayerAdapter.Item itemAtPosition = (FeatureLayerAdapter.Item) parent.getItemAtPosition(position);
                 String idLayer = itemAtPosition.getIdLayer();
                 ((TextView) findViewById(R.id.txt_title_search)).setText(itemAtPosition.getTitleLayer());
                 ServiceFeatureTable serviceFeatureTable = getServiceFeatureTable(idLayer);
@@ -726,11 +757,13 @@ public class QuanLyTaiSan extends AppCompatActivity implements NavigationView.On
     private void hiddenFloatButton() {
         findViewById(R.id.floatBtnLayer).setVisibility(View.INVISIBLE);
         findViewById(R.id.floatBtnLocation).setVisibility(View.INVISIBLE);
+        findViewById(R.id.floatBtnAdd).setVisibility(View.INVISIBLE);
     }
 
     private void showFloatButton() {
         findViewById(R.id.floatBtnLayer).setVisibility(View.VISIBLE);
         findViewById(R.id.floatBtnLocation).setVisibility(View.VISIBLE);
+        findViewById(R.id.floatBtnAdd).setVisibility(View.VISIBLE);
     }
 
     private void toogleFloatButton() {
@@ -740,6 +773,9 @@ public class QuanLyTaiSan extends AppCompatActivity implements NavigationView.On
         if (findViewById(R.id.floatBtnLocation).getVisibility() == View.VISIBLE) {
             findViewById(R.id.floatBtnLocation).setVisibility(View.INVISIBLE);
         } else findViewById(R.id.floatBtnLocation).setVisibility(View.VISIBLE);
+        if (findViewById(R.id.floatBtnAdd).getVisibility() == View.VISIBLE) {
+            findViewById(R.id.floatBtnAdd).setVisibility(View.INVISIBLE);
+        } else findViewById(R.id.floatBtnAdd).setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -784,9 +820,29 @@ public class QuanLyTaiSan extends AppCompatActivity implements NavigationView.On
                     setViewPointCenter(mLocationDisplay.getMapLocation());
                 } else mLocationDisplay.stop();
                 break;
+            case R.id.floatBtnAdd:
+                showDialogSelectAddFeatureLayer();
+                ((LinearLayout) findViewById(R.id.linear_addfeature)).setVisibility(View.VISIBLE);
+                ((ImageView) findViewById(R.id.img_map_pin)).setVisibility(View.VISIBLE);
+                ((FloatingActionButton) findViewById(R.id.floatBtnAdd)).setVisibility(View.GONE);
+                mMapViewHandler.setClickBtnAdd(true);
+                break;
+            case R.id.btn_add_feature_close:
+                closeAddFeature();
+                break;
+            case R.id.img_layvitri:
+//                mMapViewHandler.capture();
+                capture();
+//                mMapViewHandler.addFeature(null);
+                break;
         }
     }
-
+    public void closeAddFeature(){
+        ((LinearLayout) findViewById(R.id.linear_addfeature)).setVisibility(View.GONE);
+        ((ImageView) findViewById(R.id.img_map_pin)).setVisibility(View.GONE);
+        ((FloatingActionButton) findViewById(R.id.floatBtnAdd)).setVisibility(View.VISIBLE);
+        mMapViewHandler.setClickBtnAdd(false);
+    }
     public void capture() {
         Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
         cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI.getPath());
@@ -901,7 +957,6 @@ public class QuanLyTaiSan extends AppCompatActivity implements NavigationView.On
         }
 
         if (requestCode == REQUEST_ID_IMAGE_CAPTURE)
-
         {
             if (resultCode == RESULT_OK) {
                 if (this.mUri != null) {
@@ -924,8 +979,10 @@ public class QuanLyTaiSan extends AppCompatActivity implements NavigationView.On
                 }
             } else if (resultCode == RESULT_CANCELED) {
                 MySnackBar.make(mMapView, "Hủy chụp ảnh", false);
+                closeAddFeature();
             } else {
                 MySnackBar.make(mMapView, "Lỗi khi chụp ảnh", false);
+                closeAddFeature();
             }
         } else if (requestCode == getResources().getInteger(R.integer.REQUEST_ID_UPDATE_ATTACHMENT)) {
             if (resultCode == RESULT_OK) {

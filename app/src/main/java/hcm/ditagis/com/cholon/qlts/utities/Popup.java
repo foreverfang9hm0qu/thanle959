@@ -488,8 +488,8 @@ public class Popup extends AppCompatActivity {
         linearLayout = (LinearLayout) inflater.inflate(R.layout.layout_popup_infos, null);
         refressPopup();
         ((TextView) linearLayout.findViewById(R.id.txt_title_layer)).setText(mFeatureLayerDTG.getFeatureLayer().getName());
-        if (mFeatureLayerDTG.getAction().getEdit()) {
-            ImageButton imgBtn_ViewMoreInfo = (ImageButton) linearLayout.findViewById(R.id.imgBtn_ViewMoreInfo);
+        ImageButton imgBtn_ViewMoreInfo = (ImageButton) linearLayout.findViewById(R.id.imgBtn_ViewMoreInfo);
+        if (mFeatureLayerDTG.getAction().isEdit()) {
             imgBtn_ViewMoreInfo.setVisibility(View.VISIBLE);
             imgBtn_ViewMoreInfo.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -497,10 +497,9 @@ public class Popup extends AppCompatActivity {
                     viewMoreInfo();
                 }
             });
-        }
-
-        if (mFeatureLayerDTG.getAction().getDelete()) {
-            ImageButton imgBtn_delete = (ImageButton) linearLayout.findViewById(R.id.imgBtn_delete);
+        } else imgBtn_ViewMoreInfo.setVisibility(View.GONE);
+        ImageButton imgBtn_delete = (ImageButton) linearLayout.findViewById(R.id.imgBtn_delete);
+        if (mFeatureLayerDTG.getAction().isDelete()) {
             imgBtn_delete.setVisibility(View.VISIBLE);
             imgBtn_delete.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -509,14 +508,14 @@ public class Popup extends AppCompatActivity {
                     deleteFeature();
                 }
             });
-        }
+        } else imgBtn_delete.setVisibility(View.GONE);
         ((Button) linearLayout.findViewById(R.id.btn_layer_close)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dimissCallout();
             }
         });
-        if (this.mSelectedArcGISFeature.canEditAttachments()) {
+        if (mFeatureLayerDTG.getAction().isEdit() && this.mSelectedArcGISFeature.canEditAttachments()) {
             ImageButton imgBtn_takePics = (ImageButton) linearLayout.findViewById(R.id.imgBtn_takePics);
             imgBtn_takePics.setVisibility(View.VISIBLE);
             imgBtn_takePics.setOnClickListener(new View.OnClickListener() {
@@ -546,7 +545,7 @@ public class Popup extends AppCompatActivity {
     private void deleteFeature() {
         AlertDialog.Builder builder = new AlertDialog.Builder(mMainActivity, android.R.style.Theme_Material_Light_Dialog_Alert);
         builder.setTitle("Xác nhận");
-        builder.setMessage("Bạn có chắc chắn xóa sự cố này?");
+        builder.setMessage("Bạn có chắc chắn xóa đối tượng này không?");
         builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {

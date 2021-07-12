@@ -140,6 +140,10 @@ public class EditAsync extends AsyncTask<FeatureViewMoreInfoAdapter, Void, Void>
                         try {
                             mDialog.dismiss();
                             List<FeatureEditResult> featureEditResults = listListenableEditAsync.get();
+                            if (featureEditResults.size() > 0) {
+                                long objectId = featureEditResults.get(0).getObjectId();
+
+                            }
                             publishProgress();
                         } catch (InterruptedException e) {
                             e.printStackTrace();

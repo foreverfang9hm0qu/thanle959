@@ -11,9 +11,14 @@ import android.support.annotation.RequiresApi;
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.data.ArcGISFeature;
 import com.esri.arcgisruntime.data.Attachment;
+import com.esri.arcgisruntime.data.CodedValue;
+import com.esri.arcgisruntime.data.CodedValueDomain;
+import com.esri.arcgisruntime.data.Domain;
 import com.esri.arcgisruntime.data.Feature;
 import com.esri.arcgisruntime.data.FeatureEditResult;
 import com.esri.arcgisruntime.data.FeatureQueryResult;
+import com.esri.arcgisruntime.data.FeatureType;
+import com.esri.arcgisruntime.data.Field;
 import com.esri.arcgisruntime.data.QueryParameters;
 import com.esri.arcgisruntime.data.ServiceFeatureTable;
 import com.esri.arcgisruntime.geometry.Envelope;
@@ -46,14 +51,11 @@ public class SingleTapAddFeatureAsync extends AsyncTask<Point, Void, Void> {
     private Context mContext;
     private byte[] mImage;
     private ServiceFeatureTable mServiceFeatureTable;
-    private LocatorTask mLocatorTask;
     private ArcGISFeature mSelectedArcGISFeature;
     private MapView mMapView;
 
-    public SingleTapAddFeatureAsync(Context context, byte[] image, ServiceFeatureTable serviceFeatureTable,
-                                    LocatorTask locatorTask, MapView mapView) {
+    public SingleTapAddFeatureAsync(Context context, byte[] image, ServiceFeatureTable serviceFeatureTable, MapView mapView) {
         this.mServiceFeatureTable = serviceFeatureTable;
-        this.mLocatorTask = locatorTask;
         this.mMapView = mapView;
         this.mImage = image;
         this.mContext = context;
@@ -81,52 +83,53 @@ public class SingleTapAddFeatureAsync extends AsyncTask<Point, Void, Void> {
         try {
             feature = mServiceFeatureTable.createFeature();
             feature.setGeometry(clickPoint);
-            final ListenableFuture<List<GeocodeResult>> listListenableFuture =
-                    mLocatorTask.reverseGeocodeAsync(clickPoint);
-            listListenableFuture.addDoneListener(new Runnable() {
+            String typeIdField = mServiceFeatureTable.getTypeIdField();
+            List<Field> fields = mServiceFeatureTable.getFields();
+            if(fields.size() > 0){
+                for (Field field:fields){
+                    if(field.getName().equals("NgayCapNhat")){
+                        Calendar currentTime = Calendar.getInstance();
+                        feature.getAttributes().put("NgayCapNhat", currentTime);
+                    }
+                    if(field.getName().equals(typeIdField)){
+                        CodedValueDomain codedValueDomain = (CodedValueDomain) field.getDomain();
+                        CodedValue codedValue = codedValueDomain.getCodedValues().get(0);
+                        feature.getAttributes().put(typeIdField, codedValue.getCode());
+                    }
+                }
+            }
+
+            ListenableFuture<Void> mapViewResult = mServiceFeatureTable.addFeatureAsync(feature);
+            mapViewResult.addDoneListener(new Runnable() {
                 @Override
                 public void run() {
-                    try {
-                        List<GeocodeResult> geocodeResults = listListenableFuture.get();
-                        if (geocodeResults.size() > 0) {
-                            GeocodeResult geocodeResult = geocodeResults.get(0);
-                            Map<String, Object> attrs = new HashMap<>();
-                            for (String key : geocodeResult.getAttributes().keySet()) {
-                                attrs.put(key, geocodeResult.getAttributes().get(key));
+                    final ListenableFuture<List<FeatureEditResult>> listListenableEditAsync = mServiceFeatureTable.applyEditsAsync();
+                    listListenableEditAsync.addDoneListener(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                List<FeatureEditResult> featureEditResults = listListenableEditAsync.get();
+                                if (featureEditResults.size() > 0) {
+                                    long objectId = featureEditResults.get(0).getObjectId();
+                                    final QueryParameters queryParameters = new QueryParameters();
+                                    final String query = "OBJECTID = " + objectId;
+                                    queryParameters.setWhereClause(query);
+                                    final ListenableFuture<FeatureQueryResult> feature = mServiceFeatureTable.queryFeaturesAsync(queryParameters);
+                                    feature.addDoneListener(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            addAttachment(feature);
+                                        }
+                                    });
+                                }
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            } catch (ExecutionException e) {
+                                e.printStackTrace();
                             }
-                            String address = geocodeResult.getAttributes().get("LongLabel").toString();
-                            feature.getAttributes().put(Constant.VI_TRI, address);
+
                         }
-                        Short intObj = new Short((short) 0);
-                        feature.getAttributes().put(Constant.TRANG_THAI, intObj);
-
-                        String searchStr = "";
-                        String dateTime = "";
-                        String timeID = "";
-                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                            dateTime = getDateString();
-                            timeID = getTimeID();
-                            searchStr = Constant.IDSU_CO + " like '%" + timeID + "'";
-                        }
-                        QueryParameters queryParameters = new QueryParameters();
-                        queryParameters.setWhereClause(searchStr);
-                        final ListenableFuture<FeatureQueryResult> featureQuery =
-                                mServiceFeatureTable.queryFeaturesAsync(queryParameters);
-                        final String finalDateTime = dateTime;
-                        final String finalTimeID = timeID;
-                        featureQuery.addDoneListener(new Runnable() {
-                            @Override
-                            public void run() {
-                                addFeatureAsync(featureQuery, feature, finalTimeID, finalDateTime);
-                            }
-                        });
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();
-                    } catch (ExecutionException e1) {
-                        e1.printStackTrace();
-                    }
-
-
+                    });
                 }
             });
 

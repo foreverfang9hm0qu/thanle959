@@ -1,5 +1,7 @@
 package hcm.ditagis.com.cholon.qlts.tools;
 
+import com.esri.arcgisruntime.geometry.GeometryType;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,20 +9,16 @@ import hcm.ditagis.com.cholon.qlts.QuanLyTaiSan;
 import hcm.ditagis.com.cholon.qlts.R;
 import hcm.ditagis.com.cholon.qlts.adapter.FeatureLayerAdapter;
 import hcm.ditagis.com.cholon.qlts.libs.FeatureLayerDTG;
-
-/**
- * Created by NGUYEN HONG on 4/26/2018.
- */
-
-public class SearchItem {
+public class AddFeatureItem {
     private List<FeatureLayerAdapter.Item> items;
     private List<FeatureLayerDTG> mFeatureLayerDTGS;
 
-    public SearchItem(List<FeatureLayerDTG> mFeatureLayerDTGS, QuanLyTaiSan quanLyTaiSan) {
+    public AddFeatureItem(List<FeatureLayerDTG> mFeatureLayerDTGS, QuanLyTaiSan quanLyTaiSan) {
         this.mFeatureLayerDTGS = mFeatureLayerDTGS;
         items = new ArrayList<>();
         for (FeatureLayerDTG featureLayerDTG : mFeatureLayerDTGS) {
-            if (featureLayerDTG.getAction() != null && featureLayerDTG.getAction().isView())
+            GeometryType geometryType = featureLayerDTG.getFeatureLayer().getFeatureTable().getGeometryType();
+            if (featureLayerDTG.getAction() != null && featureLayerDTG.getAction().isCreate() && featureLayerDTG.getAction().isView() && geometryType == GeometryType.POINT)
                 items.add(new FeatureLayerAdapter.Item(quanLyTaiSan.getString(R.string.type_search_feature_layer), featureLayerDTG.getFeatureLayer().getName(),featureLayerDTG.getFeatureLayer().getId()));
         }
 
@@ -34,3 +32,4 @@ public class SearchItem {
         this.items = items;
     }
 }
+
