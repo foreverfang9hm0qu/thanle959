@@ -1,7 +1,7 @@
 package hcm.ditagis.com.cholon.qlts.async;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -17,34 +17,38 @@ import java.net.URL;
 import hcm.ditagis.com.cholon.qlts.R;
 import hcm.ditagis.com.cholon.qlts.entities.entitiesDB.User;
 import hcm.ditagis.com.cholon.qlts.entities.entitiesDB.UserDangNhap;
+import hcm.ditagis.com.cholon.qlts.utities.DApplication;
 import hcm.ditagis.com.cholon.qlts.utities.Preference;
 
-public class NewLoginAsycn extends AsyncTask<String, Void, User> {
+public class NewLoginAsycn extends AsyncTask<String, Void, Void> {
     private Exception exception;
     private ProgressDialog mDialog;
-    private Context mContext;
-    private LoginAsycn.AsyncResponse mDelegate;
+    private Activity mActivity;
+    private AsyncResponse mDelegate;
+    private DApplication mDApplication;
     String API_URL;
+
     public interface AsyncResponse {
-        void processFinish(User output);
+        void processFinish(Void output);
     }
 
-    public NewLoginAsycn(Context context, LoginAsycn.AsyncResponse delegate) {
-        this.mContext = context;
+    public NewLoginAsycn(Activity activity, AsyncResponse delegate) {
+        this.mActivity = activity;
+        this.mDApplication = (DApplication) activity.getApplication();
         this.mDelegate = delegate;
-        this.API_URL = mContext.getString(R.string.URL_API) + "/api/Login";
+        this.API_URL = mActivity.getString(R.string.URL_API) + "/api/Login";
     }
 
     protected void onPreExecute() {
         super.onPreExecute();
-        this.mDialog = new ProgressDialog(this.mContext, android.R.style.Theme_Material_Dialog_Alert);
-        this.mDialog.setMessage(mContext.getString(R.string.connect_message));
+        this.mDialog = new ProgressDialog(this.mActivity, android.R.style.Theme_Material_Dialog_Alert);
+        this.mDialog.setMessage(mActivity.getString(R.string.connect_message));
         this.mDialog.setCancelable(false);
         this.mDialog.show();
     }
 
     @Override
-    protected User doInBackground(String... params) {
+    protected Void doInBackground(String... params) {
         String userName = params[0];
         String pin = params[1];
 //        String passEncoded = (new EncodeMD5()).encode(pin + "_DITAGIS");
@@ -65,12 +69,15 @@ public class NewLoginAsycn extends AsyncTask<String, Void, User> {
                     stringBuilder.append(line);
                     break;
                 }
-                Preference.getInstance().savePreferences(mContext.getString(R.string.preference_login_api), stringBuilder.toString().replace("\"",""));
+                Preference.getInstance().savePreferences(mActivity.getString(R.string.preference_login_api), stringBuilder.toString().replace("\"", ""));
                 bufferedReader.close();
+                User user = new User();
+                user.setDisplayName(getDisplayName());
+                user.setUserName(userName);
+                this.mDApplication.setUser(user);
+                return null;
 
-                UserDangNhap.getInstance().setUser(new User());
-                UserDangNhap.getInstance().getUser().setDisplayName(getDisplayName());
-                return UserDangNhap.getInstance().getUser();
+
             } finally {
                 conn.disconnect();
             }
@@ -81,7 +88,7 @@ public class NewLoginAsycn extends AsyncTask<String, Void, User> {
     }
 
     @Override
-    protected void onPostExecute(User user) {
+    protected void onPostExecute(Void user) {
 //        if (user != null) {
         mDialog.dismiss();
         this.mDelegate.processFinish(user);
@@ -89,7 +96,7 @@ public class NewLoginAsycn extends AsyncTask<String, Void, User> {
     }
 
     private String getDisplayName() {
-        String API_URL = mContext.getString(R.string.URL_API) + "/api/Account/Profile";
+        String API_URL = mActivity.getString(R.string.URL_API) + "/api/Account/Profile";
         String displayName = "";
         try {
             URL url = new URL(API_URL);
@@ -97,7 +104,7 @@ public class NewLoginAsycn extends AsyncTask<String, Void, User> {
             try {
                 conn.setDoOutput(false);
                 conn.setRequestMethod("GET");
-                conn.setRequestProperty("Authorization", Preference.getInstance().loadPreference(mContext.getString(R.string.preference_login_api)));
+                conn.setRequestProperty("Authorization", Preference.getInstance().loadPreference(mActivity.getString(R.string.preference_login_api)));
                 conn.connect();
 
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -130,7 +137,7 @@ public class NewLoginAsycn extends AsyncTask<String, Void, User> {
 //        jsonData.getJSONArray("account");
         for (int i = 0; i < jsonRoutes.length(); i++) {
             JSONObject jsonRoute = jsonRoutes.getJSONObject(i);
-            displayName = jsonRoute.getString(mContext.getString(R.string.sql_coloumn_login_displayname));
+            displayName = jsonRoute.getString(mActivity.getString(R.string.sql_coloumn_login_displayname));
         }
         return displayName;
 

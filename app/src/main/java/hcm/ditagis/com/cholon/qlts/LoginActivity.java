@@ -8,10 +8,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import hcm.ditagis.com.cholon.qlts.async.LoginAsycn;
 import hcm.ditagis.com.cholon.qlts.async.NewLoginAsycn;
 import hcm.ditagis.com.cholon.qlts.entities.entitiesDB.User;
 import hcm.ditagis.com.cholon.qlts.utities.CheckConnectInternet;
+import hcm.ditagis.com.cholon.qlts.utities.DApplication;
 import hcm.ditagis.com.cholon.qlts.utities.Preference;
 
 
@@ -20,12 +20,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private TextView mTxtPassword;
     private boolean isLastLogin;
     private TextView mTxtValidation;
-
+private DApplication mDApplication;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+        this.mDApplication = (DApplication) getApplication();
         Button btnLogin = (findViewById(R.id.btnLogin));
         btnLogin.setOnClickListener(this);
         findViewById(R.id.txt_login_changeAccount).setOnClickListener(this);
@@ -77,15 +77,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             handleInfoLoginEmpty();
             return;
         }
-        NewLoginAsycn loginAsycn = new NewLoginAsycn(this, new LoginAsycn.AsyncResponse() {
-
-            @Override
-            public void processFinish(User output) {
-                if (output != null)
-                    handleLoginSuccess(output);
-                else
-                    handleLoginFail();
-            }
+        NewLoginAsycn loginAsycn = new NewLoginAsycn(this, output -> {
+            if (this.mDApplication.getUser() != null)
+                handleLoginSuccess();
+            else
+                handleLoginFail();
         });
         loginAsycn.execute(userName, passWord);
     }
@@ -100,12 +96,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         mTxtValidation.setVisibility(View.VISIBLE);
     }
 
-    private void handleLoginSuccess(User user) {
+    private void handleLoginSuccess() {
 
 
         Preference.getInstance().savePreferences(getString(R.string.preference_username), mTxtUsername.getText().toString());
 //        Preference.getInstance().savePreferences(getString(R.string.preference_password), khachHang.getPassWord());
-        Preference.getInstance().savePreferences(getString(R.string.preference_displayname), user.getDisplayName());
+        Preference.getInstance().savePreferences(getString(R.string.preference_displayname), this.mDApplication.getUser().getDisplayName());
         mTxtUsername.setText("");
         mTxtPassword.setText("");
         Intent intent = new Intent(this, QuanLyTaiSan.class);

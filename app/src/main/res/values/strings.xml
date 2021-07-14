@@ -254,5 +254,7 @@
 
     <string name="IDLayer_Basemap">BASEMAP</string>
     <string name="URL_API">http://gis.capnuoccholon.com.vn/cholon</string>
+    <string name="NGAYCAPNHAT">NGAYCAPNHAT</string>
+    <string name="NGUOICAPNHAT">NGUOICAPNHAT</string>
     <!--<string name="URL_API">http://sawagis.vn/cholon</string>-->
 </resources>

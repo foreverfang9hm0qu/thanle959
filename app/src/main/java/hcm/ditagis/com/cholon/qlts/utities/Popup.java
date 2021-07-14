@@ -45,6 +45,7 @@ import com.esri.arcgisruntime.mapping.view.MapView;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
@@ -73,12 +74,14 @@ public class Popup extends AppCompatActivity {
     private MapView mMapView;
     private ArrayList<Feature> quanhuyen_features;
     private Feature quanhuyen_feature;
+    private DApplication mDApplication;
 
 
     public Popup(QuanLyTaiSan mainActivity, MapView mMapView, Callout callout) {
         this.mMainActivity = mainActivity;
         this.mMapView = mMapView;
         this.mCallout = callout;
+        this.mDApplication = (DApplication) mainActivity.getApplication();
 
 
     }
@@ -499,7 +502,8 @@ public class Popup extends AppCompatActivity {
             });
         } else imgBtn_ViewMoreInfo.setVisibility(View.GONE);
         ImageButton imgBtn_delete = (ImageButton) linearLayout.findViewById(R.id.imgBtn_delete);
-        if (mFeatureLayerDTG.getAction().isDelete()) {
+
+        if (mFeatureLayerDTG.getAction().isDelete() && isDeleteFeature()) {
             imgBtn_delete.setVisibility(View.VISIBLE);
             imgBtn_delete.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -540,6 +544,38 @@ public class Popup extends AppCompatActivity {
             }
         });
         return linearLayout;
+    }
+
+    public static boolean isSameDay(Calendar cal1, Calendar cal2) {
+        if (cal1 == null || cal2 == null) {
+            throw new IllegalArgumentException("The dates must not be null");
+        }
+        return (cal1.get(Calendar.ERA) == cal2.get(Calendar.ERA) &&
+                cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+                cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR));
+    }
+
+    private boolean isDeleteFeature() {
+        boolean isSameDate = false, isSameUser = false;
+        Map<String, Object> attr = mSelectedArcGISFeature.getAttributes();
+        List<Field> fields = mSelectedArcGISFeature.getFeatureTable().getFields();
+        for (Field field : fields) {
+            if (field.getName().toUpperCase().equals(this.mMainActivity.getResources().getString(R.string.NGAYCAPNHAT))) {
+                Object ngayCapNhat = attr.get(field.getName());
+                if (ngayCapNhat != null) {
+                    Calendar calendar = (Calendar) ngayCapNhat;
+                    Calendar currentDate = Calendar.getInstance();
+                    isSameDate = isSameDay(calendar, currentDate);
+                }
+            }
+            if (field.getName().toUpperCase().equals(this.mMainActivity.getResources().getString(R.string.NGUOICAPNHAT))) {
+                Object nguoiCapNhat = attr.get(field.getName());
+                if (nguoiCapNhat != null) {
+                    isSameUser = nguoiCapNhat.toString().equals(this.mDApplication.getUser().getUserName());
+                }
+            }
+        }
+        return isSameDate && isSameUser;
     }
 
     private void deleteFeature() {

@@ -1,5 +1,6 @@
 package hcm.ditagis.com.cholon.qlts.async;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -13,34 +14,29 @@ import com.esri.arcgisruntime.data.ArcGISFeature;
 import com.esri.arcgisruntime.data.Attachment;
 import com.esri.arcgisruntime.data.CodedValue;
 import com.esri.arcgisruntime.data.CodedValueDomain;
-import com.esri.arcgisruntime.data.Domain;
 import com.esri.arcgisruntime.data.Feature;
 import com.esri.arcgisruntime.data.FeatureEditResult;
 import com.esri.arcgisruntime.data.FeatureQueryResult;
-import com.esri.arcgisruntime.data.FeatureType;
 import com.esri.arcgisruntime.data.Field;
 import com.esri.arcgisruntime.data.QueryParameters;
 import com.esri.arcgisruntime.data.ServiceFeatureTable;
 import com.esri.arcgisruntime.geometry.Envelope;
 import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.mapping.view.MapView;
-import com.esri.arcgisruntime.tasks.geocode.GeocodeResult;
-import com.esri.arcgisruntime.tasks.geocode.LocatorTask;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
 
 import hcm.ditagis.com.cholon.qlts.R;
 import hcm.ditagis.com.cholon.qlts.tools.MySnackBar;
 import hcm.ditagis.com.cholon.qlts.utities.Constant;
+import hcm.ditagis.com.cholon.qlts.utities.DApplication;
 
 /**
  * Created by ThanLe on 4/16/2018.
@@ -48,18 +44,20 @@ import hcm.ditagis.com.cholon.qlts.utities.Constant;
 
 public class SingleTapAddFeatureAsync extends AsyncTask<Point, Void, Void> {
     private ProgressDialog mDialog;
-    private Context mContext;
+    private Activity mActivity;
+    private DApplication mDApplication;
     private byte[] mImage;
     private ServiceFeatureTable mServiceFeatureTable;
     private ArcGISFeature mSelectedArcGISFeature;
     private MapView mMapView;
 
-    public SingleTapAddFeatureAsync(Context context, byte[] image, ServiceFeatureTable serviceFeatureTable, MapView mapView) {
+    public SingleTapAddFeatureAsync(Activity activity, byte[] image, ServiceFeatureTable serviceFeatureTable, MapView mapView) {
         this.mServiceFeatureTable = serviceFeatureTable;
         this.mMapView = mapView;
         this.mImage = image;
-        this.mContext = context;
-        this.mDialog = new ProgressDialog(context, android.R.style.Theme_Material_Dialog_Alert);
+        this.mDApplication = (DApplication) activity.getApplication();
+        this.mActivity = activity;
+        this.mDialog = new ProgressDialog(activity, android.R.style.Theme_Material_Dialog_Alert);
     }
 
     @Override
@@ -87,9 +85,12 @@ public class SingleTapAddFeatureAsync extends AsyncTask<Point, Void, Void> {
             List<Field> fields = mServiceFeatureTable.getFields();
             if(fields.size() > 0){
                 for (Field field:fields){
-                    if(field.getName().equals("NgayCapNhat")){
+                    if(field.getName().toUpperCase().equals(mActivity.getString(R.string.NGAYCAPNHAT))){
                         Calendar currentTime = Calendar.getInstance();
-                        feature.getAttributes().put("NgayCapNhat", currentTime);
+                        feature.getAttributes().put(field.getName(), currentTime);
+                    }
+                    if(field.getName().toUpperCase().equals(mActivity.getString(R.string.NGUOICAPNHAT))){
+                        feature.getAttributes().put(field.getName(),this.mDApplication.getUser().getUserName() );
                     }
                     if(field.getName().equals(typeIdField)){
                         CodedValueDomain codedValueDomain = (CodedValueDomain) field.getDomain();
@@ -226,7 +227,7 @@ public class SingleTapAddFeatureAsync extends AsyncTask<Point, Void, Void> {
             if (result.iterator().hasNext()) {
                 Feature item = result.iterator().next();
                 mSelectedArcGISFeature = (ArcGISFeature) item;
-                final String attachmentName = mContext.getString(R.string.attachment) + "_" + System.currentTimeMillis() + ".png";
+                final String attachmentName = mActivity.getString(R.string.attachment) + "_" + System.currentTimeMillis() + ".png";
                 final ListenableFuture<Attachment> addResult = mSelectedArcGISFeature.addAttachmentAsync(mImage, Bitmap.CompressFormat.PNG.toString(), attachmentName);
                 addResult.addDoneListener(new Runnable() {
                     @Override

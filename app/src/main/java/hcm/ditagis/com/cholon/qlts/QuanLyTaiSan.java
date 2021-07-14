@@ -3,6 +3,8 @@ package hcm.ditagis.com.cholon.qlts;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
@@ -33,6 +35,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -618,23 +621,29 @@ public class QuanLyTaiSan extends AppCompatActivity implements NavigationView.On
         ListView listView = layout.findViewById(R.id.listview);
         listView.setAdapter(featureLayerAdapter);
         TextView txt_Title_Layout = layout.findViewById(R.id.txt_Title_Layout);
+        View viewById = layout.findViewById(R.id.img_refress);
+        viewById.setVisibility(View.GONE);
         txt_Title_Layout.setText("Chọn lớp dữ liệu cập nhật");
         builder.setView(layout);
         final AlertDialog selectTimeDialog = builder.create();
         selectTimeDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         selectTimeDialog.show();
-        final List<FeatureLayerAdapter.Item> finalItems = featureLayerAdapter.getItems();
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        selectTimeDialog.setOnKeyListener((arg0, keyCode, event) -> {
+            // TODO Auto-generated method stub
+            if (keyCode == KeyEvent.KEYCODE_BACK) {
                 selectTimeDialog.dismiss();
-                final FeatureLayerAdapter.Item itemAtPosition = (FeatureLayerAdapter.Item) parent.getItemAtPosition(position);
-                String idLayer = itemAtPosition.getIdLayer();
-                ((TextView) findViewById(R.id.txt_title_search)).setText(itemAtPosition.getTitleLayer());
-                ServiceFeatureTable serviceFeatureTable = getServiceFeatureTable(idLayer);
-                serviceFeatureTable.getFeatureLayer().setVisible(true);
-                mMapViewHandler.setAddSFT(serviceFeatureTable);
+                closeAddFeature();
             }
+            return true;
+        });
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+            selectTimeDialog.dismiss();
+            final FeatureLayerAdapter.Item itemAtPosition = (FeatureLayerAdapter.Item) parent.getItemAtPosition(position);
+            String idLayer = itemAtPosition.getIdLayer();
+            ((TextView) findViewById(R.id.txt_title_search)).setText(itemAtPosition.getTitleLayer());
+            ServiceFeatureTable serviceFeatureTable = getServiceFeatureTable(idLayer);
+            serviceFeatureTable.getFeatureLayer().setVisible(true);
+            mMapViewHandler.setAddSFT(serviceFeatureTable);
         });
     }
     private void showDialogSelectTypeSearch() {
@@ -832,8 +841,8 @@ public class QuanLyTaiSan extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.img_layvitri:
 //                mMapViewHandler.capture();
-                capture();
-//                mMapViewHandler.addFeature(null);
+//                capture();
+                mMapViewHandler.addFeature(null);
                 break;
         }
     }

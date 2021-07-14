@@ -10,7 +10,7 @@ import hcm.ditagis.com.cholon.qlts.adapter.SettingsAdapter;
 
 public class Constant {
     public static final SimpleDateFormat DATE_TIME_FORMAT = new SimpleDateFormat("dd-MM-yyyy HH:mm:SS");
-    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd_MM_yyyy");
+    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
     private SettingsAdapter.Item[] mSettingsItems;
     public static final String OBJECTID = "OBJECTID";
     public static final String IDSU_CO = "IDSuCo";
