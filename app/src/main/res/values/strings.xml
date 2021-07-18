@@ -156,7 +156,6 @@
     <string name="format_time_day_month_year">dd/MM/yyyy</string>
 
     <!--Attribute-->
-    <string name="OBJECTID">OBJECTID</string>
     <string name="IDSUCO">IDSuCo</string>
     <string name="NGAYXAYRA">NgayXayRa</string>
     <string name="VITRI">ViTri</string>
@@ -256,5 +255,9 @@
     <string name="URL_API">http://gis.capnuoccholon.com.vn/cholon</string>
     <string name="NGAYCAPNHAT">NGAYCAPNHAT</string>
     <string name="NGUOICAPNHAT">NGUOICAPNHAT</string>
+    <string name="OBJECTID">OBJECTID</string>
+    <string name="format_typeday">%02d/%02d/%d</string>
+    <!--<string name="NGAYTHEMMOI">NGAYTHEMMOI</string>-->
+    <string name="NGAYTHEMMOI">NGAYCAPNHAT</string>
     <!--<string name="URL_API">http://sawagis.vn/cholon</string>-->
 </resources>

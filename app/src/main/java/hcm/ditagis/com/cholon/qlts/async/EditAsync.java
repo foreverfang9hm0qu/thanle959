@@ -82,7 +82,12 @@ public class EditAsync extends AsyncTask<FeatureViewMoreInfoAdapter, Void, Void>
                 Object idFeatureTypes = getIdFeatureTypes(featureTypes, item.getValue());
                 mSelectedArcGISFeature.getAttributes().put(item.getFieldName(), Short.parseShort(idFeatureTypes.toString()));
 
-            } else switch (item.getFieldType()) {
+            }
+            if(item.getFieldName().toUpperCase().equals(mContext.getResources().getString(R.string.NGAYCAPNHAT))){
+                Calendar currentTime = Calendar.getInstance();
+                mSelectedArcGISFeature.getAttributes().put(item.getFieldName(), currentTime);
+            }
+            else switch (item.getFieldType()) {
                 case DATE:
                     Date date = null;
                     try {

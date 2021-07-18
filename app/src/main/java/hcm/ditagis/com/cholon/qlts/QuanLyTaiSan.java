@@ -256,7 +256,7 @@ public class QuanLyTaiSan extends AppCompatActivity implements NavigationView.On
                     }
                 });
                 hanhChinhImageLayers.loadAsync();
-            } else if(layerInfoDTG.isView()){
+            } else if (layerInfoDTG.isView()) {
                 ServiceFeatureTable serviceFeatureTable = new ServiceFeatureTable(url);
                 final FeatureLayer featureLayer = new FeatureLayer(serviceFeatureTable);
                 featureLayer.setName(layerInfoDTG.getTitleLayer());
@@ -265,7 +265,7 @@ public class QuanLyTaiSan extends AppCompatActivity implements NavigationView.On
                 featureLayer.setMaxScale(0);
                 featureLayer.setMinScale(1000000);
                 FeatureLayerDTG featureLayerDTG = new FeatureLayerDTG(featureLayer);
-                Action action = new Action(layerInfoDTG.isView(), layerInfoDTG.isCreate(), layerInfoDTG.isEdit(),layerInfoDTG.isDelete());
+                Action action = new Action(layerInfoDTG.isView(), layerInfoDTG.isCreate(), layerInfoDTG.isEdit(), layerInfoDTG.isDelete());
                 featureLayerDTG.setAction(action);
                 featureLayerDTG.setOutFields(getFieldsDTG(layerInfoDTG.getOutField()));
                 featureLayerDTG.setQueryFields(getFieldsDTG(layerInfoDTG.getOutField()));
@@ -308,7 +308,7 @@ public class QuanLyTaiSan extends AppCompatActivity implements NavigationView.On
             @SuppressLint("SetTextI18n")
             @Override
             public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-                if(mMapViewHandler != null) {
+                if (mMapViewHandler != null) {
                     double[] location = mMapViewHandler.onScroll(e1, e2, distanceX, distanceY);
                     float log = (float) Math.round(location[0] * 100000) / 100000;
                     float lat = (float) Math.round(location[1] * 100000) / 100000;
@@ -341,6 +341,7 @@ public class QuanLyTaiSan extends AppCompatActivity implements NavigationView.On
             }
         });
     }
+
     private String[] getFieldsDTG(String stringFields) {
         String[] returnFields = null;
         if (stringFields != null) {
@@ -353,7 +354,8 @@ public class QuanLyTaiSan extends AppCompatActivity implements NavigationView.On
         }
         return returnFields;
     }
-    private void setOnClickListener(){
+
+    private void setOnClickListener() {
         findViewById(R.id.layout_layer_open_street_map).setOnClickListener(this);
         findViewById(R.id.layout_layer_street_map).setOnClickListener(this);
         findViewById(R.id.layout_layer_topo).setOnClickListener(this);
@@ -363,6 +365,7 @@ public class QuanLyTaiSan extends AppCompatActivity implements NavigationView.On
 
 
     }
+
     private void initLayerListView() {
 
         mFloatButtonLayer = findViewById(R.id.floatBtnLayer);
@@ -612,6 +615,7 @@ public class QuanLyTaiSan extends AppCompatActivity implements NavigationView.On
         });
         return true;
     }
+
     private void showDialogSelectAddFeatureLayer() {
         AddFeatureItem addFeatureItem = new AddFeatureItem(mFeatureLayerDTGS, this);
         List<FeatureLayerAdapter.Item> items = addFeatureItem.getItems();
@@ -646,6 +650,7 @@ public class QuanLyTaiSan extends AppCompatActivity implements NavigationView.On
             mMapViewHandler.setAddSFT(serviceFeatureTable);
         });
     }
+
     private void showDialogSelectTypeSearch() {
         SearchItem searchItem = new SearchItem(mFeatureLayerDTGS, this);
         List<FeatureLayerAdapter.Item> items = searchItem.getItems();
@@ -842,16 +847,18 @@ public class QuanLyTaiSan extends AppCompatActivity implements NavigationView.On
             case R.id.img_layvitri:
 //                mMapViewHandler.capture();
 //                capture();
-                mMapViewHandler.addFeature(null);
+                mMapViewHandler.addFeature();
                 break;
         }
     }
-    public void closeAddFeature(){
+
+    public void closeAddFeature() {
         ((LinearLayout) findViewById(R.id.linear_addfeature)).setVisibility(View.GONE);
         ((ImageView) findViewById(R.id.img_map_pin)).setVisibility(View.GONE);
         ((FloatingActionButton) findViewById(R.id.floatBtnAdd)).setVisibility(View.VISIBLE);
         mMapViewHandler.setClickBtnAdd(false);
     }
+
     public void capture() {
         Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
         cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI.getPath());
@@ -964,36 +971,7 @@ public class QuanLyTaiSan extends AppCompatActivity implements NavigationView.On
             }
         } catch (Exception ignored) {
         }
-
-        if (requestCode == REQUEST_ID_IMAGE_CAPTURE)
-        {
-            if (resultCode == RESULT_OK) {
-                if (this.mUri != null) {
-//                    Uri selectedImage = this.mUri;
-//                    getContentResolver().notifyChange(selectedImage, null);
-                    Bitmap bitmap = getBitmap(mUri.getPath());
-                    try {
-                        if (bitmap != null) {
-                            Matrix matrix = new Matrix();
-                            matrix.postRotate(90);
-                            Bitmap rotatedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-                            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                            rotatedBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-                            byte[] image = outputStream.toByteArray();
-                            Toast.makeText(this, "Đã lưu ảnh", Toast.LENGTH_SHORT).show();
-                            mMapViewHandler.addFeature(image);
-                        }
-                    } catch (Exception ignored) {
-                    }
-                }
-            } else if (resultCode == RESULT_CANCELED) {
-                MySnackBar.make(mMapView, "Hủy chụp ảnh", false);
-                closeAddFeature();
-            } else {
-                MySnackBar.make(mMapView, "Lỗi khi chụp ảnh", false);
-                closeAddFeature();
-            }
-        } else if (requestCode == getResources().getInteger(R.integer.REQUEST_ID_UPDATE_ATTACHMENT)) {
+        if (requestCode == getResources().getInteger(R.integer.REQUEST_ID_UPDATE_ATTACHMENT)) {
             if (resultCode == RESULT_OK) {
                 if (this.mUri != null) {
                     Bitmap bitmap = getBitmap(mUri.getPath());

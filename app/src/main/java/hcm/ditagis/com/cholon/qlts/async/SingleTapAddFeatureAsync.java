@@ -46,15 +46,13 @@ public class SingleTapAddFeatureAsync extends AsyncTask<Point, Void, Void> {
     private ProgressDialog mDialog;
     private Activity mActivity;
     private DApplication mDApplication;
-    private byte[] mImage;
     private ServiceFeatureTable mServiceFeatureTable;
     private ArcGISFeature mSelectedArcGISFeature;
     private MapView mMapView;
 
-    public SingleTapAddFeatureAsync(Activity activity, byte[] image, ServiceFeatureTable serviceFeatureTable, MapView mapView) {
+    public SingleTapAddFeatureAsync(Activity activity, ServiceFeatureTable serviceFeatureTable, MapView mapView) {
         this.mServiceFeatureTable = serviceFeatureTable;
         this.mMapView = mapView;
-        this.mImage = image;
         this.mDApplication = (DApplication) activity.getApplication();
         this.mActivity = activity;
         this.mDialog = new ProgressDialog(activity, android.R.style.Theme_Material_Dialog_Alert);
@@ -85,6 +83,10 @@ public class SingleTapAddFeatureAsync extends AsyncTask<Point, Void, Void> {
             List<Field> fields = mServiceFeatureTable.getFields();
             if(fields.size() > 0){
                 for (Field field:fields){
+                    if(field.getName().toUpperCase().equals(mActivity.getString(R.string.NGAYTHEMMOI))){
+                        Calendar currentTime = Calendar.getInstance();
+                        feature.getAttributes().put(field.getName(), currentTime);
+                    }
                     if(field.getName().toUpperCase().equals(mActivity.getString(R.string.NGAYCAPNHAT))){
                         Calendar currentTime = Calendar.getInstance();
                         feature.getAttributes().put(field.getName(), currentTime);
@@ -104,6 +106,9 @@ public class SingleTapAddFeatureAsync extends AsyncTask<Point, Void, Void> {
             mapViewResult.addDoneListener(new Runnable() {
                 @Override
                 public void run() {
+                    if (mDialog != null && mDialog.isShowing()) {
+                        mDialog.dismiss();
+                    }
                     final ListenableFuture<List<FeatureEditResult>> listListenableEditAsync = mServiceFeatureTable.applyEditsAsync();
                     listListenableEditAsync.addDoneListener(new Runnable() {
                         @Override
@@ -119,7 +124,7 @@ public class SingleTapAddFeatureAsync extends AsyncTask<Point, Void, Void> {
                                     feature.addDoneListener(new Runnable() {
                                         @Override
                                         public void run() {
-                                            addAttachment(feature);
+
                                         }
                                     });
                                 }
@@ -157,142 +162,8 @@ public class SingleTapAddFeatureAsync extends AsyncTask<Point, Void, Void> {
         return timeStamp;
     }
 
-    private void addFeatureAsync(ListenableFuture<FeatureQueryResult> featureQuery,
-                                 Feature feature, String finalTimeID, String finalDateTime) {
-        try {
-            // lấy id lớn nhất
-            int id_tmp;
-            int id = 0;
-            FeatureQueryResult result = featureQuery.get();
-            Iterator iterator = result.iterator();
-            while (iterator.hasNext()) {
-                Feature item = (Feature) iterator.next();
-                id_tmp = Integer.parseInt(item.getAttributes().get(Constant.IDSU_CO).toString().split("_")[0]);
-                if (id_tmp > id) id = id_tmp;
-            }
-            id++;
-            feature.getAttributes().put(Constant.IDSU_CO, id + "_" + finalTimeID);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                Date date = Constant.DATE_FORMAT.parse(finalDateTime);
-                Calendar c = Calendar.getInstance();
-                feature.getAttributes().put(Constant.NGAY_CAP_NHAT, c);
-                feature.getAttributes().put(Constant.NGAY_THONG_BAO, c);
-            }
-            ListenableFuture<Void> mapViewResult = mServiceFeatureTable.addFeatureAsync(feature);
-            mapViewResult.addDoneListener(new Runnable() {
-                @Override
-                public void run() {
-                    final ListenableFuture<List<FeatureEditResult>> listListenableEditAsync = mServiceFeatureTable.applyEditsAsync();
-                    listListenableEditAsync.addDoneListener(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                List<FeatureEditResult> featureEditResults = listListenableEditAsync.get();
-                                if (featureEditResults.size() > 0) {
-                                    long objectId = featureEditResults.get(0).getObjectId();
-                                    final QueryParameters queryParameters = new QueryParameters();
-                                    final String query = "OBJECTID = " + objectId;
-                                    queryParameters.setWhereClause(query);
-                                    final ListenableFuture<FeatureQueryResult> feature = mServiceFeatureTable.queryFeaturesAsync(queryParameters);
-                                    feature.addDoneListener(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            addAttachment(feature);
-                                        }
-                                    });
-                                }
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            } catch (ExecutionException e) {
-                                e.printStackTrace();
-                            }
-
-                        }
-                    });
-                }
-            });
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (ParseException e1) {
-            e1.printStackTrace();
-        }
-    }
-
-    private void addAttachment(ListenableFuture<FeatureQueryResult> feature) {
-        FeatureQueryResult result = null;
-        try {
-            result = feature.get();
-            if (result.iterator().hasNext()) {
-                Feature item = result.iterator().next();
-                mSelectedArcGISFeature = (ArcGISFeature) item;
-                final String attachmentName = mActivity.getString(R.string.attachment) + "_" + System.currentTimeMillis() + ".png";
-                final ListenableFuture<Attachment> addResult = mSelectedArcGISFeature.addAttachmentAsync(mImage, Bitmap.CompressFormat.PNG.toString(), attachmentName);
-                addResult.addDoneListener(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mDialog != null && mDialog.isShowing()) {
-                            mDialog.dismiss();
-                        }
-                        try {
-                            Attachment attachment = addResult.get();
-                            if (attachment.getSize() > 0) {
-                                final ListenableFuture<Void> tableResult = mServiceFeatureTable.updateFeatureAsync(mSelectedArcGISFeature);
-                                tableResult.addDoneListener(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        final ListenableFuture<List<FeatureEditResult>> updatedServerResult = mServiceFeatureTable.applyEditsAsync();
-                                        updatedServerResult.addDoneListener(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                List<FeatureEditResult> edits = null;
-                                                try {
-                                                    edits = updatedServerResult.get();
-                                                    if (edits.size() > 0) {
-                                                        if (!edits.get(0).hasCompletedWithErrors()) {
-                                                            //attachmentList.add(fileName);
-                                                            String s = mSelectedArcGISFeature.getAttributes().get("objectid").toString();
-                                                            // update the attachment list view/ on the control panel
-                                                        } else {
-                                                        }
-                                                    } else {
-                                                    }
-                                                } catch (InterruptedException e) {
-                                                    e.printStackTrace();
-                                                } catch (ExecutionException e) {
-                                                    e.printStackTrace();
-                                                }
-                                                if (mDialog != null && mDialog.isShowing()) {
-                                                    mDialog.dismiss();
-                                                }
-
-                                            }
-                                        });
 
 
-                                    }
-                                });
-                            }
-
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        } catch (ExecutionException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-                Envelope extent = item.getGeometry().getExtent();
-                mMapView.setViewpointGeometryAsync(extent);
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-
-
-    }
 
     @Override
     protected void onProgressUpdate(Void... values) {

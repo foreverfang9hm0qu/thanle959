@@ -37,6 +37,7 @@
                     android:title="@string/nav_tra_cuu" />
                 <item
                     android:id="@+id/nav_find_route"
+                    android:visible="false"
                     android:icon="@drawable/ic_navigation"
                     android:title="@string/nav_find_route" />
             </group>
@@ -55,6 +56,7 @@
         <item
             android:id="@+id/nav_setting"
             android:icon="@drawable/ic_settings"
+            android:visible="false"
             android:title="@string/nav_cai_dat" />
         <item
             android:id="@+id/nav_logOut"

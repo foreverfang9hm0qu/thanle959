@@ -100,8 +100,8 @@ public class MapViewHandler extends Activity {
         isClickBtnAdd = clickBtnAdd;
     }
 
-    public void addFeature(byte[] image) {
-        SingleTapAddFeatureAsync singleTapAdddFeatureAsync = new SingleTapAddFeatureAsync(quanLyTaiSan, image, addSFT, mMapView);
+    public void addFeature() {
+        SingleTapAddFeatureAsync singleTapAdddFeatureAsync = new SingleTapAddFeatureAsync(quanLyTaiSan, addSFT, mMapView);
         Point add_point = mMapView.getCurrentViewpoint(Viewpoint.Type.CENTER_AND_SCALE).getTargetGeometry().getExtent().getCenter();
         singleTapAdddFeatureAsync.execute(add_point);
         closeAddFeature();

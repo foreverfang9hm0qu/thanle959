@@ -159,17 +159,6 @@ public class Popup extends AppCompatActivity {
         View layout = mMainActivity.getLayoutInflater().inflate(R.layout.layout_viewmoreinfo_feature, null);
         mFeatureViewMoreInfoAdapter = new FeatureViewMoreInfoAdapter(mMainActivity, new ArrayList<FeatureViewMoreInfoAdapter.Item>());
         final ListView lstViewInfo = layout.findViewById(R.id.lstView_alertdialog_info);
-        layout.findViewById(R.id.layout_viewmoreinfo_id_su_co).setVisibility(View.VISIBLE);
-        if (mSelectedArcGISFeature.canEditAttachments()) {
-            layout.findViewById(R.id.framelayout_viewmoreinfo_attachment).setVisibility(View.VISIBLE);
-            layout.findViewById(R.id.framelayout_viewmoreinfo_attachment).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    viewAttachment();
-                }
-            });
-        }
-
         lstViewInfo.setAdapter(mFeatureViewMoreInfoAdapter);
         lstViewInfo.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -203,6 +192,7 @@ public class Popup extends AppCompatActivity {
                         }
                     }
                 }
+                if(field.getName().toUpperCase().equals(mMainActivity.getResources().getString(R.string.OBJECTID))) item.setEdit(false);
                 if (value != null) {
                     if (item.getFieldName().equals(typeIdField) && featureTypes.size() > 0) {
                         Object valueFeatureType = getValueFeatureType(featureTypes, value.toString());
@@ -254,20 +244,12 @@ public class Popup extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
             }
-        }).setNegativeButton("Cập nhật", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (mSelectedArcGISFeature.canUpdateGeometry()) {
-                    new EditAsync(mMainActivity, mServiceFeatureTable, mSelectedArcGISFeature, new EditAsync.AsyncResponse() {
-                        @Override
-                        public void processFinish() {
-                            refressPopup();
-                        }
-                    }).execute(mFeatureViewMoreInfoAdapter);
-                } else
-                    Toast.makeText(mMainActivity, "Không được quyền chỉnh sửa dữ liệu!!!", Toast.LENGTH_LONG).show();
+        }).setNegativeButton("Cập nhật", (dialog, which) -> {
+            if (mSelectedArcGISFeature.canUpdateGeometry()) {
+                new EditAsync(mMainActivity, mServiceFeatureTable, mSelectedArcGISFeature, () -> refressPopup()).execute(mFeatureViewMoreInfoAdapter);
+            } else
+                Toast.makeText(mMainActivity, "Không được quyền chỉnh sửa dữ liệu!!!", Toast.LENGTH_LONG).show();
 
-            }
         });
         final AlertDialog dialog = builder.create();
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -367,9 +349,7 @@ public class Popup extends AppCompatActivity {
                                     @Override
                                     public void onClick(View view) {
                                         DatePicker datePicker = (DatePicker) dialogView.findViewById(R.id.date_picker);
-                                        Calendar calendar = new GregorianCalendar(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
-                                        String s = String.format("%02d_%02d_%d", datePicker.getDayOfMonth(), datePicker.getMonth(), datePicker.getYear());
-
+                                        String s = String.format(mMainActivity.getResources().getString(R.string.format_typeday), datePicker.getDayOfMonth(), datePicker.getMonth() + 1, datePicker.getYear());
                                         textView.setText(s);
                                         alertDialog.dismiss();
                                     }
@@ -494,42 +474,28 @@ public class Popup extends AppCompatActivity {
         ImageButton imgBtn_ViewMoreInfo = (ImageButton) linearLayout.findViewById(R.id.imgBtn_ViewMoreInfo);
         if (mFeatureLayerDTG.getAction().isEdit()) {
             imgBtn_ViewMoreInfo.setVisibility(View.VISIBLE);
-            imgBtn_ViewMoreInfo.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    viewMoreInfo();
-                }
-            });
+            imgBtn_ViewMoreInfo.setOnClickListener(v -> viewMoreInfo());
         } else imgBtn_ViewMoreInfo.setVisibility(View.GONE);
+        ImageButton imgBtn_view_attachment = (ImageButton) linearLayout.findViewById(R.id.imgBtn_view_attachment);
+        if (this.mSelectedArcGISFeature.canEditAttachments()) {
+            imgBtn_view_attachment.setVisibility(View.VISIBLE);
+            imgBtn_view_attachment.setOnClickListener(v -> viewAttachment());
+        } else imgBtn_view_attachment.setVisibility(View.GONE);
         ImageButton imgBtn_delete = (ImageButton) linearLayout.findViewById(R.id.imgBtn_delete);
 
         if (mFeatureLayerDTG.getAction().isDelete() && isDeleteFeature()) {
             imgBtn_delete.setVisibility(View.VISIBLE);
-            imgBtn_delete.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mSelectedArcGISFeature.getFeatureTable().getFeatureLayer().clearSelection();
-                    deleteFeature();
-                }
+            imgBtn_delete.setOnClickListener(v -> {
+                mSelectedArcGISFeature.getFeatureTable().getFeatureLayer().clearSelection();
+                deleteFeature();
             });
         } else imgBtn_delete.setVisibility(View.GONE);
-        ((Button) linearLayout.findViewById(R.id.btn_layer_close)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dimissCallout();
-            }
-        });
+        ((Button) linearLayout.findViewById(R.id.btn_layer_close)).setOnClickListener(v -> dimissCallout());
         if (mFeatureLayerDTG.getAction().isEdit() && this.mSelectedArcGISFeature.canEditAttachments()) {
             ImageButton imgBtn_takePics = (ImageButton) linearLayout.findViewById(R.id.imgBtn_takePics);
             imgBtn_takePics.setVisibility(View.VISIBLE);
-            imgBtn_takePics.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    updateAttachment();
-                }
-            });
+            imgBtn_takePics.setOnClickListener(v -> updateAttachment());
         }
-
         linearLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         Envelope envelope = mSelectedArcGISFeature.getGeometry().getExtent();
         if (!clickMap) mMapView.setViewpointGeometryAsync(envelope, 0);
@@ -560,7 +526,7 @@ public class Popup extends AppCompatActivity {
         Map<String, Object> attr = mSelectedArcGISFeature.getAttributes();
         List<Field> fields = mSelectedArcGISFeature.getFeatureTable().getFields();
         for (Field field : fields) {
-            if (field.getName().toUpperCase().equals(this.mMainActivity.getResources().getString(R.string.NGAYCAPNHAT))) {
+            if (field.getName().toUpperCase().equals(this.mMainActivity.getResources().getString(R.string.NGAYTHEMMOI))) {
                 Object ngayCapNhat = attr.get(field.getName());
                 if (ngayCapNhat != null) {
                     Calendar calendar = (Calendar) ngayCapNhat;
