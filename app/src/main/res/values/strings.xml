@@ -257,7 +257,7 @@
     <string name="NGUOICAPNHAT">NGUOICAPNHAT</string>
     <string name="OBJECTID">OBJECTID</string>
     <string name="format_typeday">%02d/%02d/%d</string>
-    <!--<string name="NGAYTHEMMOI">NGAYTHEMMOI</string>-->
-    <string name="NGAYTHEMMOI">NGAYCAPNHAT</string>
+    <string name="NGAYTHEMMOI">NGAYTHEMMOI</string>
+    <!--<string name="NGAYTHEMMOI">NGAYCAPNHAT</string>-->
     <!--<string name="URL_API">http://sawagis.vn/cholon</string>-->
 </resources>

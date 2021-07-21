@@ -45,8 +45,6 @@ import com.esri.arcgisruntime.mapping.view.MapView;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -193,6 +191,9 @@ public class Popup extends AppCompatActivity {
                     }
                 }
                 if(field.getName().toUpperCase().equals(mMainActivity.getResources().getString(R.string.OBJECTID))) item.setEdit(false);
+                if(field.getName().toUpperCase().equals(mMainActivity.getResources().getString(R.string.NGAYCAPNHAT))) item.setEdit(false);
+                if(field.getName().toUpperCase().equals(mMainActivity.getResources().getString(R.string.NGAYTHEMMOI))) item.setEdit(false);
+                if(field.getName().toUpperCase().equals(mMainActivity.getResources().getString(R.string.NGUOICAPNHAT))) item.setEdit(false);
                 if (value != null) {
                     if (item.getFieldName().equals(typeIdField) && featureTypes.size() > 0) {
                         Object valueFeatureType = getValueFeatureType(featureTypes, value.toString());
@@ -512,26 +513,26 @@ public class Popup extends AppCompatActivity {
         return linearLayout;
     }
 
-    public static boolean isSameDay(Calendar cal1, Calendar cal2) {
-        if (cal1 == null || cal2 == null) {
+    public static boolean isPast1DateOfCurrentDate(Calendar calendar, Calendar currentDate) {
+        if (calendar == null || currentDate == null) {
             throw new IllegalArgumentException("The dates must not be null");
         }
-        return (cal1.get(Calendar.ERA) == cal2.get(Calendar.ERA) &&
-                cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
-                cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR));
+        long deviationTime = currentDate.getTimeInMillis() - calendar.getTimeInMillis();
+        int time = 24 * 60 * 60 * 1000;
+        return (time - deviationTime) > 0;
     }
 
     private boolean isDeleteFeature() {
-        boolean isSameDate = false, isSameUser = false;
+        boolean isPast1DateOfCurrentDate = false, isSameUser = false;
         Map<String, Object> attr = mSelectedArcGISFeature.getAttributes();
         List<Field> fields = mSelectedArcGISFeature.getFeatureTable().getFields();
         for (Field field : fields) {
             if (field.getName().toUpperCase().equals(this.mMainActivity.getResources().getString(R.string.NGAYTHEMMOI))) {
-                Object ngayCapNhat = attr.get(field.getName());
-                if (ngayCapNhat != null) {
-                    Calendar calendar = (Calendar) ngayCapNhat;
+                Object ngayThemMoi = attr.get(field.getName());
+                if (ngayThemMoi != null) {
+                    Calendar calendar = (Calendar) ngayThemMoi;
                     Calendar currentDate = Calendar.getInstance();
-                    isSameDate = isSameDay(calendar, currentDate);
+                    isPast1DateOfCurrentDate = isPast1DateOfCurrentDate(calendar, currentDate);
                 }
             }
             if (field.getName().toUpperCase().equals(this.mMainActivity.getResources().getString(R.string.NGUOICAPNHAT))) {
@@ -541,7 +542,7 @@ public class Popup extends AppCompatActivity {
                 }
             }
         }
-        return isSameDate && isSameUser;
+        return isPast1DateOfCurrentDate && isSameUser;
     }
 
     private void deleteFeature() {
