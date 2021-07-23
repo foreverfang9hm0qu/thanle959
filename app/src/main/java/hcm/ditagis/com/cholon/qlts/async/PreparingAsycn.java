@@ -20,6 +20,7 @@ import hcm.ditagis.com.cholon.qlts.R;
 import hcm.ditagis.com.cholon.qlts.entities.entitiesDB.LayerInfoDTG;
 import hcm.ditagis.com.cholon.qlts.entities.entitiesDB.ListObjectDB;
 import hcm.ditagis.com.cholon.qlts.tools.Route;
+import hcm.ditagis.com.cholon.qlts.utities.Constant;
 import hcm.ditagis.com.cholon.qlts.utities.Preference;
 
 
@@ -27,7 +28,6 @@ public class PreparingAsycn extends AsyncTask<Void, Void, Void> {
     private ProgressDialog mDialog;
     private Context mContext;
     private AsyncResponse mDelegate;
-    private String API_URL;
 
     public interface AsyncResponse {
         void processFinish(Void output);
@@ -36,7 +36,6 @@ public class PreparingAsycn extends AsyncTask<Void, Void, Void> {
     public PreparingAsycn(Context context, AsyncResponse delegate) {
         this.mContext = context;
         this.mDelegate = delegate;
-        API_URL = mContext.getString(R.string.URL_API) + "/api/LayerInfo";
     }
 
     @Override
@@ -52,7 +51,7 @@ public class PreparingAsycn extends AsyncTask<Void, Void, Void> {
     protected Void doInBackground(Void... params) {
         try {
 
-            URL url = new URL(API_URL);
+            URL url = new URL(Constant.getInstance().LAYER_INFO);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             try {
                 conn.setDoOutput(false);

@@ -18,10 +18,31 @@ public class Constant {
     public static final String TRANG_THAI = "TrangThai";
     public static final String NGAY_CAP_NHAT = "NgayCapNhat";
     public static final String NGAY_THONG_BAO = "NgayThongBao";
-    public static final int REQUEST_CODE = 99;
-    public static final String[] CODEID_DISTRICT = {null, "768", "766", "767"};
-    public static final String[] CODE_PHANLOAI = {null, "1", "2"};
+        public static final String SERVER_API = "http://gis.capnuoccholon.com.vn/cholon/api";
+//    private final String SERVER_API = "http://sawagis.vn/cholon/api";
+    public String API_LOGIN;
 
+    {
+        API_LOGIN = SERVER_API + "/Login";
+    }
+
+    public String DISPLAY_NAME;
+
+    {
+        DISPLAY_NAME = SERVER_API + "/Account/Profile";
+    }
+
+    public String LAYER_INFO;
+
+    {
+        LAYER_INFO = SERVER_API + "/layerinfo";
+    }
+
+    public String IS_ACCESS;
+
+    {
+        IS_ACCESS = SERVER_API + "/Account/IsAccess/m_qlts";
+    }
     public static final String NAME_DIEMSUCO = "DIEMSUCO";
 
     private static Constant mInstance = null;
