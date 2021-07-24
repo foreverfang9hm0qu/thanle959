@@ -105,8 +105,9 @@ public class Popup extends AppCompatActivity {
         FeatureViewInfoAdapter featureViewInfoAdapter = new FeatureViewInfoAdapter(mMainActivity, new ArrayList<FeatureViewInfoAdapter.Item>());
         listView.setAdapter(featureViewInfoAdapter);
         String typeIdField = mSelectedArcGISFeature.getFeatureTable().getTypeIdField();
+        boolean checkHiddenField;
         for (Field field : this.mSelectedArcGISFeature.getFeatureTable().getFields()) {
-            boolean checkHiddenField = false;
+            checkHiddenField = false;
             for (String hiddenField : hiddenFields) {
                 if (hiddenField.equals(field.getName())) {
                     checkHiddenField = true;
@@ -166,10 +167,20 @@ public class Popup extends AppCompatActivity {
         });
 
         String[] updateFields = mFeatureLayerDTG.getUpdateFields();
+        String[] unedit_Fields = mMainActivity.getResources().getStringArray(R.array.unedit_Fields);
+        String[] hiddenFields = mMainActivity.getResources().getStringArray(R.array.hiddenFields);
         String typeIdField = mSelectedArcGISFeature.getFeatureTable().getTypeIdField();
         List<FeatureType> featureTypes = mSelectedArcGISFeature.getFeatureTable().getFeatureTypes();
+        boolean checkHiddenField;
         for (Field field : this.mSelectedArcGISFeature.getFeatureTable().getFields()) {
-
+            checkHiddenField = false;
+            for (String hiddenField : hiddenFields) {
+                if (field.getName().toUpperCase().equals(hiddenField.toUpperCase())) {
+                    checkHiddenField = true;
+                    break;
+                }
+            }
+            if(checkHiddenField) continue;
             Object value = attr.get(field.getName());
             if (field.getName().equals(Constant.IDSU_CO)) {
                 if (value != null)
@@ -190,22 +201,22 @@ public class Popup extends AppCompatActivity {
                         }
                     }
                 }
-                if(field.getName().toUpperCase().equals(mMainActivity.getResources().getString(R.string.OBJECTID))) item.setEdit(false);
-                if(field.getName().toUpperCase().equals(mMainActivity.getResources().getString(R.string.NGAYCAPNHAT))) item.setEdit(false);
-                if(field.getName().toUpperCase().equals(mMainActivity.getResources().getString(R.string.NGAYTHEMMOI))) item.setEdit(false);
-                if(field.getName().toUpperCase().equals(mMainActivity.getResources().getString(R.string.NGUOICAPNHAT))) item.setEdit(false);
+                for (String unedit_Field: unedit_Fields){
+                    if(unedit_Field.toUpperCase().equals(item.getFieldName().toUpperCase())){
+                        item.setEdit(false);
+                        break;
+                    }
+                }
                 if (value != null) {
                     if (item.getFieldName().equals(typeIdField) && featureTypes.size() > 0) {
                         Object valueFeatureType = getValueFeatureType(featureTypes, value.toString());
                         if (valueFeatureType != null && valueFeatureType.toString() != null)
                             item.setValue(valueFeatureType.toString());
                     } else if (item.getFieldName().toUpperCase().equals("MAPHUONG")) {
-                        item.setEdit(false);
                         getHanhChinhFeature(value.toString());
                         if (quanhuyen_feature != null)
                             item.setValue(quanhuyen_feature.getAttributes().get("TenHanhChinh").toString());
                     } else if (item.getFieldName().toUpperCase().equals("MAQUAN")) {
-                        item.setEdit(false);
                         if (quanhuyen_feature != null)
                             item.setValue(quanhuyen_feature.getAttributes().get("TenQuan").toString());
                     } else if (field.getDomain() != null) {

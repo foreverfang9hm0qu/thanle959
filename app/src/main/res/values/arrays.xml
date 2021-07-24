@@ -114,8 +114,8 @@
         <item>COCHIAKHOA</item>
         <item>SONHA</item>
         <item>MADUONG</item>
-        
-        
+
+
     </string-array>
     <string-array name="update_fields_thapcatap">
         <item>DUONGKINH</item>
@@ -130,8 +130,8 @@
         <item>DONVIQUANLY</item>
         <item>SONHA</item>
         <item>MADUONG</item>
-        
-        
+
+
     </string-array>
     <string-array name="update_fields_bechua">
         <item>NAMXAYDUNG</item>
@@ -148,8 +148,8 @@
         <item>DONVIQUANLY</item>
         <item>SONHA</item>
         <item>MADUONG</item>
-        
-        
+
+
         <item>GHICHU</item>
         <item>MATRAMBOM</item>
         <item>MUCNUOCBE</item>
@@ -178,8 +178,8 @@
         <item>DONVIQUANLY</item>
         <item>SONHA</item>
         <item>MADUONG</item>
-        
-        
+
+
         <item>GHICHU</item>
         <item>MSDONGHOTONG</item>
         <item>MASOHAMDHT</item>
@@ -237,8 +237,8 @@
         <item>DONVIQUANLY</item>
         <item>SONHA</item>
         <item>MADUONG</item>
-        
-        
+
+
         <item>GHICHU</item>
         <item>LAYER</item>
         <item>VUNGPHUCVU</item>
@@ -261,8 +261,8 @@
         <item>TenDiemCuoi</item>
         <item>SoNha</item>
         <item>MaDuong</item>
-        
-        
+
+
         <item>NgayCapNhat</item>
         <item>GhiChu</item>
         <item>NamLapDat</item>
@@ -278,8 +278,8 @@
         <item>DuongKinhVan</item>
         <item>SoNha</item>
         <item>MaDuong</item>
-        
-        
+
+
         <item>GhiChu</item>
         <item>Layer</item>
         <item>ViTriXaCan</item>
@@ -316,8 +316,8 @@
         <item>TENTHUEBAO</item>
         <item>SONHA</item>
         <item>MADUONG</item>
-        
-        
+
+
         <item>GHICHU</item>
         <item>SOHOPDONG</item>
         <item>SONGUOISUDUNG</item>
@@ -558,7 +558,25 @@
         <item>TOADO_Y</item>
         <item>Shape.STArea()</item>
         <item>Shape.STLength()</item>
+        <item>created_user</item>
+        <item>created_date</item>
+        <item>last_edited_user</item>
+        <item>last_edited_date</item>
     </string-array>
 
     <!--Out field end-->
+
+    <!--unupdate fields    -->
+    <string-array name="unedit_Fields">
+        <item>OBJECTID</item>
+        <item>created_user</item>
+        <item>created_date</item>
+        <item>last_edited_user</item>
+        <item>last_edited_date</item>
+        <item>NGUOICAPNHAT</item>
+        <item>NGAYCAPNHAT</item>
+        <item>NGAYTHEMMOI</item>
+        <item>MAPHUONG</item>
+        <item>MAQUAN</item>
+    </string-array>
 </resources>
