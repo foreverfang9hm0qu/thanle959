@@ -9,17 +9,13 @@ import hcm.ditagis.com.cholon.qlts.adapter.SettingsAdapter;
  */
 
 public class Constant {
-    public static final SimpleDateFormat DATE_TIME_FORMAT = new SimpleDateFormat("dd-MM-yyyy HH:mm:SS");
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
     private SettingsAdapter.Item[] mSettingsItems;
     public static final String OBJECTID = "OBJECTID";
     public static final String IDSU_CO = "IDSuCo";
-    public static final String VI_TRI = "ViTri";
-    public static final String TRANG_THAI = "TrangThai";
-    public static final String NGAY_CAP_NHAT = "NgayCapNhat";
-    public static final String NGAY_THONG_BAO = "NgayThongBao";
-        public static final String SERVER_API = "http://gis.capnuoccholon.com.vn/cholon/api";
-//    private final String SERVER_API = "http://sawagis.vn/cholon/api";
+            public static final String SERVER = "http://gis.capnuoccholon.com.vn/cholon";
+//    public static final String SERVER = "http://sawagis.vn/cholon";
+    public static final String SERVER_API = SERVER + "/api";
     public String API_LOGIN;
 
     {
@@ -43,6 +39,7 @@ public class Constant {
     {
         IS_ACCESS = SERVER_API + "/Account/IsAccess/m_qlts";
     }
+
     public static final String NAME_DIEMSUCO = "DIEMSUCO";
 
     private static Constant mInstance = null;
@@ -79,6 +76,21 @@ public class Constant {
                 new SettingsAdapter.Item("Tiêu đề cài đặt", "Tiêu đề con cài đặt"),
                 new SettingsAdapter.Item("Tiêu đề cài đặt", "Tiêu đề con cài đặt"),
         };
+    }
+
+    public class URL_API {
+        public static final String CHECK_VERSION = SERVER + "/versioning/QLTS?version=%s";
+        public static final String ADD_FEATURE = SERVER_API + "/QuanLySuCo/TiepNhanSuCo/%s";
+        public static final String LOGIN = SERVER_API + "/Login";
+        public static final String PROFILE = SERVER_API + "/Account/Profile";
+        public static final String GENERATE_ID_SUCO = SERVER_API + "/QuanLySuCo/GenerateIDSuCo";
+        public static final String LAYER_INFO = SERVER_API + "/Account/layerinfo";
+        public static final String CHANGE_PASSWORD = SERVER_API + "/Account/changepass";
+        public static final String COMPLETE = SERVER_API + "/quanlysuco/xacnhanhoanthanhnhanvien?id=%s";
+        public static final String IS_ACCESS = SERVER_API + "/Account/IsAccess/m_qlsc";
+        public static final String GENERATE_ID_SUCOTHONGTIN = SERVER_API + "/QuanLySuCo/GenerateIDSuCoThongTin/";
+
+
     }
 
     public SettingsAdapter.Item[] getSettingsItems() {

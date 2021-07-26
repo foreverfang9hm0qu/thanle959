@@ -25,4 +25,14 @@ public class DApplication extends Application {
     public void setUser(User user) {
         this.user = user;
     }
+
+    private boolean checkedVersion;
+
+    public boolean isCheckedVersion() {
+        return checkedVersion;
+    }
+
+    public void setCheckedVersion(boolean checkedVersion) {
+        this.checkedVersion = checkedVersion;
+    }
 }

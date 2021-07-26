@@ -1,15 +1,20 @@
 package hcm.ditagis.com.cholon.qlts;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import hcm.ditagis.com.cholon.qlts.async.CheckVersionAsycn;
 import hcm.ditagis.com.cholon.qlts.async.NewLoginAsycn;
-import hcm.ditagis.com.cholon.qlts.entities.entitiesDB.User;
 import hcm.ditagis.com.cholon.qlts.utities.CheckConnectInternet;
 import hcm.ditagis.com.cholon.qlts.utities.DApplication;
 import hcm.ditagis.com.cholon.qlts.utities.Preference;
@@ -20,12 +25,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private TextView mTxtPassword;
     private boolean isLastLogin;
     private TextView mTxtValidation;
-private DApplication mDApplication;
+
+private DApplication mApplication;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        this.mDApplication = (DApplication) getApplication();
+        this.mApplication = (DApplication) getApplication();
         Button btnLogin = (findViewById(R.id.btnLogin));
         btnLogin.setOnClickListener(this);
         findViewById(R.id.txt_login_changeAccount).setOnClickListener(this);
@@ -56,9 +62,56 @@ private DApplication mDApplication;
             findViewById(R.id.layout_login_tool).setVisibility(View.VISIBLE);
             findViewById(R.id.layout_login_username).setVisibility(View.GONE);
         }
+        try {
+            if (!mApplication.isCheckedVersion()) {
+                mApplication.setCheckedVersion(true);
+                new CheckVersionAsycn(this, output -> {
+                    if (output != null) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this, R.style.Theme_AppCompat_DayNight_Dialog_Alert);
+                        builder.setCancelable(true)
+                                .setPositiveButton("CẬP NHẬT", (dialogInterface, i) -> {
+                                    goURLBrowser(output.getLink());
+                                }).setTitle("Có phiên bản mới");
+                        boolean isDeveloper = false;
+                        if (!output.getType().equals("RELEASE")) {
+                            int anInt = Settings.Secure.getInt(this.getContentResolver(),
+                                    Settings.Global.DEVELOPMENT_SETTINGS_ENABLED, 0);
+                            if (anInt != 0)
+                                isDeveloper = true;
+
+                        }
+                        if (isDeveloper)
+                            builder.setMessage("Bạn là người phát triển ứng dụng! Bạn có muốn cập nhật lên phiên bản ".concat(output.getVersionCode()).concat("?"));
+                        else
+                            builder.setMessage("Bạn có muốn cập nhật lên phiên bản ".concat(output.getVersionCode().concat("?")));
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+
+                    } else {
+                        Toast.makeText(LoginActivity.this, "Phiên bản hiện tại là mới nhất", Toast.LENGTH_LONG).show();
+                    }
+
+                }).execute(getPackageManager().getPackageInfo(getPackageName(), 0).versionName);
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            Toast.makeText(this, "Có lỗi xảy ra khi kiểm tra phiên bản", Toast.LENGTH_LONG).show();
+        }
 
     }
+    private void goURLBrowser(String url) {
+        boolean result = false;
+        if (!url.startsWith("http://") && !url.startsWith("https://"))
+            url = "http://" + url;
 
+        Uri webpage = Uri.parse(url);
+        Intent intent = new Intent(Intent.ACTION_VIEW, webpage);
+
+        try {
+            startActivity(intent);
+            result = true;
+        } catch (Exception ignored) {
+        }
+    }
     private void login() {
         if (!CheckConnectInternet.isOnline(this)) {
             mTxtValidation.setText(R.string.validate_no_connect);
@@ -78,7 +131,7 @@ private DApplication mDApplication;
             return;
         }
         NewLoginAsycn loginAsycn = new NewLoginAsycn(this, output -> {
-            if (this.mDApplication.getUser() != null)
+            if (this.mApplication.getUser() != null)
                 handleLoginSuccess();
             else
                 handleLoginFail();
@@ -101,7 +154,7 @@ private DApplication mDApplication;
 
         Preference.getInstance().savePreferences(getString(R.string.preference_username), mTxtUsername.getText().toString());
 //        Preference.getInstance().savePreferences(getString(R.string.preference_password), khachHang.getPassWord());
-        Preference.getInstance().savePreferences(getString(R.string.preference_displayname), this.mDApplication.getUser().getDisplayName());
+        Preference.getInstance().savePreferences(getString(R.string.preference_displayname), this.mApplication.getUser().getDisplayName());
         mTxtUsername.setText("");
         mTxtPassword.setText("");
         Intent intent = new Intent(this, QuanLyTaiSan.class);
