@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import hcm.ditagis.com.cholon.qlts.QuanLyTaiSan;
+import hcm.ditagis.com.cholon.qlts.MainActivity;
 import hcm.ditagis.com.cholon.qlts.R;
 import hcm.ditagis.com.cholon.qlts.adapter.ThongKeAdapter;
 import hcm.ditagis.com.cholon.qlts.libs.FeatureLayerDTG;
@@ -24,7 +24,7 @@ import hcm.ditagis.com.cholon.qlts.libs.FeatureLayerDTG;
  */
 
 public class ThongKe {
-    private QuanLyTaiSan mainActivity;
+    private MainActivity mainActivity;
     private List<FeatureLayerDTG> mFeatureLayerDTGS;
     private List<ThongKeAdapter.Item> items;
     private ThongKeAdapter thongKeAdapter;
@@ -33,17 +33,17 @@ public class ThongKe {
     public ThongKe() {
     }
 
-    public ThongKe(QuanLyTaiSan mainActivity, List<FeatureLayerDTG> mFeatureLayerDTGS) {
+    public ThongKe(MainActivity mainActivity, List<FeatureLayerDTG> mFeatureLayerDTGS) {
         this.mainActivity = mainActivity;
         this.mFeatureLayerDTGS = mFeatureLayerDTGS;
         setup();
     }
 
-    public QuanLyTaiSan getMainActivity() {
+    public MainActivity getMainActivity() {
         return mainActivity;
     }
 
-    public void setMainActivity(QuanLyTaiSan mainActivity) {
+    public void setMainActivity(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
     }
 

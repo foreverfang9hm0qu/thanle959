@@ -3,8 +3,6 @@ package hcm.ditagis.com.cholon.qlts;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
@@ -102,7 +100,7 @@ import hcm.ditagis.com.cholon.qlts.tools.MySnackBar;
 import hcm.ditagis.com.cholon.qlts.utities.Popup;
 import hcm.ditagis.com.cholon.qlts.tools.SearchItem;
 
-public class QuanLyTaiSan extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
     private Uri mUri;
     private Popup popupInfos;
@@ -224,8 +222,8 @@ public class QuanLyTaiSan extends AppCompatActivity implements NavigationView.On
         // config feature layer service
         mFeatureLayerDTGS = new ArrayList<>();
         mCallout = mMapView.getCallout();
-        mMapViewHandler = new MapViewHandler(mMapView, QuanLyTaiSan.this);
-        popupInfos = new Popup(QuanLyTaiSan.this, mMapView, mCallout);
+        mMapViewHandler = new MapViewHandler(mMapView, MainActivity.this);
+        popupInfos = new Popup(MainActivity.this, mMapView, mCallout);
         for (final LayerInfoDTG layerInfoDTG : ListObjectDB.getInstance().getLstFeatureLayerDTG()) {
             if (layerInfoDTG.getId().substring(layerInfoDTG.getId().length() - 3).equals("TBL") || !layerInfoDTG.isView() || layerInfoDTG.getId().equals("diemsucoLYR"))
                 continue;
@@ -416,7 +414,7 @@ public class QuanLyTaiSan extends AppCompatActivity implements NavigationView.On
         //đưa listview search ra phía sau
         this.mListViewSearch.invalidate();
         List<ObjectsAdapter.Item> items = new ArrayList<>();
-        this.mSearchAdapter = new ObjectsAdapter(QuanLyTaiSan.this, items);
+        this.mSearchAdapter = new ObjectsAdapter(MainActivity.this, items);
         this.mListViewSearch.setAdapter(mSearchAdapter);
         this.mListViewSearch.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -504,13 +502,13 @@ public class QuanLyTaiSan extends AppCompatActivity implements NavigationView.On
 
                 // If an error is found, handle the failure to start.
                 // Check permissions to see if failure may be due to lack of permissions.
-                boolean permissionCheck1 = ContextCompat.checkSelfPermission(QuanLyTaiSan.this, reqPermissions[0]) == PackageManager.PERMISSION_GRANTED;
-                boolean permissionCheck2 = ContextCompat.checkSelfPermission(QuanLyTaiSan.this, reqPermissions[1]) == PackageManager.PERMISSION_GRANTED;
+                boolean permissionCheck1 = ContextCompat.checkSelfPermission(MainActivity.this, reqPermissions[0]) == PackageManager.PERMISSION_GRANTED;
+                boolean permissionCheck2 = ContextCompat.checkSelfPermission(MainActivity.this, reqPermissions[1]) == PackageManager.PERMISSION_GRANTED;
 
                 if (!(permissionCheck1 && permissionCheck2)) {
                     // If permissions are not already granted, request permission from the user.
-                    ActivityCompat.requestPermissions(QuanLyTaiSan.this, reqPermissions, requestCode);
-                }  // Report other unknown failure types to the user - for example, location services may not // be enabled on the device. //                    String message = String.format("Error in DataSourceStatusChangedListener: %s", dataSourceStatusChangedEvent //                            .getSource().getLocationDataSource().getError().getMessage()); //                    Toast.makeText(QuanLyTaiSan.this, message, Toast.LENGTH_LONG).show();
+                    ActivityCompat.requestPermissions(MainActivity.this, reqPermissions, requestCode);
+                }  // Report other unknown failure types to the user - for example, location services may not // be enabled on the device. //                    String message = String.format("Error in DataSourceStatusChangedListener: %s", dataSourceStatusChangedEvent //                            .getSource().getLocationDataSource().getError().getMessage()); //                    Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
 
             }
         });
@@ -764,7 +762,7 @@ public class QuanLyTaiSan extends AppCompatActivity implements NavigationView.On
             mLocationDisplay.startAsync();
 
         } else {
-            Toast.makeText(QuanLyTaiSan.this, getResources().getString(R.string.location_permission_denied), Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, getResources().getString(R.string.location_permission_denied), Toast.LENGTH_SHORT).show();
         }
     }
 

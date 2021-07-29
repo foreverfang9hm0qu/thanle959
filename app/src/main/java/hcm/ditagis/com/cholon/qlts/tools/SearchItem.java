@@ -3,7 +3,7 @@ package hcm.ditagis.com.cholon.qlts.tools;
 import java.util.ArrayList;
 import java.util.List;
 
-import hcm.ditagis.com.cholon.qlts.QuanLyTaiSan;
+import hcm.ditagis.com.cholon.qlts.MainActivity;
 import hcm.ditagis.com.cholon.qlts.R;
 import hcm.ditagis.com.cholon.qlts.adapter.FeatureLayerAdapter;
 import hcm.ditagis.com.cholon.qlts.libs.FeatureLayerDTG;
@@ -16,7 +16,7 @@ public class SearchItem {
     private List<FeatureLayerAdapter.Item> items;
     private List<FeatureLayerDTG> mFeatureLayerDTGS;
 
-    public SearchItem(List<FeatureLayerDTG> mFeatureLayerDTGS, QuanLyTaiSan quanLyTaiSan) {
+    public SearchItem(List<FeatureLayerDTG> mFeatureLayerDTGS, MainActivity quanLyTaiSan) {
         this.mFeatureLayerDTGS = mFeatureLayerDTGS;
         items = new ArrayList<>();
         for (FeatureLayerDTG featureLayerDTG : mFeatureLayerDTGS) {

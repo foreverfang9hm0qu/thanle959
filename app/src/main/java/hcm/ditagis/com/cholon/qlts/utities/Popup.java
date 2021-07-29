@@ -49,7 +49,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-import hcm.ditagis.com.cholon.qlts.QuanLyTaiSan;
+import hcm.ditagis.com.cholon.qlts.MainActivity;
 import hcm.ditagis.com.cholon.qlts.R;
 import hcm.ditagis.com.cholon.qlts.adapter.FeatureViewInfoAdapter;
 import hcm.ditagis.com.cholon.qlts.adapter.FeatureViewMoreInfoAdapter;
@@ -60,7 +60,7 @@ import hcm.ditagis.com.cholon.qlts.async.ViewAttachmentAsync;
 import hcm.ditagis.com.cholon.qlts.libs.FeatureLayerDTG;
 
 public class Popup extends AppCompatActivity {
-    private QuanLyTaiSan mMainActivity;
+    private MainActivity mMainActivity;
     private ArcGISFeature mSelectedArcGISFeature = null;
     private ServiceFeatureTable mServiceFeatureTable;
     private Callout mCallout;
@@ -75,7 +75,7 @@ public class Popup extends AppCompatActivity {
     private DApplication mDApplication;
 
 
-    public Popup(QuanLyTaiSan mainActivity, MapView mMapView, Callout callout) {
+    public Popup(MainActivity mainActivity, MapView mMapView, Callout callout) {
         this.mMainActivity = mainActivity;
         this.mMapView = mMapView;
         this.mCallout = callout;

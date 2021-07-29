@@ -157,7 +157,7 @@ private DApplication mApplication;
         Preference.getInstance().savePreferences(getString(R.string.preference_displayname), this.mApplication.getUser().getDisplayName());
         mTxtUsername.setText("");
         mTxtPassword.setText("");
-        Intent intent = new Intent(this, QuanLyTaiSan.class);
+        Intent intent = new Intent(this, MainActivity.class);
 
         startActivity(intent);
     }

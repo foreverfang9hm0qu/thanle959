@@ -5,7 +5,7 @@ import com.esri.arcgisruntime.geometry.GeometryType;
 import java.util.ArrayList;
 import java.util.List;
 
-import hcm.ditagis.com.cholon.qlts.QuanLyTaiSan;
+import hcm.ditagis.com.cholon.qlts.MainActivity;
 import hcm.ditagis.com.cholon.qlts.R;
 import hcm.ditagis.com.cholon.qlts.adapter.FeatureLayerAdapter;
 import hcm.ditagis.com.cholon.qlts.libs.FeatureLayerDTG;
@@ -13,7 +13,7 @@ public class AddFeatureItem {
     private List<FeatureLayerAdapter.Item> items;
     private List<FeatureLayerDTG> mFeatureLayerDTGS;
 
-    public AddFeatureItem(List<FeatureLayerDTG> mFeatureLayerDTGS, QuanLyTaiSan quanLyTaiSan) {
+    public AddFeatureItem(List<FeatureLayerDTG> mFeatureLayerDTGS, MainActivity quanLyTaiSan) {
         this.mFeatureLayerDTGS = mFeatureLayerDTGS;
         items = new ArrayList<>();
         for (FeatureLayerDTG featureLayerDTG : mFeatureLayerDTGS) {

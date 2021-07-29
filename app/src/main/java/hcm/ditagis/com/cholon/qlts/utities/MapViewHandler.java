@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.data.ArcGISFeature;
@@ -35,9 +36,10 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
 
-import hcm.ditagis.com.cholon.qlts.QuanLyTaiSan;
+import hcm.ditagis.com.cholon.qlts.MainActivity;
 import hcm.ditagis.com.cholon.qlts.R;
 import hcm.ditagis.com.cholon.qlts.adapter.ObjectsAdapter;
+import hcm.ditagis.com.cholon.qlts.async.QuerySearchAsycn;
 import hcm.ditagis.com.cholon.qlts.async.SingleTapAddFeatureAsync;
 import hcm.ditagis.com.cholon.qlts.async.SingleTapMapViewAsync;
 import hcm.ditagis.com.cholon.qlts.libs.FeatureLayerDTG;
@@ -61,7 +63,7 @@ public class MapViewHandler extends Activity {
     private ServiceFeatureTable searchSFT;
     private ServiceFeatureTable addSFT;
     private Popup mPopUp;
-    private QuanLyTaiSan quanLyTaiSan;
+    private MainActivity quanLyTaiSan;
 
 
     public void setFeatureLayerDTGs(List<FeatureLayerDTG> mFeatureLayerDTGs) {
@@ -74,7 +76,7 @@ public class MapViewHandler extends Activity {
 
     private List<FeatureLayerDTG> mFeatureLayerDTGs;
 
-    public MapViewHandler(MapView mMapView, QuanLyTaiSan quanLyTaiSan) {
+    public MapViewHandler(MapView mMapView, MainActivity quanLyTaiSan) {
         this.mMapView = mMapView;
         this.quanLyTaiSan = quanLyTaiSan;
         this.mMap = mMapView.getMap();
@@ -113,12 +115,14 @@ public class MapViewHandler extends Activity {
         SingleTapMapViewAsync singleTapMapViewAsync = new SingleTapMapViewAsync(quanLyTaiSan, mFeatureLayerDTGs, mPopUp, mClickPoint, mMapView);
         singleTapMapViewAsync.execute(clickPoint);
     }
-    public void closeAddFeature(){
+
+    public void closeAddFeature() {
         ((LinearLayout) this.quanLyTaiSan.findViewById(R.id.linear_addfeature)).setVisibility(View.GONE);
         ((ImageView) this.quanLyTaiSan.findViewById(R.id.img_map_pin)).setVisibility(View.GONE);
         ((FloatingActionButton) this.quanLyTaiSan.findViewById(R.id.floatBtnAdd)).setVisibility(View.VISIBLE);
         this.setClickBtnAdd(false);
     }
+
     public double[] onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
         Point center = ((MapView) mMapView).getCurrentViewpoint(Viewpoint.Type.CENTER_AND_SCALE).getTargetGeometry().getExtent().getCenter();
         Geometry project = GeometryEngine.project(center, SpatialReferences.getWgs84());
@@ -147,7 +151,7 @@ public class MapViewHandler extends Activity {
         final QueryParameters queryParameters = new QueryParameters();
         final String query = "OBJECTID = " + objectID;
         queryParameters.setWhereClause(query);
-        final ListenableFuture<FeatureQueryResult> feature = searchSFT.queryFeaturesAsync(queryParameters,ServiceFeatureTable.QueryFeatureFields.LOAD_ALL);
+        final ListenableFuture<FeatureQueryResult> feature = searchSFT.queryFeaturesAsync(queryParameters, ServiceFeatureTable.QueryFeatureFields.LOAD_ALL);
         feature.addDoneListener(new Runnable() {
             @Override
             public void run() {
@@ -159,7 +163,7 @@ public class MapViewHandler extends Activity {
                             String tableName = ((ArcGISFeatureTable) mSelectedArcGISFeature.getFeatureTable()).getTableName();
                             FeatureLayerDTG featureLayerDTG = getmFeatureLayerDTG(tableName);
                             mPopUp.setFeatureLayerDTG(featureLayerDTG);
-                            mPopUp.showPopup(mSelectedArcGISFeature,false);
+                            mPopUp.showPopup(mSelectedArcGISFeature, false);
                         } else mPopUp.dimissCallout();
                     }
                 } catch (InterruptedException e) {
@@ -181,64 +185,15 @@ public class MapViewHandler extends Activity {
     }
 
     public void querySearch(String searchStr, ListView listView, final ObjectsAdapter adapter) {
-        adapter.clear();
-        adapter.notifyDataSetChanged();
-        QueryParameters queryParameters = new QueryParameters();
-        StringBuilder builder = new StringBuilder();
-        for (Field field : searchSFT.getFields()) {
-            switch (field.getFieldType()) {
-                case OID:
-                case INTEGER:
-                case SHORT:
-                    try {
-                        int search = Integer.parseInt(searchStr);
-                        builder.append(String.format("%s = %s", field.getName(), search));
-                        builder.append(" or ");
-                    } catch (Exception e) {
-
-                    }
-                    break;
-                case FLOAT:
-                case DOUBLE:
-                    try {
-                        double search = Double.parseDouble(searchStr);
-                        builder.append(String.format("%s = %s", field.getName(), search));
-                        builder.append(" or ");
-                    } catch (Exception e) {
-
-                    }
-                    break;
-                case TEXT:
-                    builder.append(field.getName() + " like N'%" + searchStr + "%'");
-                    builder.append(" or ");
-                    break;
+        new QuerySearchAsycn(mMapView.getContext(), searchSFT, output -> {
+            if (output != null && output.size() > 0) {
+                adapter.clear();
+                adapter.addAll(output);
+                adapter.notifyDataSetChanged();
+            } else {
+                Toast.makeText(mMapView.getContext(), "Không tìm thấy thông tin!", Toast.LENGTH_SHORT).show();
             }
-        }
-        builder.append(" 1 = 2 ");
-        queryParameters.setWhereClause(builder.toString());
-        final ListenableFuture<FeatureQueryResult> feature = searchSFT.queryFeaturesAsync(queryParameters);
-        feature.addDoneListener(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    FeatureQueryResult result = feature.get();
-                    Iterator iterator = result.iterator();
-                    while (iterator.hasNext()) {
-                        Feature item = (Feature) iterator.next();
-                        Map<String, Object> attributes = item.getAttributes();
-                        String objectid = attributes.get(Constant.OBJECTID).toString();
-                        adapter.add(new ObjectsAdapter.Item(objectid, objectid, ""));
-                        adapter.notifyDataSetChanged();
 
-//                        queryByObjectID(Integer.parseInt(attributes.get(Constant.OBJECTID).toString()));
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
+        }).execute(searchStr);
     }
 }
