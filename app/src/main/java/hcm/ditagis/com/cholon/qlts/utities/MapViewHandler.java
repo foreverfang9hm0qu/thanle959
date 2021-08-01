@@ -142,15 +142,12 @@ public class MapViewHandler extends Activity {
         return timeStamp1;
     }
 
-    private String getTimeID() {
-        String timeStamp = Constant.DATE_FORMAT.format(Calendar.getInstance().getTime());
-        return timeStamp;
-    }
 
     public void queryByObjectID(int objectID) {
         final QueryParameters queryParameters = new QueryParameters();
         final String query = "OBJECTID = " + objectID;
         queryParameters.setWhereClause(query);
+
         final ListenableFuture<FeatureQueryResult> feature = searchSFT.queryFeaturesAsync(queryParameters, ServiceFeatureTable.QueryFeatureFields.LOAD_ALL);
         feature.addDoneListener(new Runnable() {
             @Override
@@ -164,7 +161,7 @@ public class MapViewHandler extends Activity {
                             FeatureLayerDTG featureLayerDTG = getmFeatureLayerDTG(tableName);
                             mPopUp.setFeatureLayerDTG(featureLayerDTG);
                             mPopUp.showPopup(mSelectedArcGISFeature, false);
-                        } else mPopUp.dimissCallout();
+                        }
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();

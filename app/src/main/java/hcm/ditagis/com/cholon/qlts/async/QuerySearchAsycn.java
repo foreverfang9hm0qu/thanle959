@@ -99,6 +99,7 @@ public class QuerySearchAsycn extends AsyncTask<String, List<ObjectsAdapter.Item
                 }
                 builder.append(" 1 = 2 ");
                 queryParameters.setWhereClause(builder.toString());
+                queryParameters.setReturnGeometry(false);
                 final ListenableFuture<FeatureQueryResult> feature = mServiceFeatureTable.queryFeaturesAsync(queryParameters);
                 feature.addDoneListener(() -> {
                     try {

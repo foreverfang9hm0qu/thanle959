@@ -46,6 +46,7 @@ public class QueryHanhChinhAsync extends AsyncTask<Void, ArrayList<Feature>, Voi
         final QueryParameters queryParameters = new QueryParameters();
         final String query = "1=1";
         queryParameters.setWhereClause(query);
+        queryParameters.setReturnGeometry(false);
         final ListenableFuture<FeatureQueryResult> featureQueryResultListenableFuture = mServiceFeatureTable.queryFeaturesAsync(queryParameters, ServiceFeatureTable.QueryFeatureFields.LOAD_ALL);
         featureQueryResultListenableFuture.addDoneListener(new Runnable() {
             @Override

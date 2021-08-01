@@ -41,6 +41,8 @@ import com.esri.arcgisruntime.layers.FeatureLayer;
 import com.esri.arcgisruntime.loadable.LoadStatus;
 import com.esri.arcgisruntime.mapping.view.Callout;
 import com.esri.arcgisruntime.mapping.view.MapView;
+import com.esri.arcgisruntime.symbology.Renderer;
+import com.esri.arcgisruntime.symbology.UniqueValueRenderer;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -65,7 +67,8 @@ public class Popup extends AppCompatActivity {
     private ServiceFeatureTable mServiceFeatureTable;
     private Callout mCallout;
     private FeatureLayerDTG mFeatureLayerDTG;
-    private List<String> lstFeatureType;
+    private List<String> lstUniqueValues;
+    private String fieldNameDrawInfo;
     private LinearLayout linearLayout;
     private Uri mUri;
     private FeatureViewMoreInfoAdapter mFeatureViewMoreInfoAdapter;
@@ -104,7 +107,14 @@ public class Popup extends AppCompatActivity {
         ListView listView = linearLayout.findViewById(R.id.lstview_thongtinsuco);
         FeatureViewInfoAdapter featureViewInfoAdapter = new FeatureViewInfoAdapter(mMainActivity, new ArrayList<FeatureViewInfoAdapter.Item>());
         listView.setAdapter(featureViewInfoAdapter);
-        String typeIdField = mSelectedArcGISFeature.getFeatureTable().getTypeIdField();
+
+        Renderer renderer = mSelectedArcGISFeature.getFeatureTable().getLayerInfo().getDrawingInfo().getRenderer();
+        UniqueValueRenderer uniqueValueRenderer = null;
+        if(renderer instanceof UniqueValueRenderer){
+            uniqueValueRenderer = (UniqueValueRenderer) renderer;
+            fieldNameDrawInfo = uniqueValueRenderer.getFieldNames().get(0);
+
+        }
         boolean checkHiddenField;
         for (Field field : this.mSelectedArcGISFeature.getFeatureTable().getFields()) {
             checkHiddenField = false;
@@ -126,10 +136,10 @@ public class Popup extends AppCompatActivity {
                 } else if (item.getFieldName().toUpperCase().equals("MAQUAN")) {
                     if (quanhuyen_feature != null)
                         item.setValue(quanhuyen_feature.getAttributes().get("TenQuan").toString());
-                } else if (item.getFieldName().equals(typeIdField)) {
-                    List<FeatureType> featureTypes = mSelectedArcGISFeature.getFeatureTable().getFeatureTypes();
-                    if (featureTypes.size() > 0) {
-                        Object valueFeatureType = getValueFeatureType(featureTypes, value.toString());
+                } else if (item.getFieldName().equals(fieldNameDrawInfo)) {
+                    List<UniqueValueRenderer.UniqueValue> uniqueValues = uniqueValueRenderer.getUniqueValues();
+                    if (uniqueValues.size() > 0) {
+                        Object valueFeatureType = getLabelUniqueRenderer(uniqueValues, value.toString());
                         if (valueFeatureType != null) item.setValue(valueFeatureType.toString());
                     } else item.setValue(value.toString());
 
@@ -169,8 +179,11 @@ public class Popup extends AppCompatActivity {
         String[] updateFields = mFeatureLayerDTG.getUpdateFields();
         String[] unedit_Fields = mMainActivity.getResources().getStringArray(R.array.unedit_Fields);
         String[] hiddenFields = mMainActivity.getResources().getStringArray(R.array.hiddenFields);
-        String typeIdField = mSelectedArcGISFeature.getFeatureTable().getTypeIdField();
-        List<FeatureType> featureTypes = mSelectedArcGISFeature.getFeatureTable().getFeatureTypes();
+        Renderer renderer = mSelectedArcGISFeature.getFeatureTable().getLayerInfo().getDrawingInfo().getRenderer();
+        UniqueValueRenderer uniqueValueRenderer = null;
+        if(renderer instanceof UniqueValueRenderer){
+            uniqueValueRenderer = (UniqueValueRenderer) renderer;
+        }
         boolean checkHiddenField;
         for (Field field : this.mSelectedArcGISFeature.getFeatureTable().getFields()) {
             checkHiddenField = false;
@@ -208,11 +221,15 @@ public class Popup extends AppCompatActivity {
                     }
                 }
                 if (value != null) {
-                    if (item.getFieldName().equals(typeIdField) && featureTypes.size() > 0) {
-                        Object valueFeatureType = getValueFeatureType(featureTypes, value.toString());
-                        if (valueFeatureType != null && valueFeatureType.toString() != null)
-                            item.setValue(valueFeatureType.toString());
-                    } else if (item.getFieldName().toUpperCase().equals("MAPHUONG")) {
+                    if (item.getFieldName().equals(fieldNameDrawInfo)) {
+                        List<UniqueValueRenderer.UniqueValue> uniqueValues = uniqueValueRenderer.getUniqueValues();
+                        if (uniqueValues.size() > 0) {
+                            Object valueFeatureType = getLabelUniqueRenderer(uniqueValues, value.toString());
+                            if (valueFeatureType != null) item.setValue(valueFeatureType.toString());
+                        } else item.setValue(value.toString());
+
+                    }
+                    else if (item.getFieldName().toUpperCase().equals("MAPHUONG")) {
                         getHanhChinhFeature(value.toString());
                         if (quanhuyen_feature != null)
                             item.setValue(quanhuyen_feature.getAttributes().get("TenHanhChinh").toString());
@@ -290,8 +307,18 @@ public class Popup extends AppCompatActivity {
     private Object getValueFeatureType(List<FeatureType> featureTypes, String code) {
         Object value = null;
         for (FeatureType featureType : featureTypes) {
-            if (featureType.getId().toString().equals(code)) {
+            if (featureType.getId() != null && featureType.getId().toString().equals(code)) {
                 value = featureType.getName();
+                break;
+            }
+        }
+        return value;
+    }
+    private Object getLabelUniqueRenderer(List<UniqueValueRenderer.UniqueValue> uniqueValues, String code) {
+        Object value = null;
+        for (UniqueValueRenderer.UniqueValue uniqueValue : uniqueValues) {
+            if (uniqueValue.getValues() != null && uniqueValue.getValues().get(0).toString().equals(code)) {
+                value = uniqueValue.getLabel();
                 break;
             }
         }
@@ -323,13 +350,13 @@ public class Popup extends AppCompatActivity {
                 final Spinner spin = layout.findViewById(R.id.spin_edit_viewmoreinfo);
 
                 final Domain domain = mSelectedArcGISFeature.getFeatureTable().getField(item.getFieldName()).getDomain();
-                if (item.getFieldName().equals(mSelectedArcGISFeature.getFeatureTable().getTypeIdField())) {
-                    if (lstFeatureType.size() > 0) {
+                if (item.getFieldName().equals(fieldNameDrawInfo)) {
+                    if (lstUniqueValues.size() > 0) {
                         layoutSpin.setVisibility(View.VISIBLE);
-                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(layout.getContext(), android.R.layout.simple_list_item_1, lstFeatureType);
+                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(layout.getContext(), android.R.layout.simple_list_item_1, lstUniqueValues);
                         spin.setAdapter(adapter);
                         if (item.getValue() != null)
-                            spin.setSelection(lstFeatureType.indexOf(item.getValue()));
+                            spin.setSelection(lstUniqueValues.indexOf(item.getValue()));
                     } else {
                         layoutEditText.setVisibility(View.VISIBLE);
                         editText.setInputType(InputType.TYPE_CLASS_NUMBER);
@@ -393,7 +420,7 @@ public class Popup extends AppCompatActivity {
                 builder.setPositiveButton("Cập nhật", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if ((lstFeatureType.size() > 0 && item.getFieldName().equals(mSelectedArcGISFeature.getFeatureTable().getTypeIdField())) || (domain != null)) {
+                        if ((lstUniqueValues.size() > 0 && item.getFieldName().equals(fieldNameDrawInfo)) || (domain != null)) {
                             item.setValue(spin.getSelectedItem().toString());
                         } else {
                             switch (item.getFieldType()) {
@@ -452,6 +479,7 @@ public class Popup extends AppCompatActivity {
     }
 
     public void dimissCallout() {
+        this.clearSelection();
         if (mCallout != null && mCallout.isShowing()) {
             mCallout.dismiss();
         }
@@ -475,10 +503,19 @@ public class Popup extends AppCompatActivity {
         this.mSelectedArcGISFeature = mSelectedArcGISFeature;
         FeatureLayer featureLayer = mFeatureLayerDTG.getFeatureLayer();
         featureLayer.selectFeature(mSelectedArcGISFeature);
-        lstFeatureType = new ArrayList<>();
-        for (int i = 0; i < mSelectedArcGISFeature.getFeatureTable().getFeatureTypes().size(); i++) {
-            lstFeatureType.add(mSelectedArcGISFeature.getFeatureTable().getFeatureTypes().get(i).getName());
+        lstUniqueValues = new ArrayList<>();
+        Renderer renderer = mSelectedArcGISFeature.getFeatureTable().getLayerInfo().getDrawingInfo().getRenderer();
+        List<UniqueValueRenderer.UniqueValue> uniqueValues = null;
+        if(renderer instanceof UniqueValueRenderer){
+            UniqueValueRenderer uniqueValueRenderer = (UniqueValueRenderer)renderer;
+            uniqueValues = uniqueValueRenderer.getUniqueValues();
         }
+        if(uniqueValues != null){
+            for (int i = 0; i < uniqueValues.size(); i++) {
+                lstUniqueValues.add(uniqueValues.get(i).getLabel().toString());
+            }
+        }
+
         LayoutInflater inflater = LayoutInflater.from(this.mMainActivity.getApplicationContext());
         linearLayout = (LinearLayout) inflater.inflate(R.layout.layout_popup_infos, null);
         refressPopup();

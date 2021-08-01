@@ -108,8 +108,6 @@ public class SingleTapMapViewAsync extends AsyncTask<Point, FeatureLayerDTG, Voi
     @Override
     protected void onProgressUpdate(FeatureLayerDTG... values) {
         super.onProgressUpdate(values);
-        mPopUp.clearSelection();
-        mPopUp.dimissCallout();
         if (values != null) {
             FeatureLayerDTG featureLayerDTG = values[0];
             mPopUp.setFeatureLayerDTG(featureLayerDTG);

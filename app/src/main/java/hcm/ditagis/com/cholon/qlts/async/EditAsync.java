@@ -18,6 +18,8 @@ import com.esri.arcgisruntime.data.FeatureEditResult;
 import com.esri.arcgisruntime.data.FeatureType;
 import com.esri.arcgisruntime.data.Field;
 import com.esri.arcgisruntime.data.ServiceFeatureTable;
+import com.esri.arcgisruntime.symbology.Renderer;
+import com.esri.arcgisruntime.symbology.UniqueValueRenderer;
 
 import java.text.ParseException;
 import java.util.Calendar;
@@ -44,8 +46,6 @@ public class EditAsync extends AsyncTask<FeatureViewMoreInfoAdapter, Void, Void>
     private Activity mMainActivity;
     private ServiceFeatureTable mServiceFeatureTable;
     private ArcGISFeature mSelectedArcGISFeature = null;
-    private boolean isUpdateAttachment;
-    private byte[] mImage;
     private DApplication mDApplication;
 
     public EditAsync(Activity mainActivity, ServiceFeatureTable serviceFeatureTable, ArcGISFeature selectedArcGISFeature, AsyncResponse delegate) {
@@ -75,7 +75,14 @@ public class EditAsync extends AsyncTask<FeatureViewMoreInfoAdapter, Void, Void>
     @Override
     protected Void doInBackground(FeatureViewMoreInfoAdapter... params) {
         FeatureViewMoreInfoAdapter adapter = params[0];
-        List<FeatureType> featureTypes = mSelectedArcGISFeature.getFeatureTable().getFeatureTypes();
+        Renderer renderer = mSelectedArcGISFeature.getFeatureTable().getLayerInfo().getDrawingInfo().getRenderer();
+        List<UniqueValueRenderer.UniqueValue> uniqueValues  = null;
+        String fieldName = null;
+        if(renderer instanceof UniqueValueRenderer){
+            UniqueValueRenderer uniqueValueRenderer = (UniqueValueRenderer) renderer;
+            uniqueValues = uniqueValueRenderer.getUniqueValues();
+            fieldName = uniqueValueRenderer.getFieldNames().get(0);
+        }
         try {
             for (FeatureViewMoreInfoAdapter.Item item : adapter.getItems()) {
                 if (item.getValue() == null || !item.isEdit()) continue;
@@ -85,9 +92,10 @@ public class EditAsync extends AsyncTask<FeatureViewMoreInfoAdapter, Void, Void>
                     List<CodedValue> codedValues = ((CodedValueDomain) this.mSelectedArcGISFeature.getFeatureTable().getField(item.getFieldName()).getDomain()).getCodedValues();
                     codeDomain = getCodeDomain(codedValues, item.getValue());
                 }
-                if (featureTypes.size() > 0 && item.getFieldName().equals(mSelectedArcGISFeature.getFeatureTable().getTypeIdField())) {
-                    Object idFeatureTypes = getIdFeatureTypes(featureTypes, item.getValue());
-                    mSelectedArcGISFeature.getAttributes().put(item.getFieldName(), Short.parseShort(idFeatureTypes.toString()));
+
+                if (uniqueValues.size() > 0 && item.getFieldName().equals(fieldName)) {
+                    Object valueUniqueRenderer = getValueUniqueRenderer(uniqueValues, item.getValue());
+                    mSelectedArcGISFeature.getAttributes().put(item.getFieldName(), Short.parseShort(valueUniqueRenderer.toString()));
 
                 }
                 else switch (item.getFieldType()) {
@@ -192,6 +200,17 @@ public class EditAsync extends AsyncTask<FeatureViewMoreInfoAdapter, Void, Void>
             }
         }
         return code;
+    }
+
+    private Object getValueUniqueRenderer(List<UniqueValueRenderer.UniqueValue> uniqueValues, String label) {
+        Object value = null;
+        for (UniqueValueRenderer.UniqueValue uniqueValue : uniqueValues) {
+            if (uniqueValue.getLabel() != null && uniqueValue.getLabel().toString().equals(label)) {
+                value = uniqueValue.getValues().get(0).toString();
+                break;
+            }
+        }
+        return value;
     }
 
     private Object getCodeDomain(List<CodedValue> codedValues, String value) {

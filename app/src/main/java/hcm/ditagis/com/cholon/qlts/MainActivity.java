@@ -260,8 +260,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 featureLayer.setName(layerInfoDTG.getTitleLayer());
                 featureLayer.setId(layerInfoDTG.getId());
                 mMap.getOperationalLayers().add(featureLayer);
-                featureLayer.setMaxScale(0);
-                featureLayer.setMinScale(1000000);
                 FeatureLayerDTG featureLayerDTG = new FeatureLayerDTG(featureLayer);
                 Action action = new Action(layerInfoDTG.isView(), layerInfoDTG.isCreate(), layerInfoDTG.isEdit(), layerInfoDTG.isDelete());
                 featureLayerDTG.setAction(action);
