@@ -93,7 +93,7 @@ public class EditAsync extends AsyncTask<FeatureViewMoreInfoAdapter, Void, Void>
                     codeDomain = getCodeDomain(codedValues, item.getValue());
                 }
 
-                if (uniqueValues.size() > 0 && item.getFieldName().equals(fieldName)) {
+                if (uniqueValues != null && uniqueValues.size() > 0 && item.getFieldName().equals(fieldName)) {
                     Object valueUniqueRenderer = getValueUniqueRenderer(uniqueValues, item.getValue());
                     mSelectedArcGISFeature.getAttributes().put(item.getFieldName(), Short.parseShort(valueUniqueRenderer.toString()));
 
