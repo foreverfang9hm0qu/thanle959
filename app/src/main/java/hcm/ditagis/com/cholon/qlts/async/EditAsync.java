@@ -76,9 +76,9 @@ public class EditAsync extends AsyncTask<FeatureViewMoreInfoAdapter, Void, Void>
     protected Void doInBackground(FeatureViewMoreInfoAdapter... params) {
         FeatureViewMoreInfoAdapter adapter = params[0];
         Renderer renderer = mSelectedArcGISFeature.getFeatureTable().getLayerInfo().getDrawingInfo().getRenderer();
-        List<UniqueValueRenderer.UniqueValue> uniqueValues  = null;
+        List<UniqueValueRenderer.UniqueValue> uniqueValues = null;
         String fieldName = null;
-        if(renderer instanceof UniqueValueRenderer){
+        if (renderer instanceof UniqueValueRenderer) {
             UniqueValueRenderer uniqueValueRenderer = (UniqueValueRenderer) renderer;
             uniqueValues = uniqueValueRenderer.getUniqueValues();
             fieldName = uniqueValueRenderer.getFieldNames().get(0);
@@ -87,18 +87,15 @@ public class EditAsync extends AsyncTask<FeatureViewMoreInfoAdapter, Void, Void>
             for (FeatureViewMoreInfoAdapter.Item item : adapter.getItems()) {
                 if (item.getValue() == null || !item.isEdit()) continue;
                 Domain domain = mSelectedArcGISFeature.getFeatureTable().getField(item.getFieldName()).getDomain();
-                Object codeDomain = null;
+                Object codeDomain = null, valueUniqueRenderer = null;
                 if (domain != null) {
                     List<CodedValue> codedValues = ((CodedValueDomain) this.mSelectedArcGISFeature.getFeatureTable().getField(item.getFieldName()).getDomain()).getCodedValues();
                     codeDomain = getCodeDomain(codedValues, item.getValue());
                 }
-
                 if (uniqueValues != null && uniqueValues.size() > 0 && item.getFieldName().equals(fieldName)) {
-                    Object valueUniqueRenderer = getValueUniqueRenderer(uniqueValues, item.getValue());
-                    mSelectedArcGISFeature.getAttributes().put(item.getFieldName(), Short.parseShort(valueUniqueRenderer.toString()));
-
+                    valueUniqueRenderer = getValueUniqueRenderer(uniqueValues, item.getValue());
                 }
-                else switch (item.getFieldType()) {
+                switch (item.getFieldType()) {
                     case DATE:
                         Date date = null;
                         try {
@@ -111,19 +108,31 @@ public class EditAsync extends AsyncTask<FeatureViewMoreInfoAdapter, Void, Void>
                         break;
 
                     case TEXT:
-                        if (codeDomain != null) {
+                        if (valueUniqueRenderer != null) {
+                            mSelectedArcGISFeature.getAttributes().put(item.getFieldName(), valueUniqueRenderer.toString());
+                        } else if (codeDomain != null) {
                             mSelectedArcGISFeature.getAttributes().put(item.getFieldName(), codeDomain.toString());
                         } else
                             mSelectedArcGISFeature.getAttributes().put(item.getFieldName(), item.getValue());
                         break;
+                    case DOUBLE:
+                        mSelectedArcGISFeature.getAttributes().put(item.getFieldName(), Double.parseDouble(item.getValue()));
+                        break;
+                    case FLOAT:
+                        mSelectedArcGISFeature.getAttributes().put(item.getFieldName(), Float.parseFloat(item.getValue()));
+                        break;
                     case INTEGER:
-                        if (codeDomain != null) {
+                        if (valueUniqueRenderer != null) {
+                            mSelectedArcGISFeature.getAttributes().put(item.getFieldName(), Integer.parseInt(valueUniqueRenderer.toString()));
+                        } else if (codeDomain != null) {
                             mSelectedArcGISFeature.getAttributes().put(item.getFieldName(), Integer.parseInt(codeDomain.toString()));
                         } else
                             mSelectedArcGISFeature.getAttributes().put(item.getFieldName(), Integer.parseInt(item.getValue()));
                         break;
                     case SHORT:
-                        if (codeDomain != null) {
+                        if (valueUniqueRenderer != null) {
+                            mSelectedArcGISFeature.getAttributes().put(item.getFieldName(), Short.parseShort(valueUniqueRenderer.toString()));
+                        } else if (codeDomain != null) {
                             mSelectedArcGISFeature.getAttributes().put(item.getFieldName(), Short.parseShort(codeDomain.toString()));
                         } else
                             mSelectedArcGISFeature.getAttributes().put(item.getFieldName(), Short.parseShort(item.getValue()));
@@ -131,10 +140,10 @@ public class EditAsync extends AsyncTask<FeatureViewMoreInfoAdapter, Void, Void>
                 }
             }
         } catch (Exception e) {
-            Log.e("",e.toString());
+            Log.e("", e.toString());
         }
         List<Field> fields = mSelectedArcGISFeature.getFeatureTable().getFields();
-        for(Field field:fields){
+        for (Field field : fields) {
             if (field.getName().toUpperCase().equals(mMainActivity.getResources().getString(R.string.NGAYCAPNHAT))) {
                 Calendar currentTime = Calendar.getInstance();
                 mSelectedArcGISFeature.getAttributes().put(field.getName(), currentTime);
@@ -152,8 +161,6 @@ public class EditAsync extends AsyncTask<FeatureViewMoreInfoAdapter, Void, Void>
             public void run() {
                 try {
                     updateFeature(mSelectedArcGISFeature);
-
-
                 } catch (Exception e) {
                 }
             }

@@ -306,10 +306,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
                 if (mMapViewHandler != null) {
                     double[] location = mMapViewHandler.onScroll(e1, e2, distanceX, distanceY);
-                    float log = (float) Math.round(location[0] * 100000) / 100000;
-                    float lat = (float) Math.round(location[1] * 100000) / 100000;
-                    txtToaDo.setText(lat + ", " + log);
-//                    edit_latitude.setText(location[1] + "");
+                    if(location != null){
+                        float log = (float) Math.round(location[0] * 100000) / 100000;
+                        float lat = (float) Math.round(location[1] * 100000) / 100000;
+                        txtToaDo.setText(lat + ", " + log);
+                    }
                 }
                 return super.onScroll(e1, e2, distanceX, distanceY);
             }

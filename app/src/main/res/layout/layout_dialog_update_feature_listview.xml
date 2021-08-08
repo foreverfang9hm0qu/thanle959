@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:paddingLeft="20dp"
-            android:text="ádfdasf"
+            android:text="Field"
             android:textAppearance="?android:attr/textAppearanceMedium" />
         <ImageView
             android:id="@+id/img_selectLayer"
@@ -119,5 +119,13 @@
             android:text="ádfdasf"
             android:textAppearance="?android:attr/textAppearanceMedium" />
     </LinearLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/txtNotifyInCorrect"
+        android:text="@string/INCORRECT_INPUT_FORMAT"
+        android:layout_marginLeft="20dp"
+        android:visibility="gone"
+        android:textColor="@color/colorRed"/>
 
 </LinearLayout>

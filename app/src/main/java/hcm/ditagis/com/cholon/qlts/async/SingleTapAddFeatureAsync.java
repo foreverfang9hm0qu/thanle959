@@ -128,10 +128,9 @@ public class SingleTapAddFeatureAsync extends AsyncTask<Point, Void, Void> {
                                         }
                                     });
                                 }
-                            } catch (InterruptedException e) {
+                            } catch (Exception e) {
                                 e.printStackTrace();
-                            } catch (ExecutionException e) {
-                                e.printStackTrace();
+                                MySnackBar.make(mMapView, "Không thêm được đối tượng. Vui lòng thử lại sau", true);
                             }
 
                         }

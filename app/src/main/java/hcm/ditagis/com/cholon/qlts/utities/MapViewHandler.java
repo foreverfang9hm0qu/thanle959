@@ -124,11 +124,16 @@ public class MapViewHandler extends Activity {
     }
 
     public double[] onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-        Point center = ((MapView) mMapView).getCurrentViewpoint(Viewpoint.Type.CENTER_AND_SCALE).getTargetGeometry().getExtent().getCenter();
-        Geometry project = GeometryEngine.project(center, SpatialReferences.getWgs84());
-        double[] location = {project.getExtent().getCenter().getX(), project.getExtent().getCenter().getY()};
+        Geometry targetGeometry = ((MapView) mMapView).getCurrentViewpoint(Viewpoint.Type.CENTER_AND_SCALE).getTargetGeometry();
+        if(targetGeometry != null) {
+            Point center = targetGeometry.getExtent().getCenter();
+            Geometry project = GeometryEngine.project(center, SpatialReferences.getWgs84());
+            double[] location = {project.getExtent().getCenter().getX(), project.getExtent().getCenter().getY()};
+
 //        Geometry geometry = GeometryEngine.project(project, SpatialReferences.getWebMercator());
-        return location;
+            return location;
+        }
+        return null;
     }
 
 

@@ -1,5 +1,6 @@
 package hcm.ditagis.com.cholon.qlts.utities;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -110,7 +111,7 @@ public class Popup extends AppCompatActivity {
 
         Renderer renderer = mSelectedArcGISFeature.getFeatureTable().getLayerInfo().getDrawingInfo().getRenderer();
         UniqueValueRenderer uniqueValueRenderer = null;
-        if(renderer instanceof UniqueValueRenderer){
+        if (renderer instanceof UniqueValueRenderer) {
             uniqueValueRenderer = (UniqueValueRenderer) renderer;
             fieldNameDrawInfo = uniqueValueRenderer.getFieldNames().get(0);
 
@@ -181,7 +182,7 @@ public class Popup extends AppCompatActivity {
         String[] hiddenFields = mMainActivity.getResources().getStringArray(R.array.hiddenFields);
         Renderer renderer = mSelectedArcGISFeature.getFeatureTable().getLayerInfo().getDrawingInfo().getRenderer();
         UniqueValueRenderer uniqueValueRenderer = null;
-        if(renderer instanceof UniqueValueRenderer){
+        if (renderer instanceof UniqueValueRenderer) {
             uniqueValueRenderer = (UniqueValueRenderer) renderer;
         }
         boolean checkHiddenField;
@@ -193,7 +194,7 @@ public class Popup extends AppCompatActivity {
                     break;
                 }
             }
-            if(checkHiddenField) continue;
+            if (checkHiddenField) continue;
             Object value = attr.get(field.getName());
             if (field.getName().equals(Constant.IDSU_CO)) {
                 if (value != null)
@@ -214,8 +215,8 @@ public class Popup extends AppCompatActivity {
                         }
                     }
                 }
-                for (String unedit_Field: unedit_Fields){
-                    if(unedit_Field.toUpperCase().equals(item.getFieldName().toUpperCase())){
+                for (String unedit_Field : unedit_Fields) {
+                    if (unedit_Field.toUpperCase().equals(item.getFieldName().toUpperCase())) {
                         item.setEdit(false);
                         break;
                     }
@@ -225,11 +226,11 @@ public class Popup extends AppCompatActivity {
                         List<UniqueValueRenderer.UniqueValue> uniqueValues = uniqueValueRenderer.getUniqueValues();
                         if (uniqueValues.size() > 0) {
                             Object valueFeatureType = getLabelUniqueRenderer(uniqueValues, value.toString());
-                            if (valueFeatureType != null) item.setValue(valueFeatureType.toString());
+                            if (valueFeatureType != null)
+                                item.setValue(valueFeatureType.toString());
                         } else item.setValue(value.toString());
 
-                    }
-                    else if (item.getFieldName().toUpperCase().equals("MAPHUONG")) {
+                    } else if (item.getFieldName().toUpperCase().equals("MAPHUONG")) {
                         getHanhChinhFeature(value.toString());
                         if (quanhuyen_feature != null)
                             item.setValue(quanhuyen_feature.getAttributes().get("TenHanhChinh").toString());
@@ -314,6 +315,7 @@ public class Popup extends AppCompatActivity {
         }
         return value;
     }
+
     private Object getLabelUniqueRenderer(List<UniqueValueRenderer.UniqueValue> uniqueValues, String code) {
         Object value = null;
         for (UniqueValueRenderer.UniqueValue uniqueValue : uniqueValues) {
@@ -325,7 +327,7 @@ public class Popup extends AppCompatActivity {
         return value;
     }
 
-    private void edit(final AdapterView<?> parent, View view, int position, long id) {
+    private void edit1(final AdapterView<?> parent, View view, int position, long id) {
         if (parent.getItemAtPosition(position) instanceof FeatureViewMoreInfoAdapter.Item) {
             final FeatureViewMoreInfoAdapter.Item item = (FeatureViewMoreInfoAdapter.Item) parent.getItemAtPosition(position);
             if (item.isEdit()) {
@@ -335,7 +337,6 @@ public class Popup extends AppCompatActivity {
                 builder.setCancelable(false).setNegativeButton("Hủy", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
                     }
                 });
                 final LinearLayout layout = (LinearLayout) mMainActivity.getLayoutInflater().
@@ -417,46 +418,47 @@ public class Popup extends AppCompatActivity {
                         editText.setText(item.getValue());
                         break;
                 }
-                builder.setPositiveButton("Cập nhật", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if ((lstUniqueValues.size() > 0 && item.getFieldName().equals(fieldNameDrawInfo)) || (domain != null)) {
-                            item.setValue(spin.getSelectedItem().toString());
-                        } else {
-                            switch (item.getFieldType()) {
-                                case DATE:
-                                    item.setValue(textView.getText().toString());
-                                    break;
-                                case DOUBLE:
-                                    try {
-                                        double x = Double.parseDouble(editText.getText().toString());
-                                        item.setValue(editText.getText().toString());
-                                    } catch (Exception e) {
-                                        Toast.makeText(mMainActivity, "Số liệu nhập vào không đúng định dạng!!!", Toast.LENGTH_LONG).show();
-                                    }
-                                    break;
-                                case TEXT:
-                                    item.setValue(editText.getText().toString());
-                                    break;
-                                case INTEGER:
-                                    try {
-                                        int x = Integer.parseInt(editText.getText().toString());
-                                        item.setValue(editText.getText().toString());
-                                    } catch (Exception e) {
-                                        Toast.makeText(mMainActivity, "Số liệu nhập vào không đúng định dạng!!!", Toast.LENGTH_LONG).show();
-                                    }
-                                    break;
-                                case SHORT:
-                                    try {
-                                        short x = Short.parseShort(editText.getText().toString());
-                                        item.setValue(editText.getText().toString());
-                                    } catch (Exception e) {
-                                        Toast.makeText(mMainActivity, "Số liệu nhập vào không đúng định dạng!!!", Toast.LENGTH_LONG).show();
-                                    }
-                                    break;
-                            }
+                builder.setPositiveButton("Cập nhật", (dialog, which) -> {
+                    String value = null;
+                    if ((lstUniqueValues.size() > 0 && item.getFieldName().equals(fieldNameDrawInfo)) || (domain != null)) {
+                        value = spin.getSelectedItem().toString();
+                    } else {
+                        switch (item.getFieldType()) {
+                            case DATE:
+                                value = textView.getText().toString();
+                                break;
+                            case FLOAT:
+                            case DOUBLE:
+                                try {
+                                    double x = Double.parseDouble(editText.getText().toString());
+                                    value = editText.getText().toString();
+                                } catch (Exception e) {
+                                    Toast.makeText(mMainActivity, mMainActivity.getResources().getString(R.string.INCORRECT_INPUT_FORMAT), Toast.LENGTH_LONG).show();
+                                }
+                                break;
+                            case TEXT:
+                                value = editText.getText().toString();
+                                break;
+                            case INTEGER:
+                                try {
+                                    int x = Integer.parseInt(editText.getText().toString());
+                                    value = editText.getText().toString();
+                                } catch (Exception e) {
+                                    Toast.makeText(mMainActivity, mMainActivity.getResources().getString(R.string.INCORRECT_INPUT_FORMAT), Toast.LENGTH_LONG).show();
+                                }
+                                break;
+                            case SHORT:
+                                try {
+                                    short x = Short.parseShort(editText.getText().toString());
+                                    value = editText.getText().toString();
+                                } catch (Exception e) {
+                                    Toast.makeText(mMainActivity, mMainActivity.getResources().getString(R.string.INCORRECT_INPUT_FORMAT), Toast.LENGTH_LONG).show();
+                                }
+                                break;
                         }
-                        dialog.dismiss();
+                    }
+                    if (value != null) {
+                        item.setValue(value);
                         FeatureViewMoreInfoAdapter adapter = (FeatureViewMoreInfoAdapter) parent.getAdapter();
                         new NotifyDataSetChangeAsync(mMainActivity).execute(adapter);
                     }
@@ -469,6 +471,151 @@ public class Popup extends AppCompatActivity {
             }
         }
 
+    }
+
+    private void edit(final AdapterView<?> parent, View view, int position, long id) {
+        if (parent.getItemAtPosition(position) instanceof FeatureViewMoreInfoAdapter.Item) {
+            final FeatureViewMoreInfoAdapter.Item item = (FeatureViewMoreInfoAdapter.Item) parent.getItemAtPosition(position);
+            if (item.isEdit()) {
+                final LinearLayout layout = (LinearLayout) mMainActivity.getLayoutInflater().
+                        inflate(R.layout.layout_dialog_update_feature_listview, null);
+
+                final FrameLayout layoutTextView = layout.findViewById(R.id.layout_edit_viewmoreinfo_TextView);
+                final TextView textView = layout.findViewById(R.id.txt_edit_viewmoreinfo);
+                TextView txtNotifyInCorrect = layout.findViewById(R.id.txtNotifyInCorrect);
+                ImageView img_selectTime = (ImageView) layout.findViewById(R.id.img_selectLayer);
+                final LinearLayout layoutEditText = layout.findViewById(R.id.layout_edit_viewmoreinfo_Editext);
+                final EditText editText = layout.findViewById(R.id.etxt_edit_viewmoreinfo);
+                final LinearLayout layoutSpin = layout.findViewById(R.id.layout_edit_viewmoreinfo_Spinner);
+                final Spinner spin = layout.findViewById(R.id.spin_edit_viewmoreinfo);
+
+                final Domain domain = mSelectedArcGISFeature.getFeatureTable().getField(item.getFieldName()).getDomain();
+                if (item.getFieldName().equals(fieldNameDrawInfo)) {
+                    if (lstUniqueValues.size() > 0) {
+                        layoutSpin.setVisibility(View.VISIBLE);
+                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(layout.getContext(), android.R.layout.simple_list_item_1, lstUniqueValues);
+                        spin.setAdapter(adapter);
+                        if (item.getValue() != null)
+                            spin.setSelection(lstUniqueValues.indexOf(item.getValue()));
+                    } else {
+                        layoutEditText.setVisibility(View.VISIBLE);
+                        editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+                        editText.setText(item.getValue());
+                    }
+                } else if (domain != null) {
+                    layoutSpin.setVisibility(View.VISIBLE);
+                    List<CodedValue> codedValues = ((CodedValueDomain) domain).getCodedValues();
+                    if (codedValues != null) {
+                        List<String> codes = new ArrayList<>();
+                        for (CodedValue codedValue : codedValues)
+                            codes.add(codedValue.getName());
+                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(layout.getContext(), android.R.layout.simple_list_item_1, codes);
+                        spin.setAdapter(adapter);
+                        if (item.getValue() != null)
+                            spin.setSelection(codes.indexOf(item.getValue()));
+
+                    }
+                } else switch (item.getFieldType()) {
+                    case DATE:
+                        layoutTextView.setVisibility(View.VISIBLE);
+                        textView.setText(item.getValue());
+                        img_selectTime.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                final View dialogView = View.inflate(mMainActivity, R.layout.date_time_picker, null);
+                                final android.app.AlertDialog alertDialog = new android.app.AlertDialog.Builder(mMainActivity).create();
+                                dialogView.findViewById(R.id.date_time_set).setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        DatePicker datePicker = (DatePicker) dialogView.findViewById(R.id.date_picker);
+                                        String s = String.format(mMainActivity.getResources().getString(R.string.format_typeday), datePicker.getDayOfMonth(), datePicker.getMonth() + 1, datePicker.getYear());
+                                        textView.setText(s);
+                                        alertDialog.dismiss();
+                                    }
+                                });
+                                alertDialog.setView(dialogView);
+                                alertDialog.show();
+                            }
+                        });
+                        break;
+                    case TEXT:
+                        layoutEditText.setVisibility(View.VISIBLE);
+                        editText.setText(item.getValue());
+                        break;
+                    case INTEGER:
+                    case SHORT:
+                        layoutEditText.setVisibility(View.VISIBLE);
+                        editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+                        editText.setText(item.getValue());
+                        break;
+                    case DOUBLE:
+                    case FLOAT:
+                        layoutEditText.setVisibility(View.VISIBLE);
+                        editText.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                        editText.setText(item.getValue());
+                        break;
+                }
+                final AlertDialog dialog = new AlertDialog.Builder(mMainActivity)
+                        .setView(layout)
+                        .setMessage(item.getAlias())
+                        .setTitle("Cập nhật thuộc tính")
+                        .setPositiveButton(R.string.btn_Update, null) //Set to null. We override the onclick
+                        .setNegativeButton(R.string.btn_Esc, null)
+                        .create();
+
+                dialog.setOnShowListener(dialogInterface -> {
+
+                    Button button = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
+                    button.setOnClickListener(view1 -> {
+                        String value = null;
+                        if ((lstUniqueValues.size() > 0 && item.getFieldName().equals(fieldNameDrawInfo)) || (domain != null)) {
+                            value = spin.getSelectedItem().toString();
+                        } else {
+                            switch (item.getFieldType()) {
+                                case DATE:
+                                    value = textView.getText().toString();
+                                    break;
+                                case FLOAT:
+                                case DOUBLE:
+                                    try {
+                                        double x = Double.parseDouble(editText.getText().toString());
+                                        value = editText.getText().toString();
+                                    } catch (Exception e) {
+                                        txtNotifyInCorrect.setVisibility(View.VISIBLE);
+                                    }
+                                    break;
+                                case TEXT:
+                                    value = editText.getText().toString();
+                                    break;
+                                case INTEGER:
+                                    try {
+                                        int x = Integer.parseInt(editText.getText().toString());
+                                        value = editText.getText().toString();
+                                    } catch (Exception e) {
+                                        txtNotifyInCorrect.setVisibility(View.VISIBLE);
+                                    }
+                                    break;
+                                case SHORT:
+                                    try {
+                                        short x = Short.parseShort(editText.getText().toString());
+                                        value = editText.getText().toString();
+                                    } catch (Exception e) {
+                                        txtNotifyInCorrect.setVisibility(View.VISIBLE);
+                                    }
+                                    break;
+                            }
+                        }
+                        if (value != null) {
+                            dialog.dismiss();
+                            item.setValue(value);
+                            FeatureViewMoreInfoAdapter adapter = (FeatureViewMoreInfoAdapter) parent.getAdapter();
+                            new NotifyDataSetChangeAsync(mMainActivity).execute(adapter);
+                        } else txtNotifyInCorrect.setVisibility(View.VISIBLE);
+                    });
+                });
+                dialog.show();
+            }
+        }
     }
 
     public void clearSelection() {
@@ -506,11 +653,11 @@ public class Popup extends AppCompatActivity {
         lstUniqueValues = new ArrayList<>();
         Renderer renderer = mSelectedArcGISFeature.getFeatureTable().getLayerInfo().getDrawingInfo().getRenderer();
         List<UniqueValueRenderer.UniqueValue> uniqueValues = null;
-        if(renderer instanceof UniqueValueRenderer){
-            UniqueValueRenderer uniqueValueRenderer = (UniqueValueRenderer)renderer;
+        if (renderer instanceof UniqueValueRenderer) {
+            UniqueValueRenderer uniqueValueRenderer = (UniqueValueRenderer) renderer;
             uniqueValues = uniqueValueRenderer.getUniqueValues();
         }
-        if(uniqueValues != null){
+        if (uniqueValues != null) {
             for (int i = 0; i < uniqueValues.size(); i++) {
                 lstUniqueValues.add(uniqueValues.get(i).getLabel().toString());
             }
