@@ -8,15 +8,10 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="generalnotitle" parent="Theme.AppCompat.Light">
-        <item name="android:windowNoTitle">true</item>   <!-- //this -->
-    </style>
-
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
-
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
@@ -29,37 +24,10 @@
         <item name="colorControlHighlight">#d50000</item>
     </style>
 
-    <style name="Button" parent="android:Widget.Button">
-        <item name="android:paddingLeft">@dimen/margin_field_name</item>
-        <item name="android:paddingRight">@dimen/margin_field_name</item>
-        <item name="android:textColor">@color/colorTextColor</item>
-        <item name="android:textStyle">normal</item>
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:gravity">left|center_vertical</item>
-
-
-        <item name="android:textSize">20sp</item>
-
-    </style>
-
-    <style name="ViewSpace" parent="android:Widget.TextView">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">1dp</item>
-        <!--<item name="android:layout_marginTop">@dimen/margin_view_setting</item>-->
-        <!--<item name="android:layout_marginBottom">@dimen/margin_view_setting</item>-->
-        <item name="android:background">@color/colorGray</item>
-
-    </style>
-
     <style name="MyTextAppearance.Red" parent="@android:style/TextAppearance">
         <item name="android:textSize">17sp</item>
         <item name="android:textStyle">italic</item>
         <item name="android:textColor">@color/colorRed</item>
-    </style>
-
-    <style name="MyTextAppearance.Black.Small" parent="@android:style/TextAppearance">
-        <item name="android:textColor">@android:color/black</item>
     </style>
 
     <style name="MySeekBar" parent="Widget.AppCompat.SeekBar">
@@ -72,4 +40,5 @@
         </item>
 
     </style>
+
 </resources>

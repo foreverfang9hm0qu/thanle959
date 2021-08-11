@@ -43,10 +43,6 @@
             android:name="hcm.ditagis.com.cholon.qlts.TraCuuActivity"
             android:label="Tra cứu thông tin"
             android:parentActivityName="hcm.ditagis.com.cholon.qlts.MainActivity" />
-        <activity
-            android:name="hcm.ditagis.com.cholon.qlts.SettingsActivity"
-            android:label="Cài đặt"
-            android:parentActivityName="hcm.ditagis.com.cholon.qlts.MainActivity" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

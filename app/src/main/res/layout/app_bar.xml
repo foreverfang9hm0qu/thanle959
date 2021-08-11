@@ -26,7 +26,7 @@
 
     <include
 
-        layout="@layout/content_quan_ly_tai_san" />
+        layout="@layout/content" />
 
     <LinearLayout
         android:id="@+id/layout_layer"
@@ -295,7 +295,6 @@
                     android:textSize="17sp" />
 
                 <EditText
-                    android:id="@+id/edit_latitude"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="10.7554041"
@@ -317,7 +316,6 @@
                     android:textSize="17sp" />
 
                 <EditText
-                    android:id="@+id/edit_longtitude"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="106.6546293"

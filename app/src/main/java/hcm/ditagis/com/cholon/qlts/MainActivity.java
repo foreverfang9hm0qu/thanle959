@@ -94,6 +94,7 @@ import hcm.ditagis.com.cholon.qlts.libs.FeatureLayerDTG;
 import hcm.ditagis.com.cholon.qlts.tools.AddFeatureItem;
 import hcm.ditagis.com.cholon.qlts.tools.ThongKe;
 import hcm.ditagis.com.cholon.qlts.utities.CheckConnectInternet;
+import hcm.ditagis.com.cholon.qlts.utities.DApplication;
 import hcm.ditagis.com.cholon.qlts.utities.ImageFile;
 import hcm.ditagis.com.cholon.qlts.utities.MapViewHandler;
 import hcm.ditagis.com.cholon.qlts.tools.MySnackBar;
@@ -107,7 +108,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private MapView mMapView;
     private ArcGISMap mMap;
     private Callout mCallout;
-    private FeatureLayerDTG mFeatureLayerDTG;
     private MapViewHandler mMapViewHandler;
     private ListView mListViewSearch;
     private ObjectsAdapter mSearchAdapter;
@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private List<FeatureLayerDTG> mFeatureLayerDTGS;
     private LinearLayout mLinearLayoutCover;
     private ThongKe thongKe;
-    private ArcGISMapImageLayer hanhChinhImageLayers, taiSanImageLayers;
+    private ArcGISMapImageLayer hanhChinhImageLayers;
     private int states[][];
     private int colors[];
 
@@ -178,8 +178,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-        NavigationView navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+
 
         // location
 
@@ -191,8 +190,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         initLayerListView();
         initMapView();
         setOnClickListener();
+        setLoginInfos();
     }
-
+    private void setLoginInfos(){
+        DApplication application = (DApplication) getApplication();
+        String displayName = application.getUser().getDisplayName();
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        View headerLayout = navigationView.getHeaderView(0);
+        TextView nav_name_nv = headerLayout.findViewById(R.id.nav_name_nv);
+        nav_name_nv.setText(displayName);
+    }
     private void initMapView() {
         mMap = new ArcGISMap(Basemap.Type.OPEN_STREET_MAP, 10.7554041, 106.6546293, 12);
         mMapView = findViewById(R.id.mapView);
@@ -218,7 +226,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void setFeatureService() {
-
         // config feature layer service
         mFeatureLayerDTGS = new ArrayList<>();
         mCallout = mMapView.getCallout();
@@ -544,7 +551,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onCreateOptionsMenu(Menu menu) {
 
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.quan_ly_su_co, menu);
+        getMenuInflater().inflate(R.menu.menu_search, menu);
         final SearchView mTxtSearch = (SearchView) menu.findItem(R.id.action_search).getActionView();
         mTxtSearch.setQueryHint(getString(R.string.title_search));
         mTxtSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -717,10 +724,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.nav_find_route:
                 intent = new Intent(this, FindRouteActivity.class);
                 this.startActivity(intent);
-                break;
-            case R.id.nav_setting:
-                intent = new Intent(this, SettingsActivity.class);
-                this.startActivityForResult(intent, 1);
                 break;
             case R.id.nav_visible_float_button:
                 toogleFloatButton();
