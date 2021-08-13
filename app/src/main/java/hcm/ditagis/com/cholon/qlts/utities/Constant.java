@@ -13,10 +13,10 @@ public class Constant {
     private SettingsAdapter.Item[] mSettingsItems;
     public static final String OBJECTID = "OBJECTID";
     public static final String IDSU_CO = "IDSuCo";
-            public static final String SERVER = "http://gis.capnuoccholon.com.vn/cholon";
+            public static final String SERVER = "https://gis.capnuoccholon.com.vn/cholon";
 //    public static final String SERVER = "http://sawagis.vn/cholon";
     public static final String SERVER_API = SERVER + "/api";
-    public String API_LOGIN;
+    public static String API_LOGIN;
 
     {
         API_LOGIN = SERVER_API + "/Login";

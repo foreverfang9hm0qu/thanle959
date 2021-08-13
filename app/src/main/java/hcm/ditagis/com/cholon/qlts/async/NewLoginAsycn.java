@@ -17,6 +17,7 @@ import java.net.URL;
 import hcm.ditagis.com.cholon.qlts.R;
 import hcm.ditagis.com.cholon.qlts.entities.entitiesDB.User;
 import hcm.ditagis.com.cholon.qlts.entities.entitiesDB.UserDangNhap;
+import hcm.ditagis.com.cholon.qlts.utities.Constant;
 import hcm.ditagis.com.cholon.qlts.utities.DApplication;
 import hcm.ditagis.com.cholon.qlts.utities.Preference;
 
@@ -26,8 +27,6 @@ public class NewLoginAsycn extends AsyncTask<String, Void, Void> {
     private Activity mActivity;
     private AsyncResponse mDelegate;
     private DApplication mDApplication;
-    String API_URL;
-
     public interface AsyncResponse {
         void processFinish(Void output);
     }
@@ -36,7 +35,6 @@ public class NewLoginAsycn extends AsyncTask<String, Void, Void> {
         this.mActivity = activity;
         this.mDApplication = (DApplication) activity.getApplication();
         this.mDelegate = delegate;
-        this.API_URL = mActivity.getString(R.string.URL_API) + "/api/Login";
     }
 
     protected void onPreExecute() {
@@ -54,7 +52,7 @@ public class NewLoginAsycn extends AsyncTask<String, Void, Void> {
 //        String passEncoded = (new EncodeMD5()).encode(pin + "_DITAGIS");
         // Do some validation here
         String urlParameters = String.format("Username=%s&Password=%s", userName, pin);
-        String urlWithParam = String.format("%s?%s", API_URL, urlParameters);
+        String urlWithParam = String.format("%s?%s", Constant.getInstance().API_LOGIN, urlParameters);
         try {
 //            + "&apiKey=" + API_KEY
             URL url = new URL(urlWithParam);
